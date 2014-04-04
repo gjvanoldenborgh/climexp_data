@@ -279,10 +279,10 @@ for var in vars:
                 else:
                     cmonth = str(month)
                 file = datavar + str(year) + cmonth + '_mo.grib'
-                if ( os.path.exists(file):
+                if os.path.exists(file):
                     os.remove(file)
                 file = datavar + str(year) + cmonth + '_mo.nc'
-                if ( os.path.exists(file):
+                if os.path.exists(file):
                     os.remove(file)
     
         ###print "concatenate = " + str(concatenate)    

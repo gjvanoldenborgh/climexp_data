@@ -21,7 +21,7 @@ fi
 cdoflags="-r -R -f nc4 -z zip"
 
 # construct the list of months
-var=msl # let's assume all went well and the other variables were downloaded as well...
+var=z500 # let's assume all went well and the other variables were downloaded as well...
 m=0
 curyr=`date "+%Y"`
 begyr=$((curyr-1))
@@ -43,11 +43,12 @@ do
     else
         mo=$m
     fi
-    rsync -e ssh -avt bvlclim:climexp/ERA-interim/$var$yr$mo.grib .
-    if [ -s $var$yr$mo.grib ]; then
+    rsync -e ssh -avt bvlclim:climexp/ERA-interim/\*$yr$mo.grib .
+    rsync -e ssh -avt bvlclim:climexp/ERA-interim/\*$yr.grib .
+    if [ -s $var$yr$mo.grib -o -s $var$yr.grib ]; then
         # clean up the operational analyses if the ERA-interim exists
-        [ -f oper_$var$yr$mo.grib ] && rm oper_$var$yr$mo.grib
-        [ -f oper_$var$yr$mo.nc ] && rm oper_$var$yr$mo.nc
+        [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
+        [ -f oper_$var$yr$mo.nc ] && rm oper_*$yr$mo.nc
     else
         echo "downloading oper_$var$yr$mo.grib ..."
         dates="$dates $yr$mo"
@@ -67,6 +68,7 @@ do
             fi
         else
             lastday=`date "+%d"` # today
+            lastday=${lastday#0} # NOT octal
             lastday=$((lastday-1)) # yesterday
         fi
         list="${yr}-${mo}-01"
@@ -87,13 +89,14 @@ do
 	        sed -e "s@LIST@$list@" -e "s/DATE/$yr$mo/" marsoper.sh > marsoper$yr$mo.sh
 	        ecjput ecgate marsoper$yr$mo.sh
 	
-	        echo "wait for it to finish"
 	        c=1
 	        while [ $c = 1 ]
 	        do
-		        sleep 15
-		        c=`ecjls|fgrep -c EXEC`
+    	        echo "wait for it to finish"
+		        sleep 60
+		        c=`ecjls|egrep -c 'INIT|WAIT|EXEC'`
 	        done
+	        sleep 15 # to give ECMWF time to finish copying the files
         fi
 
         echo "retrieve output"
@@ -104,7 +107,10 @@ do
 	            if [ "$download" != false ]; then
 	                [ -f oper_${var}${yr}${mo}.grb ] && rm oper_${var}${yr}${mo}.grb
 		            echo ecget oper_${var}${yr}${mo}.grb
-		            ecget oper_${var}${yr}${mo}.grb
+		            while [ ! -s oper_${var}${yr}${mo}.grb ]; do
+		                ecget oper_${var}${yr}${mo}.grb
+		                [ ! -s oper_${var}${yr}${mo}.grb ] && sleep 60
+		            done
 		            echo ecdelete oper_${var}${yr}${mo}.grb
 		            ecdelete oper_${var}${yr}${mo}.grb
 	            fi
@@ -124,7 +130,7 @@ do
 				        -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
 				        -a title,global,a,c,"operational analysis" \
 			            aap.nc oper_${var}${yr}${mo}.nc
-			        if [ $var = t2m ]; then
+			        if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
 			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
 			            mv aap.nc oper_${var}${yr}${mo}.nc
 			        fi
@@ -133,11 +139,55 @@ do
             fi
         done
 
-        if [ 0 = 1 ]; then
-        cvars=`fgrep "for var in pr" marsoper.sh | sed -e "s/for var in //"`
+        ###cvars=`fgrep "for var in pr" marsoper.sh | sed -e "s/for var in //"`
+        cvars="tmin tmax" # not yet pr
         for var in $cvars
         do
             if [ $var != "#" ]; then
+	            if [ "$download" != false ]; then
+	                [ -f oper_${var}${yr}${mo}.grb ] && rm oper_${var}${yr}${mo}.grb
+		            echo ecget oper_${var}${yr}${mo}.grb
+		            while [ ! -s oper_${var}${yr}${mo}.grb ]; do
+		                ecget oper_${var}${yr}${mo}.grb
+		                [ ! -s oper_${var}${yr}${mo}.grb ] && sleep 60
+		            done
+		            echo ecdelete oper_${var}${yr}${mo}.grb
+		            ecdelete oper_${var}${yr}${mo}.grb
+	            fi
+            fi
+            if [ $var = tmin -o $var = tmax ]; then
+                if [ $var = tmin ]; then
+                    oper=daymin
+                elif [ $var = tmax ]; then
+                    oper=daymax
+                else
+                    echo "$0: error: unknown var $var"
+                    exit -1
+                fi
+	            if [ force=true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}.nc -ot oper_${var}${yr}${mo}.grb ]; then
+		            echo "converting oper_${var}${yr}${mo} to netcdf"
+		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb aap.nc
+                    # shift time so that the 06, 12, 18 and 24 values are averaged
+		            cdo $cdoflags shifttime,-3hour aap.nc noot.nc
+		            cdo $cdoflags $oper noot.nc aap.nc
+		            # shift time back from 21 to 12 UTC in order not to confuse the next program
+		            cdo $cdoflags shifttime,-9hour aap.nc oper_${var}${yr}${mo}.nc
+		            rm -f aap.nc noot.nc
+		            . ./gribcodes.sh
+		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
+		            ncatted -O -a long_name,$var,a,c,"$long_name" \
+				        -a units,$var,a,c,"$units" \
+				        -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
+				        -a title,global,a,c,"operational analysis" \
+			            aap.nc oper_${var}${yr}${mo}.nc
+			        if [ $var = tmin -o $var = tmax ]; then
+			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
+			            mv aap.nc oper_${var}${yr}${mo}.nc
+			        fi
+			        rm aap.nc
+            	fi
+            elif [ $var = "pr" ]; then
+                echo "Completely untested code"
 	            for step in 12 24
             	do
 		            if [ ! -s oper_${var}${yr}${mo}_$step.grb ]; then
@@ -161,7 +211,6 @@ do
                 [ -f noot.nc ] && rm noot.nc
             fi
         done
-        fi # 0=1
     fi # download or not?
 done # loop over yr,mo
 
@@ -170,7 +219,7 @@ do
     files=""
     for date in $dates
     do
-        files="$files oper_$var$date.nc"
+        [ -s oper_$var$date.nc ] && files="$files oper_$var$date.nc"
     done
     rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
     echo cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc

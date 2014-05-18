@@ -2,7 +2,7 @@
 # See mail form Bert Wouters
 #   land
 base=ftp://podaac.jpl.nasa.gov/allData/tellus/L3/land_mass/RL05/netcdf/
-file=\*CSR\*.nc
+file=\*CSR\*LND\*.nc
 wget -q -N "$base/$file"
 thisfile=`ls -t $file | head -1`
 if [ -s "$thisfile" ]; then
@@ -11,7 +11,7 @@ fi
 
 #   ocean
 base=ftp://podaac.jpl.nasa.gov/allData/tellus/L3/ocean_mass/RL05/netcdf/
-file=\*CSR\*.nc
+file=\*CSR\*OCN\*.nc
 wget -q -N "$base/$file"
 thisfile=`ls -t $file | head -1`
 if [ -s "$thisfile" ]; then
@@ -30,4 +30,4 @@ daily2longerfield grace_ocean_daily.nc 12 mean minfac 0.25 grace_ocean.nc
 $HOME/NINO/copyfiles.sh grace_ocean.nc
 rm grace_ocean_daily.nc
 
-$HOME/copyfiles.sh grace_land.nc grace_ocean.nc
+$HOME/NINO/copyfiles.sh grace_land.nc grace_ocean.nc

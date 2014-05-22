@@ -2,6 +2,7 @@
 import os
 from datetime import datetime
 from ecmwfapi import ECMWFDataServer
+cdo = "cdo -r -R -b 32 -f nc4 -z zip"
 
 def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
     """ retrieve daily data from ECMWF ERA-interim archive """
@@ -55,20 +56,20 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             oper = "daymean"
 
         if type == "an":
-            command = "cdo -r -R -b 32 -f nc4 -z zip -setname," + var + " -" + oper + " " + file + " " + " aap.nc; cdo -r -R -b 32 -f nc4 -z zip -shifttime,-6hour aap.nc " + ncfile
+            command = cdo + " -setname," + var + " -" + oper + " " + file + " " + " aap.nc; " + cdo + " -shifttime,-6hour aap.nc " + ncfile
         elif type == "fc":
             if var == "tmin" or var == "tmax":
                 # shift -3 hr to get the 06, 12, 18 and 24 values in the correct day
-                command = "cdo -r -R -b 32 -f nc4 -z zip -setname," \
-                    + var + " -shifttime,-3hour " + file + \
-                    " aap.nc; cdo -r -R -b 32 -f nc4 -z zip -" \
-                    + oper + " aap.nc noot.nc; cdo -r -R -b 32 -f nc4 -z zip -shifttime,-9hour noot.nc " + ncfile
+                command = cdo + " -setname," + var + " -shifttime,-3hour " + file + \
+                    " aap.nc; " + cdo + " -" + oper + " aap.nc noot.nc; " + cdo + \
+                    " -shifttime,-9hour noot.nc " + ncfile
             elif var == 'tp':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm
-                command = "cdo -r -R -b 32 -f nc4 -z zip -setname," \
-                    + var + " -shifttime,-6hour " + file + \
-                    " aap.nc; cdo -r -R -b 32 -f nc4 -z zip -daysum -mulc,1000 aap.nc " + ncfile
+                command = cdo + " -setname," \
+                    + var + " -shifttime,-6hour " + file + " aap.nc; " + cdo + \
+                    " -daysum -mulc,1000 aap.nc noot.nc; " + cdo + \
+                    " -shifttime,-6hour noot.nc " + ncfile
             else:
                 print "error: cannot handle var %s" % var
                 sys.exit(-1)
@@ -89,6 +90,8 @@ currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
 vars = [ "tmin", "tmax", "t2m", "msl", "z500", "tp" ]
+print "DEBUG"
+vars = [ "tp" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -184,7 +187,7 @@ for var in vars:
 
     outfile = "erai_" + var + "_daily.nc"
     if concatenate or os.path.isfile(file) == False:
-        command = "cdo -r -R -b 32 -f nc4 -z zip copy " + ncfiles + " " + outfile
+        command = cdo + " copy " + ncfiles + " " + outfile
         print command
         os.system(command)
 

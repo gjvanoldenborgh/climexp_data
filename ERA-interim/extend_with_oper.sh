@@ -21,7 +21,7 @@ fi
 cdoflags="-r -R -f nc4 -z zip"
 
 # construct the list of months
-var=z500 # let's assume all went well and the other variables were downloaded as well...
+var=tp # let's assume all went well and the other variables were downloaded as well...
 m=0
 curyr=`date "+%Y"`
 begyr=$((curyr-1))
@@ -43,8 +43,10 @@ do
     else
         mo=$m
     fi
-    rsync -e ssh -avt bvlclim:climexp/ERA-interim/\*$yr$mo.grib .
-    rsync -e ssh -avt bvlclim:climexp/ERA-interim/\*$yr.grib .
+    echo "Getting \*$yr$mo.grib from bvlclim"
+    rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr$mo.grib . > /dev/null 2>&1
+    echo "Getting \*$yr.grib from bvlclim"
+    rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr.grib . > /dev/null 2>&1
     if [ -s $var$yr$mo.grib -o -s $var$yr.grib ]; then
         # clean up the operational analyses if the ERA-interim exists
         [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
@@ -84,6 +86,7 @@ do
             d=$((d+1))
         done
 
+        downlaod=false
         if [ "$download" != false ]; then
 	        echo "submit MARS job to retrieve operational fields"
 	        sed -e "s@LIST@$list@" -e "s/DATE/$yr$mo/" marsoper.sh > marsoper$yr$mo.sh
@@ -139,20 +142,28 @@ do
             fi
         done
 
-        ###cvars=`fgrep "for var in pr" marsoper.sh | sed -e "s/for var in //"`
-        cvars="tmin tmax" # not yet pr
+        cvars=`fgrep "for var in tp" marsoper.sh | sed -e "s/for var in //"`
         for var in $cvars
         do
             if [ $var != "#" ]; then
 	            if [ "$download" != false ]; then
-	                [ -f oper_${var}${yr}${mo}.grb ] && rm oper_${var}${yr}${mo}.grb
-		            echo ecget oper_${var}${yr}${mo}.grb
-		            while [ ! -s oper_${var}${yr}${mo}.grb ]; do
-		                ecget oper_${var}${yr}${mo}.grb
-		                [ ! -s oper_${var}${yr}${mo}.grb ] && sleep 60
+	                if [ $var = tmin -o $var = tmax ]; then
+	                    exts=""
+	                else
+	                    exts="_12 _24"
+	                fi
+	                for ext in $exts
+	                do
+	                    file=oper_${var}${yr}${mo}$ext.grb
+    	                [ -f $file ] && rm $file
+	    	            echo ecget $file
+		                while [ ! -s $file ]; do
+		                    ecget $file
+		                    [ ! -s $file ] && sleep 60
+		                done
+		                echo ecdelete $file
+		                ecdelete $file
 		            done
-		            echo ecdelete oper_${var}${yr}${mo}.grb
-		            ecdelete oper_${var}${yr}${mo}.grb
 	            fi
             fi
             if [ $var = tmin -o $var = tmax ]; then
@@ -186,7 +197,7 @@ do
 			        fi
 			        rm aap.nc
             	fi
-            elif [ $var = "pr" ]; then
+            elif [ $var = "tp" ]; then
                 echo "Completely untested code"
 	            for step in 12 24
             	do
@@ -221,6 +232,7 @@ do
     do
         [ -s oper_$var$date.nc ] && files="$files oper_$var$date.nc"
     done
+    echo "Getting erai_${var}_daily.nc from bvlclim"
     rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
     echo cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc

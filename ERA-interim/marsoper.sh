@@ -149,11 +149,11 @@ EOF
 done # instantaneous vars
 
 # accumulated surface variables
-for var in tmin tmax # pr
+for var in tp tmin tmax
 do
 
     case $var in
-        pr)    par=228.128;;
+        tp)    par=228.128;;
         evap)  par=182.128;;
         ustrs) par=180.128;;
         vstrs) par=181.128;;
@@ -185,7 +185,7 @@ target="$file"
 EOF
     else
         # accumulated fluxes
-        file=$SCRATCH/eraint_${var}${date}_12.grb
+        file=$SCRATCH/oper_${var}${date}_12.grb
         if [ ! -s $file ]; then
             mars <<EOF
 retrieve,
@@ -204,7 +204,7 @@ target="$file"
 EOF
         fi
 
-        file=$SCRATCH/eraint_${var}${date}_24.grb
+        file=$SCRATCH/oper_${var}${date}_24.grb
         if [ ! -s $file ]; then
             mars <<EOF
 retrieve,
@@ -224,9 +224,6 @@ EOF
         fi
     fi # accumulated
 done # forecast vars
-
-#use cdo
-#cdo -R -f nc copy $SCRATCH/eraint_t2m.grb $SCRATCH/eraint_t2m.nc
 
 #------------------------------- 
 # tidy up by deleting unwanted files 

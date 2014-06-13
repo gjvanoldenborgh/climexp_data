@@ -32,7 +32,7 @@ do
         . $HOME/climexp/queryfield.cgi
         file=$HOME/climexp/$file
 	    regrfile=regr_sst_${model}_co2eq_annual_${ave}.nc
-	    subfile=${model}-co2eq_annual_${ave}.nc
+	    subfile=${model}-co2eq_annual_${ave}.ctl
 	    if [ ! -s $regrfile ]; then
 		    command="correlatefield $file $trend mon 1 ave 12 minfac $minfac $regrfile"
 		    echo $command
@@ -43,7 +43,7 @@ do
 		    fi
 	    fi
 	    if [ ! -s $subfile ]; then
-		    command="subtractfield $file $regrfile regr $trend ave 12 $subfile"
+		    command="correlatefield $file $trend ave 12 subtract $subfile"
 		    echo $command
 		    $command
     		if [ ! -s $subfile ]; then

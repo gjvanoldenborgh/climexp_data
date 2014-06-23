@@ -1,5 +1,5 @@
 #!/bin/sh
-for var in t2msst # t2m sst 
+for var in t2m sst t2msst 
 do
 
 	if [ $var = t2msst ]; then
@@ -23,8 +23,6 @@ EOF
 			ncatted -a units,t2msst,a,c,"K" erai_t2msst.nc
 		fi
 	fi
-echo DEBUG
-exit
 	case $var in
 		t2msst) areas="gl nh sh arctic antarctic";;
 		t2m) areas="gl nh sh land sea seaice_n seaice_s landnoice seanoice arctic antarctic";;

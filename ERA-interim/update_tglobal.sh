@@ -62,6 +62,7 @@ EOF
 				exit -1
 			fi
 		fi
+		if [ -s nonmissing_erai_${var}.nc ]; then
 		if [ \( ! -s nonmissing_erai_${var}_$area.dat \) -o nonmissing_erai_${var}_$area.dat -ot nonmissing_erai_${var}.nc ]; then
 			get_index nonmissing_erai_${var}.nc 0 360 $lats lsmask lsmask07.nc $landsea standardunits > nonmissing_$series
 			if [ $? != 0 -o ! -s nonmissing_$series ]; then
@@ -71,6 +72,7 @@ EOF
 			fi
 			plotdat anom 1981 2010 nonmissing_$series > aap.dat
 			mv aap.dat nonmissing_$series
+		fi
 		fi
 	done
 done

@@ -89,9 +89,7 @@ server = ECMWFDataServer()
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
-vars = [ "tmin", "tmax", "t2m", "msl", "z500", "tp" ]
-print "DEBUG"
-vars = [ "tp" ]
+vars = [ "t2m", "tmin", "tmax", "msl", "z500", "tp" ]
 for var in vars:
     ncfiles = ""
     concatenate = False

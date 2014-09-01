@@ -86,7 +86,6 @@ do
             d=$((d+1))
         done
 
-        downlaod=false
         if [ "$download" != false ]; then
 	        echo "submit MARS job to retrieve operational fields"
 	        sed -e "s@LIST@$list@" -e "s/DATE/$yr$mo/" marsoper.sh > marsoper$yr$mo.sh
@@ -148,12 +147,13 @@ do
             if [ $var != "#" ]; then
 	            if [ "$download" != false ]; then
 	                if [ $var = tmin -o $var = tmax ]; then
-	                    exts=""
+	                    exts="@"
 	                else
 	                    exts="_12 _24"
 	                fi
-	                for ext in $exts
+	                for iext in $exts
 	                do
+	                    ext=${iext#@}
 	                    file=oper_${var}${yr}${mo}$ext.grb
     	                [ -f $file ] && rm $file
 	    	            echo ecget $file
@@ -198,7 +198,6 @@ do
 			        rm aap.nc
             	fi
             elif [ $var = "tp" ]; then
-                echo "Completely untested code"
 	            for step in 12 24
             	do
 		            if [ ! -s oper_${var}${yr}${mo}_$step.grb ]; then

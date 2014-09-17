@@ -63,7 +63,7 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
                 command = cdo + " -setname," + var + " -shifttime,-3hour " + file + \
                     " aap.nc; " + cdo + " -" + oper + " aap.nc noot.nc; " + cdo + \
                     " -shifttime,-9hour noot.nc " + ncfile
-            elif var == 'tp':
+            elif var == 'tp' or var == 'evap':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm
                 command = cdo + " -setname," \
@@ -89,7 +89,7 @@ server = ECMWFDataServer()
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
-vars = [ "t2m", "tmin", "tmax", "msl", "z500", "tp" ]
+vars = [ "t2m", "tmin", "tmax", "msl", "z500", "tp", "evap" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -120,6 +120,10 @@ for var in vars:
         levtype = "pl"
     elif var == "tp":
         code = "228.128"
+        type = "fc"
+        units = "mm/dy"
+    elif var == "evap":
+        code = "182.128"
         type = "fc"
         units = "mm/dy"
     else:

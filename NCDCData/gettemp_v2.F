@@ -169,14 +169,14 @@ c       other documentation
             if ( n.gt.1 .or. lwrite ) print '(a)','Opening v2.prcp'
             open(unit=2,file=dir(1:ldir)//'v2.prcp',status
      +            ='old',form='formatted',access='direct',recl=77)
-            nrec  =  1119924
+            nrec  =  1120020
             nstat = 80091155
         elseif ( index(string,'getprcp').ne.0 ) then
             type = 'prcp'
             if ( n.gt.1 ) print '(a)','Opening v2.prcp_adj'
             open(unit=2,file=dir(1:ldir)//'v2.prcp_adj',status
      +            ='old',form='formatted',access='direct',recl=77)
-            nrec  =   225380
+            nrec  =   225383
             nstat = 65103160
         elseif ( index(string,'gettempall').ne.0 ) then
             type = 'tempall'

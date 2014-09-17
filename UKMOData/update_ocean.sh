@@ -6,7 +6,7 @@ base=http://www.metoffice.gov.uk/hadobs/en3/data/EN3_v2a
 version=EN3_v2a
 
 yr=1949
-yrnow=`date -d "1 month ago" "+%Y"`
+yrnow=`date -d "1 year ago" "+%Y"`
 while [ $yr -lt $yrnow ]; do
     echo $((++yr))
     file=${version}_ObjectiveAnalyses_$yr.tar

@@ -50,28 +50,28 @@
      +               1x,i4,a1,i5,3(a2),i2,a1,i2,a16,a1)
                 if ( var.eq.'tavg' .and. ext.eq.'qca' ) then
                     call getdata3('temp',2,100000*ic+iwmo,imod,0,nyr,
-     +                     440691,80099914,0,3000
-     +                   ,'v3.2.2.20140316')
+     +                     441000,80099914,0,3000
+     +                   ,'v3.2.2.20140905')
                 else if ( var.eq.'tmin' .and. ext.eq.'qca' ) then
                     call getdata3('tmin',2,100000*ic+iwmo,imod,0,nyr,
-     +                     306847,70188968,0,3000
-     +                   ,'v3.2.2.20140315')
+     +                     307124,70188968,0,3000
+     +                   ,'v3.2.2.20140830')
                 else if ( var.eq.'tmax' .and. ext.eq.'qca' ) then
                     call getdata3('tmax',2,100000*ic+iwmo,imod,0,nyr
-     +                   ,  308724,70188968,0,3000
-     +                   ,'v3.2.2.20140315')
+     +                   ,  308864,70188968,0,3000
+     +                   ,'v3.2.2.20140830')
                 else if ( var.eq.'tavg' .and. ext.eq.'qcu' ) then
                     call getdata3('tempall',2,100000*ic+iwmo,imod,0
-     +                   ,nyr,  460165,80099914,0,3000
-     +                   ,'v3.2.2.20140316')
+     +                   ,nyr,  460340,80099914,0,3000
+     +                   ,'v3.2.2.20140905')
                 else if ( var.eq.'tmin' .and. ext.eq.'qcu' ) then
                     call getdata3('tminall',2,100000*ic+iwmo,imod,0
-     +                   ,nyr,  320994,70188968,0,3000
-     +                   ,'v3.2.2.20140315')
+     +                   ,nyr,  321127,70188968,0,3000
+     +                   ,'v3.2.2.20140830')
                 else if ( var.eq.'tmax' .and. ext.eq.'qcu' ) then
                     call getdata3('tmaxall',2,100000*ic+iwmo,imod,0
-     +                   ,nyr,  319873,70188968,0,3000
-     +                   ,'v3.2.2.20140315')
+     +                   ,nyr,  319991,70188968,0,3000
+     +                   ,'v3.2.2.20140830')
                 else
                     write(0,*) 'makeyeartempindex: error: var = ',var,
      +                   ' and ext = ',ext

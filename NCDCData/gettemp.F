@@ -118,39 +118,39 @@ c       other documentation
         if ( index(string,'gettemp ').ne.0 ) then
             type = 'temp'
             file = 'ghcnm.tavg.v3.qca'
-            nrec  =   440691
+            nrec  =   441000
             nstat = 80099914
-            version = 'v3.2.2.20140316'
+            version = 'v3.2.2.20140905'
         elseif ( index(string,'getmin ').ne.0 ) then
             type = 'tmin'
             file = 'ghcnm.tmin.v3.qca'
-            nrec  =   306847
+            nrec  =   307124
             nstat = 80099914
-            version = 'v3.2.2.20140315'
+            version = 'v3.2.2.20140830'
         elseif ( index(string,'getmax ').ne.0 ) then
             type = 'tmax'
             file = 'ghcnm.tmax.v3.qca'
-            nrec  =   308724
+            nrec  =   308864
             nstat = 70188968
-            version = 'v3.2.2.20140315'
+            version = 'v3.2.2.20140830'
         elseif ( index(string,'gettempall').ne.0 ) then
             type = 'tempall'
             file = 'ghcnm.tavg.v3.qcu'
-            nrec  =   460165
+            nrec  =   460340
             nstat = 80099914
-            version = 'v3.2.2.20140316'
+            version = 'v3.2.2.20140905'
         elseif ( index(string,'getminall').ne.0 ) then
             type = 'tminall'
             file = 'ghcnm.tmin.v3.qcu'
-            nrec  =   320994
+            nrec  =   321127
             nstat = 70188968
-            version = 'v3.2.2.20140315'
+            version = 'v3.2.2.20140830'
         elseif ( index(string,'getmaxall').ne.0 ) then
             type = 'tmaxall'
             file = 'ghcnm.tmax.v3.qcu'
-            nrec  =   319873
+            nrec  =   319991
             nstat = 70188968
-            version = 'v3.2.2.20140315'
+            version = 'v3.2.2.20140830'
         else
             print *,'do not know which database to use when running as '
      +            ,string(1:llen(string))

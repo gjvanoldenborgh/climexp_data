@@ -9,12 +9,12 @@ a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
 export FORM_a1=1
 export FORM_a2=$a
 gen_time 1700 2200 12 > dummy.12.dat
-addseries dummy.12.dat file hadsst_natl.dat file hadcrut4110_ns_avg.dat mon 1:12 plot aap.dat > /tmp/addseries.log
+addseries dummy.12.dat file hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.dat > /tmp/addseries.log
 file=`tail -1 /tmp/addseries.log`
 normdiff $file null none none > aap.dat
 cat > amo_hadsst.dat <<EOF
 # AMO index SST 25-60N, 7-75W minus regression on global mean temperature
-# as in <a haref="http://www.ocean-sci.net/5/293/2009/os-5-293-2009.html">van Oldenborgh et al 2009</a>
+# as in <a href="http://www.ocean-sci.net/5/293/2009/os-5-293-2009.html">van Oldenborgh et al 2009</a>
 # based on HadSST $version from UKMO
 # AMO [K] SST anomalies
 EOF

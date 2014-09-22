@@ -34,7 +34,12 @@ mv nao.dat nao_base.dat
 cp nao_update.htm nao_update.htm.old
 wget -N http://www.cru.uea.ac.uk/~timo/datapages/naoi.htm
 ###make update_nao
-./update_nao > nao.dat
+cat > nao.dat <<EOF
+# Normalised NAO index from pressure readings in Iceland and Gibraltar
+# Source: <a href="http://www.cru.uea.ac.uk/cru/data/nao/">CRU</a>, updated by <a href="http://www.cru.uea.ac.uk/~timo/datapages/naoi.htm">Tim Osborn</a>
+# NAO [1] North Atlantic Oscillation index
+EOF
+./update_nao >> nao.dat
 $HOME/NINO/copyfilesall.sh nao.dat
 #
 # SOI

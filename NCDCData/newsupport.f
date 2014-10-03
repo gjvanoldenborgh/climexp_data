@@ -594,7 +594,7 @@
      +                   ,'daily minimum temperature (unadjusted) '
      +                   ,'from GHCN-M ',trim(version)
                 elseif ( type.eq.'tmaxall' ) then
-                    print '(2a)','# tmax [Celsius] '
+                    print '(4a)','# tmax [Celsius] '
      +                   ,'daily maximum temperature (adjusted) '
      +                   ,'from GHCN-M ',trim(version)
                 else

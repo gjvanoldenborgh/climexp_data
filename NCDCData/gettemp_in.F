@@ -428,7 +428,7 @@ c       other documentation
                 nflag = 1
             endif
             call getdata3(type,2,100000*ic(jj)+iwmo(jj),imod(jj)
-     +            ,nflag,nyr,nrec,nstat,yr1,yr2,' ')
+     +            ,nflag,nyr,nrec,nstat,yr1,yr2,version)
   700       continue
         enddo
  800    continue

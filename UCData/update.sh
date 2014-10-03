@@ -34,3 +34,4 @@ do
         fi
     done
 done
+$HOME/NINO/copyfiles.sh *.nc

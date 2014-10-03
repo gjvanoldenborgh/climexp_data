@@ -541,7 +541,7 @@
   800   continue
 *
         end
-*  #] getdata:inga
+*  #] getdata:
 *  #[ tidyname:
         subroutine tidyname(name,country)
 *

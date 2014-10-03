@@ -125,7 +125,7 @@
       elseif ( element.eq.'TOBS' ) then
           goto 200
       else
-          write(0,*) 'error: unknown element ',element,' in ',station
+          !!!write(0,*) 'error: unknown element ',element,' in ',station
           goto 200
       endif
       idates(3*i-1) = min(yr,idates(3*i-1))

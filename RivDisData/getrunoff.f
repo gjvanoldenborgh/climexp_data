@@ -199,7 +199,6 @@ c     20 character river name
 ***                print *,'opening ',dir(1:ldir)
                 open(2,file=dir(1:ldir),status='old',err=940)
 *               read and print (uninterpreted) header
-                read(2,'(a)') string
 ***                print '(a)',string
                 print '(a)','# runoff [m3/s]'
 *               read and print data

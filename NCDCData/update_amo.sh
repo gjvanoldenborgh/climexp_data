@@ -3,12 +3,12 @@
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
 get_index ersstv3b.ctl -75 -7 25 60 > ersst_natl.dat
-correlate ersst_natl.dat file ncdc_gl.dat mon 1:12 plot aap.dat
+correlate ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.dat
 a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
 export FORM_a1=1
 export FORM_a2=$a
 gen_time 1700 2200 12 > dummy.12.dat
-addseries dummy.12.dat file ersst_natl.dat file ncdc_gl.dat mon 1:12 plot aap.dat > /tmp/addseries.log
+addseries dummy.12.dat file ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.dat > /tmp/addseries.log
 file=`tail -1 /tmp/addseries.log`
 normdiff $file null none none > aap.dat
 cat > amo_ersst.dat <<EOF

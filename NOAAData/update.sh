@@ -1,10 +1,10 @@
 #!/bin/sh
 cp table.html table.html.old
-wget -N http://www.esrl.noaa.gov/psd/enso/mei/table.html
+wget -N http://www.cdc.noaa.gov/people/klaus.wolter/MEI/table.html
 cat > mei.dat <<EOF
 # MEI [1] Multivariate ENSO Index
 # shifted by 0.5 month, i.e., the Jan value represents the Dec/Jan MEI index.
-# from <a href="http://www.cdc.noaa.gov/people/klaus.wolter/MEI/"ESRL</a>
+# from <a href="http://www.cdc.noaa.gov/people/klaus.wolter/MEI/">ESRL</a>
 EOF
 egrep '^[12][0-9]' table.html >> mei.dat
 lastline=`tail -1 mei.dat`

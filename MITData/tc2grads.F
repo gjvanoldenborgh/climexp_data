@@ -10,7 +10,7 @@
 #include "netcdf.inc"
         integer nstorms,nobs,nx,ny,yrbeg,yrend
         parameter (nstorms=2000,nobs=120,nx=360/5,ny=180/5,yrbeg=1851
-     +       ,yrend=2008)
+     +       ,yrend=2014)
         integer i,j,yr,mo,dy,hr,istorm,iobs,ncid,status,iocean,nstorm
      +       ,len,ivar,xtype,ndimvar,dimids(nf_max_var_dims),natts,irec
      +       ,ifile,ii,i1,jj,n

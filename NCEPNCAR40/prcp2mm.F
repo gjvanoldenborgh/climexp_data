@@ -4,7 +4,7 @@
 *	quick hack
 *
 	implicit none
-#include "recfac.inc"
+#include "recfac.h"
 	integer nxmax,nymax
 	parameter(nxmax=240,nymax=121)
 	integer irec,i,j,nx,ny,nz,nt,nperyear,dpm(12,2),leap,yrbegin,

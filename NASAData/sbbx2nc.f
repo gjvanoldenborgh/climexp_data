@@ -58,7 +58,7 @@ C
       parameter (im   = 360)    ! lon. grid points, 360 = 1-deg resolution
       parameter (jm   = 180)    ! lat. grid points, 180 = 1-deg resolution
  
-      parameter (ifyr = 1880, ilyr = 2013)   ! first, last years of output
+      parameter (ifyr = 1880, ilyr = 2014)   ! first, last years of output
 
       parameter (iyrx = ifyr-1)
       parameter (iyrs = ilyr-ifyr+1)

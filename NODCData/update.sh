@@ -8,6 +8,7 @@ do
       do
         wget -q -N ftp://ftp.nodc.noaa.gov/pub/data.nodc/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/basin/3month/h22-${b}0-${depth}m${season}.dat
       done
+      wget -q -N http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/basin/pentad/pent_h22-${b}0-${depth}m.dat
     done
 
     ./dat2dat $depth

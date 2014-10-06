@@ -14,6 +14,9 @@
         do ibasin=1,4           ! Atlantic, Indian, Pacific, World
 !
 !           input
+            file='pent_h22-i0-'//trim(depth)//'m.dat'
+            file(10:10) = basins(ibasin)
+            open(0+ibasin,file=trim(file),status='old')
             file='h22-i0-'//trim(depth)//'m1-3.dat'
             file(5:5) = basins(ibasin)
             open(10+ibasin,file=trim(file),status='old')
@@ -28,10 +31,25 @@
             open(40+ibasin,file=trim(file),status='old')
         
 !           skip headers
-            do iseason=1,4
+            do iseason=0,4
                 read(10*iseason+ibasin,'(a)') string
             end do
 
+            !!!if ( depth.eq.'2000' ) then
+!               first read the annual (actually, pentad) values
+                do while ( .true. )
+                    read(0*iseason+ibasin,*,end=100) yrf,vals
+                    if ( lwrite ) print *,'read ',basins(ibasin),yrf 
+                    yr = int(yrf)
+                    do mo=1,12
+                        do i=1,3
+                            data(mo,yr,3*(ibasin-1)+i) = vals(2*i-1)
+                        end do
+                    end do
+                end do
+  100       continue
+            !!!end if
+!           next overwrite with 3-monthly values if these exist
             do while ( .true. )
                 do iseason=1,4
                     read(10*iseason+ibasin,*,end=800) yrf,vals
@@ -45,7 +63,7 @@
                 end do
             end do
  800        continue
-            do iseason=1,4
+            do iseason=0,4
                 close(10*iseason+ibasin)
             end do
         end do

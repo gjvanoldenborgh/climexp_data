@@ -129,7 +129,7 @@
      +               trim(depth)//'m'
             else
                 write(1,'(a)') '# <a href="http://www.nodc.noaa.gov/'//
-     +               'OC5/3M%5fHEAT%5fCONTENT/basin%5fdata.html">NODC'//
+     +               'OC5/3M_HEAT_CONTENT/basin_avt_data.html">NODC'//
      +               '</a> upper ocean mean temperature anomaly of the '
      +               //file(9:j-1)
                 write(1,'(a)') '# MT [K] mean temperature anomaly 0-'//

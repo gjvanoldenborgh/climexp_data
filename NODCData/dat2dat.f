@@ -2,34 +2,48 @@
         implicit none
         integer yrbeg,yrend
         parameter (yrbeg=1950,yrend=2020)
-        integer i,j,yr,mo,ibasin,iseason
+        integer i,j,yr,mo,ibasin,jbasin,iseason
         real yrf,vals(6),data(12,yrbeg:yrend,12)
-        character file*30,basins(4),string*80,depth*5
+        character file*30,basins(4),string*80,depth*5,var*2,altvar*4
         logical lwrite
         data basins /'a','i','p','w'/
 
         lwrite = .false.
         data = 3e33
         call getarg(1,depth)
+        call getarg(2,var)
+
         do ibasin=1,4           ! Atlantic, Indian, Pacific, World
 !
+            if ( var.eq.'HC' ) then
+                altvar = 'h22'
+                jbasin = 5
+            else if ( var.eq.'MT' ) then
+                altvar = 'T-dC'
+                jbasin = 6
+            end if
 !           input
-            file='pent_h22-i0-'//trim(depth)//'m.dat'
-            file(10:10) = basins(ibasin)
+            file='pent_'//trim(altvar)//'-i0-'//trim(depth)//'m.dat'
+            file(jbasin+5:jbasin+5) = basins(ibasin)
+            print *,'opening ',trim(file)
             open(0+ibasin,file=trim(file),status='old')
-            file='h22-i0-'//trim(depth)//'m1-3.dat'
-            file(5:5) = basins(ibasin)
+            file=trim(altvar)//'-i0-'//trim(depth)//'m1-3.dat'
+            file(jbasin:jbasin) = basins(ibasin)
+            print *,'opening ',trim(file)
             open(10+ibasin,file=trim(file),status='old')
-            file='h22-i0-'//trim(depth)//'m4-6.dat'
-            file(5:5) = basins(ibasin)
+            file=trim(altvar)//'-i0-'//trim(depth)//'m4-6.dat'
+            file(jbasin:jbasin) = basins(ibasin)
+            print *,'opening ',trim(file)
             open(20+ibasin,file=trim(file),status='old')
-            file='h22-i0-'//trim(depth)//'m7-9.dat'
-            file(5:5) = basins(ibasin)
+            file=trim(altvar)//'-i0-'//trim(depth)//'m7-9.dat'
+            file(jbasin:jbasin) = basins(ibasin)
+            print *,'opening ',trim(file)
             open(30+ibasin,file=trim(file),status='old')
-            file='h22-i0-'//trim(depth)//'m10-12.dat'
-            file(5:5) = basins(ibasin)
+            file=trim(altvar)//'-i0-'//trim(depth)//'m10-12.dat'
+            file(jbasin:jbasin) = basins(ibasin)
+            print *,'opening ',trim(file)
             open(40+ibasin,file=trim(file),status='old')
-        
+!
 !           skip headers
             do iseason=0,4
                 read(10*iseason+ibasin,'(a)') string
@@ -69,42 +83,58 @@
         end do
 !
 !       write output
+        if ( var.eq.'HC' ) then
+            altvar = 'heat'
+        else if ( var.eq.'MT' ) then
+            altvar = 'temp'
+        end if
+
         do i=1,12
             if ( i.eq.1 ) then
-                file='heat'//trim(depth)//'_Atlantic.dat'
+                file=altvar//trim(depth)//'_Atlantic.dat'
             else if ( i.eq.2 ) then
-                file='heat'//trim(depth)//'_North_Atlantic.dat'
+                file=altvar//trim(depth)//'_North_Atlantic.dat'
             else if ( i.eq.3 ) then
-                file='heat'//trim(depth)//'_South_Atlantic.dat'
+                file=altvar//trim(depth)//'_South_Atlantic.dat'
             else if ( i.eq.4 ) then
-                file='heat'//trim(depth)//'_Indian.dat'
+                file=altvar//trim(depth)//'_Indian.dat'
             else if ( i.eq.5 ) then
-                file='heat'//trim(depth)//'_North_Indian.dat'
+                file=altvar//trim(depth)//'_North_Indian.dat'
             else if ( i.eq.6 ) then
-                file='heat'//trim(depth)//'_South_Indian.dat'
+                file=altvar//trim(depth)//'_South_Indian.dat'
             else if ( i.eq.7 ) then
-                file='heat'//trim(depth)//'_Pacific.dat'
+                file=altvar//trim(depth)//'_Pacific.dat'
             else if ( i.eq.8 ) then
-                file='heat'//trim(depth)//'_North_Pacific.dat'
+                file=altvar//trim(depth)//'_North_Pacific.dat'
             else if ( i.eq.9 ) then
-                file='heat'//trim(depth)//'_South_Pacific.dat'
+                file=altvar//trim(depth)//'_South_Pacific.dat'
             else if ( i.eq.10 ) then
-                file='heat'//trim(depth)//'_global.dat'
+                file=altvar//trim(depth)//'_global.dat'
             else if ( i.eq.11 ) then
-                file='heat'//trim(depth)//'_nh.dat'
+                file=altvar//trim(depth)//'_nh.dat'
             else if ( i.eq.12 ) then
-                file='heat'//trim(depth)//'_sh.dat'
+                file=altvar//trim(depth)//'_sh.dat'
             else
                 write(0,*) 'error jkhfry33412'
                 call abort
             end if
             open(1,file=trim(file))
             j = index(file,'.dat')
-            write(1,'(a)') '# <a href="http://www.nodc.noaa.gov/OC5/'//
-     +           '3M%5fHEAT%5fCONTENT/basin%5fdata.html">NODC</a> '//
-     +           'upper ocean heat content of the '//file(9:j-1)
-            write(1,'(a)') '# HC [10^22 J] heat content 0-'//
-     +           trim(depth)//'m'
+            if ( var.eq.'HC' ) then
+                write(1,'(a)') '# <a href="http://www.nodc.noaa.gov/'//
+     +               'OC5/3M%5fHEAT%5fCONTENT/basin%5fdata.html">NODC'//
+     +               '</a> upper ocean heat content of the '//
+     +               file(9:j-1)
+                write(1,'(a)') '# HC [10^22 J] heat content 0-'//
+     +               trim(depth)//'m'
+            else
+                write(1,'(a)') '# <a href="http://www.nodc.noaa.gov/'//
+     +               'OC5/3M%5fHEAT%5fCONTENT/basin%5fdata.html">NODC'//
+     +               '</a> upper ocean mean temperature anomaly of the '
+     +               //file(9:j-1)
+                write(1,'(a)') '# MT [K] mean temperature anomaly 0-'//
+     +               trim(depth)//'m'
+            end if
             call printdatfile(1,data(1,yrbeg,i),12,12,yrbeg,yrend)
             close(1)
         end do

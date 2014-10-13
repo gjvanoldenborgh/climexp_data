@@ -55,7 +55,8 @@
    10       continue
             read(1,'(a)',end=20,err=20) string
             if ( string.eq.' ' ) goto 10
-            if ( index(string(1:2),'#').ne.0 ) then
+            if ( index(string(1:2),'#').ne.0 .or. 
+     +           index(string(1:2),'?').ne.0 ) then
                 read(string(3:),*,err=18) slon,slon1,slat,slat1
                 print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,a)'
      +                    ,'Searching for stations in ',slat,'N:',

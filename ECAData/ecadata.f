@@ -15,7 +15,7 @@
         real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon
      +        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin
      +        ,rlatmax,val,elev(nn)
-        logical blend
+        logical blend,lwrite
         character name(nn)*40,country(nn)*2,pmlon*1,pmlat*1,gsn(nn)*3
      +       ,el*3,elem*40,element*2,elin*2,wmo*6,units*10,longname*40
         character string*200,line*500,sname*25
@@ -29,6 +29,7 @@
 ! 68- 76 LON    : Longitude in degrees:minutes:seconds (+: East, -: West)
 ! 78- 81 HGTH   : Height in meters
 !       3i5 yr1,yr2,nyr (added by addyear)
+        lwrite = .false.
         if ( iargc().lt.1 ) then
             print '(a)','usage: eca{tmin|temp|tmax|prcp} '//
      +            '[lat lon|name] [min years]'
@@ -199,7 +200,17 @@
             !!!write(*,'(i8,a)') i,trim(line)
             goto 100
         endif
-        if ( istation.eq.0 ) then
+        if ( nlist.gt.0 ) then
+*           look for a station in the list
+            do j=1,nlist
+                if ( iecd(i).eq.list(j) ) then
+                    if ( lwrite ) write(0,*) 'found station',i,j,iecd(i)
+                    call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax
+     +                    ,rlon(i),rlat(i))
+                    i = i + 1
+                endif
+            enddo
+        elseif ( istation.eq.0 ) then
             dlon = min(abs(rlon(i)-slon),
      +            abs(rlon(i)-slon-360),
      +            abs(rlon(i)-slon+360))
@@ -222,7 +233,7 @@
                 goto 100
             endif
         elseif ( slat1.lt.1e33 ) then
-*       look for a station in the box
+*           look for a station in the box
             if ( (slon1.gt.slon .and. 
      +            rlon(i).gt.slon .and. rlon(i).lt.slon1
      +            .or.
@@ -240,15 +251,6 @@
                     stop
                 endif
             endif
-        elseif ( nlist.gt.0 ) then
-*           look for a station in the list
-            do j=1,nlist
-                if ( iecd(i).eq.list(j) ) then
-                    call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax
-     +                    ,rlon(i),rlat(i))
-                    i = i + 1
-                endif
-            enddo
         else
             print *,'internal error 31459263'
             call abort
@@ -259,11 +261,12 @@
   200   continue
         i = i - 1
 
-        if ( istation.eq.0 .or. slat1.lt.1e33 ) then
+        if ( nlist.eq.0 .and. (istation.eq.0 .or. slat1.lt.1e33) ) then
             call sortdist(i,n,dist,rlon,rlat,ind,rmin)
         else
             n = i
         endif
+        if ( lwrite ) write(0,*) 'found ',n,' stations'
 *
 *       output
         if ( n.eq.0 ) then
@@ -276,7 +279,8 @@
         endif
         nok = 0
         do j=1,n
-            if ( istation.eq.0 .or. slat1.lt.1e33 ) then
+            if (  nlist.eq.0 .and. (istation.eq.0 .or. slat1.lt.1e33) )
+     +           then
                 jj = ind(j)
                 if ( jj.eq.0 ) goto 700
                 if ( dist(jj).gt.1e33 ) goto 700

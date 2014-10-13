@@ -29,7 +29,7 @@ do
         ./dat2dat $depth $var
         $HOME/NINO/copyfilesall.sh heat${depth}_*.dat temp${depth}_*.dat
 
-        if [ $var = HC -a $depth = 100 }; then
+        if [ $var = HC -a $depth = 100 ]; then
             echo "100m heat content not available"
         else
             cp ${var}_0-${depth}-3month.tar.gz ${var}_0-${depth}-3month.tar.gz.old

@@ -40,6 +40,7 @@ do
               make dat2grads
               ./dat2grads $depth $var
               $HOME/NINO/copyfiles.sh heat${depth}.???
+              $HOME/NINO/copyfiles.sh temp${depth}.???
             fi
         fi
     done

@@ -1,6 +1,6 @@
 #!/bin/sh
 base=http://www.metoffice.gov.uk/hadobs/crutem4/data/gridded_fields/
-version=4.2.0.0
+version=4.3.0.0
 file=CRUTEM.${version}.anomalies.nc
 wget -N --header="accept-encoding: gzip" $base/$file.gz
 gunzip -c $file.gz > $file
@@ -9,7 +9,7 @@ mv aap.nc $file
 $HOME/NINO/copyfilesall.sh $file
 
 base=http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/gridded_fields
-version=4.2.0.0
+version=4.3.0.0
 file=HadCRUT.${version}.median_netcdf.zip
 wget -N --header="accept-encoding: gzip" $base/$file
 unzip -o $file

@@ -2,7 +2,7 @@
 #
 # CRUTEM, HadCRUT
 #
-version=4.2.0.0
+version=4.3.0.0
 for field in CRUTEM.${version}.anomalies CRUTEM.${version}.variance_adjusted
 do
   file=$field.nc.gz

@@ -30,7 +30,7 @@ base=http://www.metoffice.gov.uk/hadobs/crutem4/data/diagnostics/global/nh+sh/
 area="n+s"
 safearea=ns
 name="NH+SH"
-version=4.2.0.0
+version=4.3.0.0
 file=CRUTEM.${version}.global_${area}_monthly
 cp $file $file.old
 wget -q -N $base/$file
@@ -50,7 +50,7 @@ fi
 #
 base=http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/time_series/
 # should be the same as CRUTEM
-###version=4.2.0.0
+###version=4.3.0.0
 root=HadCRUT.${version}.monthly
 for area in ns_avg nh sh 30S_30N
 do

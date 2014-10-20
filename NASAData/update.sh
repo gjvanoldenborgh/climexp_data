@@ -28,9 +28,8 @@ do
 		if [ $region = GLB -a $type = "Ts+dSST" ]; then
 			file=giss_al_gl_m.dat
 			echo "filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat"
-			filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat
-			file=giss_al_gl_a.dat
-			filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat
+			filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
+			daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%m.dat}a_4yrlo.dat
 		fi
 	done
 done

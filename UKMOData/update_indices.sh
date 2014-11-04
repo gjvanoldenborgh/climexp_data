@@ -3,17 +3,18 @@ force=false
 #
 # HadSST3
 #
-version=3.1.0.0
-base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/
+version=3.1.1.0
+base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/diagnostics
 for region in globe nh sh tropics
 do
-    file=HadSST3_monthly_${region}_ts.txt
+    file=HadSST.${version}_monthly_${region}_ts.txt
     cp $file $file.old
     echo "wget -q -N $base/$file"
     wget -q -N $base/$file
     diff $file $file.old
     if [ $? != 0 ]; then
-        f=${file%.txt}.dat
+        # only change filename for major updates
+        f=HadSST3_monthly_${region}_ts.dat
 	    cat > $f <<EOF
 # HadSST $version $region averaged SST anomalies, median of ensemble
 # source: <a href="http://www.metoffice.gov.uk/hadobs/hadsst3/data/download.html">Met Office</a>

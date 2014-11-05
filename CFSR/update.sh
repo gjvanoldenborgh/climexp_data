@@ -1,7 +1,5 @@
 #!/bin/sh
 
-if [ 0 = 1 ]; then
-
 yrnow=`date +%Y`
 yr=1979
 mo=0
@@ -20,12 +18,10 @@ do
     for type in flxf06 pgblnl
     do
 	file=$type.gdas.$yr$mm.grb2
-	wget -N http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file
+	wget -q -N http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file
 	###wget -N http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file.inv
     done
 done
-
-fi # debug: do not try to get all old files
 
 for var in tmp2m tmin2m tmax2m tmpsfc prate uflx vflx u10m v10m shtfl lhtfl dlwrf_sfc ulwrf_sfc ulwrf_toa dswrf_sfc uswrf_sfc dswrf_toa uswrf_toa slp hgt t u v w q qrel
 do

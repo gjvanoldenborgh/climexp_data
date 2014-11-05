@@ -68,7 +68,7 @@ rsync -r -e ssh -avt ghcnm bhlclim:climexp/NCDCData/
 scp gettemp gettempall \
     getmin getminall \
     getmax getmaxall \
-    bhlclim:climexp/bin/
+    bhlclim:climexp/NCDCData/
 
 date > downloaded_$yr$mo
 

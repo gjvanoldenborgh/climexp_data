@@ -28,8 +28,8 @@ if [ -n "$also_download_ensemble" ]; then
 fi
 
 
-base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.3.1.0.0/netcdf/
-version=3.1.0.0
+version=3.1.1.0
+base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
 file=HadSST.${version}.median_netcdf.zip
 wget -N --header="accept-encoding: gzip" $base/$file
 unzip -o $file

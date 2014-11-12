@@ -294,7 +294,7 @@ for var in vars:
         print command
         os.system(command)
 
-        command = "ncatted -a units," + var + ",a,c," + units + " -a title,global,a,c,\"ERA-interim reanalysis from http://data-portal.ecmwf.int\" " + outfile
+        command = "ncatted -a units," + var + ",a,c," + units + " -a title,global,a,c,\"ERA-interim reanalysis from http://apps.ecmwf.int/datasets/\" " + outfile
         print command
         os.system(command)
 

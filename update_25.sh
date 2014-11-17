@@ -24,7 +24,6 @@ echo @@@ UKMO
 (cd UKMOData; ./update_fields.sh  | 2>&1 tee update_fields.log)
 ###(cd UKMOData; ./update_hadslp2.sh | 2>&1 tee update_hadslp2.log)
 (cd UKMOData; ./update_amo.sh  | 2>&1 tee update_amo.log)
-(cd CRUData; ./merge_crutem3_hadsst2.sh | 2>&1 tee update_merge.log)
 echo @@@ YorkData
 (cd YorkData; ./update_indices.sh | 2>&1 tee update_indices.log)
 (cd YorkData; ./update_fields.sh | 2>&1 tee update_fields.log)

@@ -38,19 +38,6 @@ do
     $HOME/NINO/copyfiles.sh $myfile
   fi
 done
-for field in HadCRUT3 HadCRUT3v
-do
-  file=$field.nc
-  cp $file $file.old
-  wget -N http://www.metoffice.gov.uk/hadobs/hadcrut3/data/$file
-  if cmp $file $file.old
-  then
-    echo "no change"
-  else
-    rm $file.old
-    $HOME/NINO/copyfiles.sh $file
-  fi
-done
 ./makeiozm.sh
 $HOME/NINO/copyfiles.sh seio_hadsst2.dat wio_hadsst2.dat
 

@@ -4,7 +4,7 @@
 
 version=3.1.1.0
 get_index HadSST.${version}.median.nc -75 -7 25 60 > hadsst_natl.dat
-correlate hadsst_natl.dat file hadcrut3_gl.dat mon 1:12 plot aap.dat
+correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.dat
 a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
 export FORM_a1=1
 export FORM_a2=$a

@@ -89,3 +89,5 @@ do
     fi
   done
 done
+
+. ./merge_with_cru.sh

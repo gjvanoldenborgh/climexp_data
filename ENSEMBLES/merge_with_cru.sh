@@ -1,13 +1,16 @@
 #!/bin/sh
 version=v10.0
 cversion=3.22
-for var in tg
+for var in tg tx tn rr
 do
     file=${var}_0.50deg_reg_${version}u.nc
     monfile=${var}_0.50deg_reg_${version}u_mon.nc
     outfile=${var}_0.50deg_reg_${version}u_extended.nc
     case $var in
         tg) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.tmp.dat.nc | head -1`;;
+        tx) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.tmx.dat.nc | head -1`;;
+        tn) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.tmn.dat.nc | head -1`;;
+        rr) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.pre.dat.nc | head -1`;;
         *) echo "cannot handle $var yet"; exit -1;;
     esac
     if [ -z "$ccfile" -o ! -s "$ccfile" ]; then

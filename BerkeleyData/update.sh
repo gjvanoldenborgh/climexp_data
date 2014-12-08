@@ -6,6 +6,25 @@ if [ -f downloaded_$yr$mo -a "$force" != true ]; then
   exit
 fi
 
+wget -N http://berkeleyearth.lbl.gov/auto/Global/Complete_TAVG_complete.txt
+fgrep "Berkeley Dataset" Complete_TAVG_complete.txt | tr '%' "#" | \
+	sed -e 's@Berkeley Dataset@<a href="http://www.berkeleyearth.org">Berkeley Dataset</a>@' > t2m_land_best.dat
+echo 
+echo "# T2m_land_anom [K] land-surface average temperature anomalies relative to 1951-1980" >> t2m_land_best.dat
+fgrep -v '%' Complete_TAVG_complete.txt | fgrep -v ' 2010 ' | cut -b 1-22 >> t2m_land_best.dat
+$HOME/NINO/copyfilesall.sh t2m_land_best.dat
+
+wget -N http://berkeleyearth.lbl.gov/auto/Global/Land_and_Ocean_complete.txt
+cat << EOF > t2m_land_ocean_best.dat
+# Land temperature from <a href="http://www.berkeleyearth.org">Berkeley Dataset</a>, 
+# ocean temperature reinterpolated from HadSST, temperature over sea ice extrapolated from land.
+# T2m_anom [K] global mean temperature anomalies relative to 1951-1980
+EOF
+sed '/Sea Ice Temperature Inferred from Water Temperatures/,$d' Land_and_Ocean_complete.txt \
+    | fgrep -v '%' \
+    | cut -b 1-22 >> t2m_land_ocean_best.dat
+$HOME/NINO/copyfilesall.sh t2m_land_ocean_best.dat
+
 base=http://berkeleyearth.lbl.gov/auto/Global/Gridded/
 for var in TAVG TMIN TMAX
 do
@@ -46,22 +65,6 @@ do
 	
 done
 date > downloaded_$yr$mo
-
-exit
-
-cp analysis-data.zip analysis-data.zip.old
-wget -N http://www.berkeleyearth.org/downloads/analysis-data.zip
-cmp analysis-data.zip analysis-data.zip.old
-if [ $? != 0 ]; then
-	unzip -u analysis-data.zip
-	fgrep Earth Full_Database_Average_complete.txt | tr '%' "#" | \
-		sed -e 's@Berkeley Earth@<a href="http://www.berkeleyearth.org">Berkeley Earth</a>@' > t2m_land_best.dat
-	echo 
-	echo "# T2m_land_anom [K] land-surface average temperature anomalies relative to 1950-1980" >> t2m_land_best.dat
-	fgrep -v '%' Full_Database_Average_complete.txt | fgrep -v ' 2010 ' | cut -b 1-22 >> t2m_land_best.dat
-	$HOME/NINO/copyfilesall.sh t2m_land_best.dat
-fi
-
 
 exit
 

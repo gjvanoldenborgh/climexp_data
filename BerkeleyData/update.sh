@@ -11,7 +11,9 @@ fgrep "Berkeley Dataset" Complete_TAVG_complete.txt | tr '%' "#" | \
 	sed -e 's@Berkeley Dataset@<a href="http://www.berkeleyearth.org">Berkeley Dataset</a>@' > t2m_land_best.dat
 echo 
 echo "# T2m_land_anom [K] land-surface average temperature anomalies relative to 1951-1980" >> t2m_land_best.dat
-fgrep -v '%' Complete_TAVG_complete.txt | fgrep -v ' 2010 ' | cut -b 1-22 >> t2m_land_best.dat
+fgrep -v '%' Complete_TAVG_complete.txt | fgrep -v ' 2010 ' \
+    | cut -b 1-22 \
+    | fgrep -v NaN >> t2m_land_best.dat
 $HOME/NINO/copyfilesall.sh t2m_land_best.dat
 
 wget -N http://berkeleyearth.lbl.gov/auto/Global/Land_and_Ocean_complete.txt

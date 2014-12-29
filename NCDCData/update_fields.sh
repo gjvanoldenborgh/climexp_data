@@ -1,4 +1,50 @@
 #!/bin/sh
+
+# ERSST v4
+wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v4/netcdf/ersst.v4.[12]*.nc
+new=true
+if [ $new = true ]; then
+  rm ersstv4_all.nc
+  filelist=""
+  for file in ersst.v4.[12]*.nc
+  do
+    date=${file#ersst.v4.}
+    date=${date%.nc}
+    if [ $date -ge 200801 ]; then
+        newfile=${file%.nc}_patched.nc
+            if [ ! -s $newfile -o $newfile -ot $file ]; then
+            yyyy=${date%??}
+            mm=${date#????}
+            cdo settaxis,${yyyy}-${mm}-15,12:00,1mon $file $newfile
+        fi
+        filelist="$filelist $newfile"
+    else
+        filelist="$filelist $file"
+    fi
+  done
+  cdo -r -f nc4 -z zip copy $filelist ersstv4_all.nc
+  cdo selvar,sst ersstv4_all.nc ersstv4.nc
+  cdo selvar,anom ersstv4_all.nc ersstv4a.nc
+  $HOME/NINO/copyfiles.sh ersstv4.nc ersstv4a.nc
+fi
+
+# ERSST v3b
+wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/ascii/ersst.[12]*.asc
+new=true
+if [ $new = true ]; then
+  rm ersstv3b.???
+  ./ersstv3b2dat
+  $HOME/NINO/copyfiles.sh ersstv3b.???
+  ./makenino.sh
+  $HOME/NINO/copyfiles.sh ersst_nino*.dat
+  ./makeiozm.sh
+  $HOME/NINO/copyfiles.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
+  ./makesiod.sh
+  $HOME/NINO/copyfiles.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
+  ./update_amo.sh
+  $HOME/NINO/copyfiles.sh amo_ersst.dat amo_ersst_ts.dat
+fi
+
 ###force=true
 # GHCN-M v3 temperature
 base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
@@ -70,23 +116,6 @@ quit
 EOF
 	ncatted -a units,pr,c,c,"mm/month" -a long_name,pr,c,c,"total precipitation" prcp_total.nc
 	$HOME/NINO/copyfiles.sh prcp_anom.dat prcp_anom.ctl prcp_total.nc
-fi
-
-# ERSST
-wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/ascii/ersst.[12]*.asc
-new=true
-if [ $new = true ]; then
-  rm ersstv3b.???
-  ./ersstv3b2dat
-  $HOME/NINO/copyfiles.sh ersstv3b.???
-  ./makenino.sh
-  $HOME/NINO/copyfiles.sh ersst_nino*.dat
-  ./makeiozm.sh
-  $HOME/NINO/copyfiles.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
-  ./makesiod.sh
-  $HOME/NINO/copyfiles.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
-  ./update_amo.sh
-  $HOME/NINO/copyfiles.sh amo_ersst.dat amo_ersst_ts.dat
 fi
 
 echo "not retrieving v2 temperatures"

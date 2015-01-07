@@ -39,8 +39,7 @@ if [ $somethingnew = true -o "$force" = true ]; then
 
   $HOME/NINO/copyfiles.sh v2.prcp v2.prcp_adj v2.slp
   $HOME/NINO/copyfiles.sh v2.prcp.inv.withmonth v2.prcp.adj.inv.withmonth v2.slp.inv.withmonth
-  scp getprcp getprcpall getslp \
-    bhlclim:climexp/bin/
+  $HOME/NINO/copyfiles.sh getprcp getprcpall getslp
 fi
 
 date > downloaded_v2_$yr$mo

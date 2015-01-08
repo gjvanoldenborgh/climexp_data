@@ -25,12 +25,14 @@ do
 		[ ! -s $file ] && exit -1
 		./txt2dat $region $type
 		###echo region=$region,type=$type
-		if [ $region = GLB -a $type = "Ts+dSST" ]; then
-			file=giss_al_gl_m.dat
-			echo "filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat"
-			filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
-			daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%m.dat}a_4yrlo.dat
-		fi
 	done
 done
+for region in gl nh sh
+do
+    daily2longer giss_al_${region}_m.dat 1 mean add_pers > giss_al_${region}_a.dat
+done
+file=giss_al_gl_m.dat
+echo "filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat"
+filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
+daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%m.dat}a_4yrlo.dat
 $HOME/NINO/copyfilesall.sh giss*.dat

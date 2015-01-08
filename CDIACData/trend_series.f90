@@ -26,8 +26,9 @@ program trend_sres
                 val1 = val2
                 read(string,*) yr,val2
                 if ( val1(1) < 1e33 ) then
-                    write(2,'(i7,12f8.2)') yr-10,(val2-val1)/10
-                    write(2,'(i7,12f8.2)') yr,(val2-val1)/10
+                    !!!write(2,'(i7,12f8.2)') yr-10,(val2-val1)/10
+                    !!!write(2,'(i7,12f8.2)') yr,(val2-val1)/10
+                    write(2,'(i7,12f8.2)') yr-5,(val2-val1)/10
                 end if
             end if 
         end do

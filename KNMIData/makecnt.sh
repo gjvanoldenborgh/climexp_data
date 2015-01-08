@@ -1,6 +1,6 @@
 #!/bin/sh
 export PATH=$PATH:/usr/people/oldenbor/climexp/bin/
-setenv DIR $HOME/climexp
+export DIR=$HOME/climexp
 scp bvlclim:climexp/NASAData/giss_al_gl_a_4yrlo.dat $HOME/NINO/NASAData/
 for station in 240 260 275 280 283 344 350 370 375 380
 do

@@ -1,16 +1,17 @@
 set size 0.745,0.5
-set xrange [1995:2015]
-set yrange [360:405]
+set xrange [1995:2020]
+set yrange [360:420]
 set key left
 plot 'co2_annual.dat' title 'obs (global marine)' w l lt 5 lw 5, \
      'tar-isam.txt' u 1:4 title 'A1FI' w l lt 1, \
      'tar-isam.txt' u 1:2 title 'A1B' w l lt 4, \
      'tar-isam.txt' u 1:5 title 'A2' w l lt 3, \
-     'tar-isam.txt' u 1:6 title 'B1' w l lt 2, \
-     'tar-bern.txt' u 1:4 notitle w l lt 1, \
-     'tar-bern.txt' u 1:2 notitle w l lt 4, \
-     'tar-bern.txt' u 1:5 notitle w l lt 3, \
-     'tar-bern.txt' u 1:6 notitle w l lt 2
+     'tar-isam.txt' u 1:6 title 'B1' w l lt 2
+#     , \
+#     'tar-bern.txt' u 1:4 notitle w l lt 1, \
+#     'tar-bern.txt' u 1:2 notitle w l lt 4, \
+#     'tar-bern.txt' u 1:5 notitle w l lt 3, \
+#     'tar-bern.txt' u 1:6 notitle w l lt 2
 set term postscript epsf solid color
 set out "plotco2.eps"
 replot

@@ -151,6 +151,18 @@ for var in vars:
         type = "fc"
         units = "mm/dy"
         factor = 1000
+    elif var == "ls":
+        long_name = "large-scale precipitation"
+        code = "142.128"
+        type = "fc"
+        units = "mm/dy"
+        factor = 1000
+    elif var == "cp":
+        long_name = "convective precipitation"
+        code = "143.128"
+        type = "fc"
+        units = "mm/dy"
+        factor = 1000
     elif var == "evap":
         long_name = "evaporation"
         code = "182.128"

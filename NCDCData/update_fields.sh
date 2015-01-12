@@ -10,7 +10,7 @@ if [ $new = true ]; then
   do
     date=${file#ersst.v4.}
     date=${date%.nc}
-    if [ $date -ge 200801 ]; then
+    if [ 0 = 1 -a $date -ge 200801 ]; then
         newfile=${file%.nc}_patched.nc
             if [ ! -s $newfile -o $newfile -ot $file ]; then
             yyyy=${date%??}

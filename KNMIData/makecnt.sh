@@ -22,6 +22,13 @@ do
     if [ $monfile -ot $dayfile -o ! -s $monfile ]
     then
         daily2longer $dayfile 12 mean add_trend > $monfile
+        c=`cat $monfile | wc -l | tr -d ' '`
+        if [ $c -lt 20 ]; then
+            echo "Something went wrong in"
+            echo daily2longer $dayfile 12 mean add_trend
+            wc $monfile
+            exit
+        fi
     fi
     cp $homfile.dat.org $homfile.dat
     egrep '^ *(2009|20[1-9].)' $monfile >> $homfile.dat

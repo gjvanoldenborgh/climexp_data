@@ -1,4 +1,7 @@
 #!/bin/sh
+if [ "$1" = force ]; then
+  force=true
+fi
 for var in MT HC
 do
     case $var in
@@ -35,7 +38,7 @@ do
             cp ${var}_0-${depth}-3month.tar.gz ${var}_0-${depth}-3month.tar.gz.old
             wget -q -N ftp://ftp.nodc.noaa.gov/pub/data.nodc/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/${altvar}_3month/${var}_0-${depth}-3month.tar.gz
             cmp ${var}_0-${depth}-3month.tar.gz ${var}_0-${depth}-3month.tar.gz.old
-            if [ $? != 0 ]; then
+            if [ "$force" = true -o $? != 0 ]; then
               tar zxf ${var}_0-${depth}-3month.tar.gz
               make dat2grads
               ./dat2grads $depth $var

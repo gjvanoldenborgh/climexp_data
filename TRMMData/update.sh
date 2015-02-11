@@ -16,8 +16,8 @@ do
           then
           urls="$urls ftp://disc2.nascom.nasa.gov/ftp/data/s4pa/TRMM_L3/TRMM_$dataset/$yyyy/$doy/$dataset.$yymmdd.7.HDF.Z"
       else
-          # N.B.:  3B43 version is 6A, not 6, and not compressed
-          urls="$urls http://disc2.nascom.nasa.gov/s4pa/TRMM_L3/TRMM_$dataset/$yyyy/$doy/$dataset.$yymmdd.6A.HDF"
+          # updated to version 7
+          urls="$urls http://disc2.nascom.nasa.gov/s4pa/TRMM_L3/TRMM_$dataset/$yyyy/$doy/$dataset.$yymmdd.7.HDF"
       fi
   done
   for url in $urls
@@ -41,7 +41,7 @@ do
 
   # convert to netcdf
   if [ $dataset = 3B43 ]; then
-      ./hdf2netcdf_v6.sh ${dataset}.*.6.HDF ${dataset}.*.6A.HDF
+      ./hdf2netcdf_3b43.sh ${dataset}.*.7.HDF
   else
       ./hdf2netcdf.sh ${dataset}.*.HDF
   fi

@@ -9,6 +9,7 @@
         real*8 yrfrac
         real val
         real,allocatable :: data(:,:),mdata(:,:)
+        logical,allocatable :: lvalid(:,:)
         character file*256,region*40,string*256,version*40
         integer,external :: leap
         logical lwrite
@@ -18,6 +19,7 @@
         yrbeg = 1992
         yrend = iarray(1)
         allocate(data(366,yrbeg:yrend))
+        allocate(lvalid(366,yrbeg:yrend))
         allocate(mdata(12,yrbeg:yrend))
         data = 3e33
 
@@ -103,7 +105,8 @@
 !
 !       average to monhly
 !
-        call allday2period(data,366,366,mdata,12,12,yrbeg,yrend,
+        lvalid = .true.
+        call allday2period(data,366,366,lvalid,mdata,12,12,yrbeg,yrend,
      +       'mea',' ',-1000.,0.8,0,'ssh','mm',lwrite)
 !
 !       write out

@@ -1,24 +1,27 @@
 #!/bin/sh
-
+export PATH=$PATH:/usr/local/free/bin:$HOME/climexp/bin
 # get the CMORPH 1.0 data once
 if [ ! -s downloaded_old_cmorph_data ]; then
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/
+    wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/
     date > downloaded_old_cmorph_data
 fi
+
+# the new data is dated 9:30 GMT, so if we download it at 10:30we should be OK
+# TO BE CHECKED
 yr=`date +%Y`
 yr1=$((yr-1))
 date=`date +%Y%m%d`
 if [ ! -s downloaded_cmorph_$date ]; then
     # the remainder of v1.0
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/$yr1/${yr1}12
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/$yr/
+    wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/$yr1/${yr1}12
+    wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/$yr/
     # v0.x for the rest
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr1/${yr1}12
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr/
+    wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr1/${yr1}12
+    wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr/
 
-    # get GrADS control files
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/CTL
-    wget -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/CTL
+    #### get GrADS control files NOT USED
+    ###wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/CTL
+    ###wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/CTL
 
     date > downloaded_cmorph_$date
 fi
@@ -144,3 +147,7 @@ $HOME/NINO/copyfiles.sh cmorph_daily_05.nc
 echo cdo -r -f nc4 -z zip copy $ncfiles cmorph_daily.nc
 cdo -r -f nc4 -z zip copy $ncfiles cmorph_daily.nc
 $HOME/NINO/copyfiles.sh cmorph_daily.nc
+cdo monmean cmorph_daily.nc aap.nc # too big to use daily2longerfield
+cdo settaxis,1998-01-15,00:00,1mon aap.nc cmorph_monthly.nc # cdo puts the date at the end of the month :-(
+rm aap.nc
+$HOME/NINO/copyfiles.sh cmorph_monthly.nc

@@ -1,23 +1,25 @@
 #!/bin/sh
 yr=1979
-for version in "5.5" "5.6"
+for version in "5.6" "5.5"
 do
-base=http://vortex.nsstc.uah.edu/public/msu/t2lt/
+base=http://www.atmos.uah.edu/public/msu/t2lt/
 yrnow=`date -d "last month" +"%Y"`
 while [ $yr -le $yrnow ]
 do
   file=tltmonamg.${yr}_$version
   wget -q -N $base$file
   size=`wc -c $file | awk '{print $1}'`
-  if [ -n "$size" -a $size -lt 500 ]
+  if [ -n "$size" -a ${size:-0} -lt 500 ]
   then
+    echo "$0: error retrieving $base$file"
     rm $file
     file=tltmonamg.${yr}_6.0p
     wget -q -N $base$file
   fi
   size=`wc -c $file | awk '{print $1}'`
-  if [ -n "$size" -a $size -lt 500 ]
+  if [ -n "$size" -a ${size:-0} -lt 500 ]
   then
+    echo "$0: error retrieving $base$file"
     rm $file
     yr=3000
   fi
@@ -25,13 +27,15 @@ do
 done
 
 make msu2grads
-./msu2grads
+./msu2grads $version
 grads2nc tlt.ctl tlt.nc
 case $version in
     5.5) mv tlt.nc tlt_55.nc;;
-    5.6) cp tlt.nc tlt_56.nc;;
+    5.6) mv tlt.nc tlt_56.nc;;
 esac
 done # version
+
+cp tlt_56.nc tlt.nc
 
 get_index tlt.nc 0 360 -90 90 > tlt_gl.dat
 get_index tlt.nc 0 360 -90 0 > tlt_sh.dat

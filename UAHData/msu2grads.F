@@ -9,15 +9,16 @@
         parameter(yrbeg=1979,yrend=2020,nx=144,ny=72)
         integer yr,mo,ix,iy,isat,iyr,imo,ndata(nx,ny),nrec
         real data(nx,ny,12,yrbeg:yrend)
-        character acha*12,file*100
+        character acha*12,file*100,version*3
 
+        call getarg(1,version)
         nrec = 0
         do yr=yrbeg,yrend
-            write(file,'(a,i4,2a)') 'tltmonamg.',yr,'_5.5'
+            write(file,'(a,i4,2a)') 'tltmonamg.',yr,'_',version
             open(1,file=file,status='old',err=10)
             goto 20
  10         continue
-            write(file,'(a,i4,2a)') 'tltmonamg.',yr,'_5.5a'
+            write(file,'(a,i4,3a)') 'tltmonamg.',yr,'_',version,'a'
             open(1,file=file,status='old',err=800)
  20         continue
             do mo=1,12
@@ -52,7 +53,7 @@
         write(1,'(a)') 'DSET ^tlt.grd'
         write(1,'(a)') 'TITLE Spencer and Christy '//
      +       '(U. of Alabama Huntsville) MSU lower troposphere '//
-     +       'temperature v5.5'
+     +       'temperature v'//version
         write(1,'(a)') 'UNDEF 3e33'
         write(1,'(a)') 'XDEF 144 LINEAR -178.75 2.5'
         write(1,'(a)') 'YDEF  72 LINEAR  -88.75 2.5'

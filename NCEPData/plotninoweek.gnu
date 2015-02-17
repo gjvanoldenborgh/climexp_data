@@ -4,7 +4,7 @@ set mxtics 12
 set zeroaxis
 set key left bottom
 set title "CPC/NCEP ENSO indices"
-set xrange [2002:2015]
+set xrange [2002:2016]
 plot 'wksst.myfor' using (1990+(7*$1-5)/365.25):($3) title 'NINO12 index' w lines lt 5 lw 1, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($5) title 'NINO3 index' w lines lt 1 lw 5, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($7) title 'NINO3.4 index' w lines lt 4 lw 5, \

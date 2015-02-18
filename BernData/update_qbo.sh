@@ -13,3 +13,8 @@ EOF
     cat $file | awk "{print \$1 \" \" \$2 \" \" \$$((3+i))}" | fgrep -v YEAR >> $series
     i=$((i+1))
 done
+
+# merge with up-to-date NCEP/NCAR QBO
+egrep -v '^194[0-9] ' $HOME/climexp/NCEPNCAR40/nqbo.dat > nqbo.dat
+egrep '^190[8-9]|^19[1-9]|^200|^2010' qbo_30.dat > qbo_reconstructed.dat
+patchseries qbo_reconstructed.dat nqbo.dat > qbo_merged.dat

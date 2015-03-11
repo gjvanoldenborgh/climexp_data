@@ -1,11 +1,12 @@
 #!/bin/sh
 # update the 8-8 precipitation data from the volunteer stations
 [ ! -d tmp ] && mkdir tmp
-if [ ! -s rr550.dat -o reeksen/neerslaggeg_550.zip -nt rr550.dat ]; then
+if [ ! -s rr550.dat -o reeksen/neerslaggeg_DE-BILT_550.zip -nt rr550.dat ]; then
     echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
     echo '==============================================' >> list_rr.txt
     for file in reeksen/neerslaggeg_*.zip
     do
+        echo "updating from $file"
         txtfile=tmp/`basename $file .zip`.txt
         unzip -p $file > $txtfile
         ./neerslag2dat $txtfile >> list_rr.txt

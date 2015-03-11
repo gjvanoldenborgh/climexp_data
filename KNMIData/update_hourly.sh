@@ -18,7 +18,7 @@ if [ "$1" != noupdate ]; then
     if [ ! -f hourly2maxdaily -o hourly2maxdaily -ot hourly2maxdaily.f ]; then
         gfortran -o hourly2maxdaily hourly2maxdaily.f
     fi
-    if [ ! -f rx260.dat -o rx260.dat -ot KNMI_2014_hourly.txt ]; then
+    if [ ! -f rx260.dat -o rx260.dat -ot KNMI_${yr}_hourly.txt ]; then
         ./hourly2maxdaily KNMI_1???s_hourly.txt KNMI_2???_hourly.txt
     fi
 fi

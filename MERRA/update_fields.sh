@@ -19,41 +19,41 @@ fi
 # invariants
 if [ ! -s lsmask.nc ]; then
 	for var in FRLAKE FRLAND FRLANDICE FROCEAN; do
-		ncks -v ${var}_EOSGRID_Data_Fields http://goldsmr2.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY/MAC0NXASM.5.2.0/1979/MERRA300.prod.assim.const_2d_asm_Nx.00000000.hdf merra_${var}.nc
-		ncrename -d XDim_EOSGRID,lon -v XDim_EOSGRID,lon \
-				-d YDim_EOSGRID,lat -v YDim_EOSGRID,lat merra_${var}.nc
+		ncks -v ${var} http://goldsmr2.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY/MAC0NXASM.5.2.0/1979/MERRA300.prod.assim.const_2d_asm_Nx.00000000.hdf merra_${var}.nc
+		ncrename -d XDim,lon -v XDim,lon \
+				-d YDim,lat -v YDim,lat merra_${var}.nc
 		if [ $var = FROCEAN ]; then
 			cdo mulc,-1 merra_FROCEAN.nc aap.nc
 			cdo addc,1 aap.nc noot.nc
 			cdo settaxis,2000-01-01,0:00,1mon noot.nc lsmask.nc
 			rm aap.nc noot.nc
-			ncrename -v FROCEAN_EOSGRID_Data_Fields,lsmask lsmask.nc
+			ncrename -v FROCEAN,lsmask lsmask.nc
 			$HOME/NINO/copyfiles.sh lsmask.nc
 		fi
 	done
 fi
 
-for var in lhtfl shtfl taux tauy wspd evap tp ci # t2m u10 v10 ts slp z t u v
+for var in t2m u10 v10 ts slp # z t u v lhtfl shtfl taux tauy wspd evap tp ci # 
 do
 	case $var in
-		slp) eosvar=SLP_EOSGRID_Data_Fields;type=2D;levtype=pres;;
-		z) eosvar=H_EOSGRID_Data_Fields;type=3D;levtype=pres;;
-		t) eosvar=T_EOSGRID_Data_Fields;type=3D;levtype=pres;;
-		u) eosvar=U_EOSGRID_Data_Fields;type=3D;levtype=pres;;
-		v) eosvar=V_EOSGRID_Data_Fields;type=3D;levtype=pres;;
-		slpm) eosvar=SLP_EOSGRID_Data_Fields;type=2D;levtype=1lev;;
-		t2m) eosvar=T2M_EOSGRID_Data_Fields;type=2D;levtype=1lev;;
-		ts) eosvar=TS_EOSGRID_Data_Fields;type=2D;levtype=1lev;;
-		u10) eosvar=U10M_EOSGRID_Data_Fields;type=2D;levtype=1lev;;
-		v10) eosvar=V10M_EOSGRID_Data_Fields;type=2D;levtype=1lev;;
-		lhtfl) eosvar=EFLUX_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		shtfl) eosvar=HFLUX_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		evap) eosvar=EVAP_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		taux) eosvar=TAUX_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		tauy) eosvar=TAUY_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		wspd) eosvar=SPEED_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		ci) eosvar=FRSEAICE_EOSGRID_Data_Fields;type=2D;levtype=flux;;
-		tp) eosvar=PRECTOT_EOSGRID_Data_Fields;type=2D;levtype=flux;;
+		slp) eosvar=SLP;type=2D;levtype=pres;;
+		z) eosvar=H;type=3D;levtype=pres;;
+		t) eosvar=T;type=3D;levtype=pres;;
+		u) eosvar=U;type=3D;levtype=pres;;
+		v) eosvar=V;type=3D;levtype=pres;;
+		slpm) eosvar=SLP;type=2D;levtype=1lev;;
+		t2m) eosvar=T2M;type=2D;levtype=1lev;;
+		ts) eosvar=TS;type=2D;levtype=1lev;;
+		u10) eosvar=U10M;type=2D;levtype=1lev;;
+		v10) eosvar=V10M;type=2D;levtype=1lev;;
+		lhtfl) eosvar=EFLUX;type=2D;levtype=flux;;
+		shtfl) eosvar=HFLUX;type=2D;levtype=flux;;
+		evap) eosvar=EVAP;type=2D;levtype=flux;;
+		taux) eosvar=TAUX;type=2D;levtype=flux;;
+		tauy) eosvar=TAUY;type=2D;levtype=flux;;
+		wspd) eosvar=SPEED;type=2D;levtype=flux;;
+		ci) eosvar=FRSEAICE;type=2D;levtype=flux;;
+		tp) eosvar=PRECTOT;type=2D;levtype=flux;;
 		*) echo "$0: error: cannot handle var $var yet"; exit -1;;
 	esac
 	
@@ -91,11 +91,11 @@ do
 			fi
 			ncks -v $eosvar $base/$path $file
 			ncrename -v $eosvar,$var \
-					-d XDim_EOSGRID,lon -v XDim_EOSGRID,lon \
-					-d YDim_EOSGRID,lat -v YDim_EOSGRID,lat \
-					-d TIME_EOSGRID,time -v TIME_EOSGRID,time $file
+					-d XDim,lon -v XDim,lon \
+					-d YDim,lat -v YDim,lat \
+					$file
 			[ $type = 3D ] && ncrename \
-					-d Height_EOSGRID,lev -v Height_EOSGRID,lev $file
+					-d Height,lev -v Height,lev $file
 					
 		fi
 		m=$((m+1))

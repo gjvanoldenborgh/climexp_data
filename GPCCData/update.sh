@@ -8,11 +8,11 @@ lastyr=$((thisyr-1))
 for res in 10 25
 do
 
-	wget $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/gpcc${res}\*.zip
-	wget $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring/gpcc${res}\*.zip
+	wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/gpcc${res}\*.zip
+	wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring/gpcc${res}\*.zip
 	if [ $res = 10 ]; then
-		wget $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$lastyr/*.gz
-		wget $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$thisyr/*.gz
+		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$lastyr/*.gz
+		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$thisyr/*.gz
 		for file in gpcc_first_guess_??_????.gz
 		do
 			gunzip -c $file > `basename $file .gz`
@@ -71,9 +71,16 @@ d maskout(prcp.1,smth9(nprcp.2-0.1))
 disable fwrite
 quit
 EOF
-	if [ 1 = 0 -a $res = 10 ]; then # not worth it...
-		echo gzipping...
-		gzip -f gpcc_${res}_mon.dat gpcc_${res}_n1_mon.dat ngpcc_${res}_mon.dat
-	fi
-	$HOME/NINO/copyfilesall.sh gpcc_${res}_n1_mon.* gpcc_${res}_mon.* ngpcc_${res}_mon.* 
+	grads2nc gpcc_${res}_mon.ctl aap.nc
+	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_mon.nc
+	grads2nc gpcc_${res}_n1_mon.ctl aap.nc
+	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_n1_mon.nc
+	grads2nc ngpcc_${res}_mon.ctl aap.nc
+	cdo -r -f nc4 -z zip copy aap.nc ngpcc_${res}_mon.nc
+	patchfield gpcc_V6_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_combined.nc
+	patchfield gpcc_V6_${res}_n1.nc gpcc_${res}_n1_mon.nc gpcc_${res}_n1_combined.nc
+	$HOME/NINO/copyfilesall.sh gpcc_${res}_n1_mon.nc gpcc_${res}_mon.nc ngpcc_${res}_mon.nc gpcc_${res}_combined.nc
+	###rm gpcc_${res}_mon.??? gpcc_${res}_n1_mon.??? ngpcc_${res}_mon.??? aap.nc
+    
 done
+

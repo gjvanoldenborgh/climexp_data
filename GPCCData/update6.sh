@@ -1,4 +1,5 @@
 #!/bin/sh
+if [ 0 = 1 ]; then
 # download GPCC v6
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data/
 yr=1901
@@ -17,15 +18,17 @@ do
   done
   yr=$((yr+10))
 done
+fi # skip for now
 
 make v6tograds
 for res in 05 10 25
 do
   ./v6tograds $res
-  if [ $res = 05 ]
-  then
-    gzip  gpcc_V6_${res}.grd  gpcc_V6_${res}_n1.grd
-  fi
-  $HOME/NINO/copyfiles.sh gpcc_V6_${res}.ctl gpcc_V6_${res}.grd*
-  $HOME/NINO/copyfiles.sh gpcc_V6_${res}_n1.ctl gpcc_V6_${res}_n1.grd*
+  grads2nc gpcc_V6_${res}.ctl aap.nc
+  cdo -r -f nc4 -z zip copy aap.nc gpcc_V6_${res}.nc
+  grads2nc gpcc_V6_${res}_n1.ctl aap.nc
+  cdo -r -f nc4 -z zip copy aap.nc gpcc_V6_${res}_n1.nc
+  ###rm gpcc_V6_${res}.??? gpcc_V6_${res}_n1.??? aap.nc
+  $HOME/NINO/copyfiles.sh gpcc_V6_${res}.nc
+  $HOME/NINO/copyfiles.sh gpcc_V6_${res}_n1.nc
 done

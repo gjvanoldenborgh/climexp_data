@@ -78,7 +78,7 @@ cdo = "cdo -r -R -b 32 -f nc4 -z zip "
 vars = [ "t2m", "ts", "msl", "u10", "v10", "wspd", "ci", "snd", "sst", 
          "tp", "evap", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
          "z", "t", "u", "v", "w", "q" ]
-vars = [ "tp", "t2m" ]
+vars = [ "evap", "wspd", "ci", "ssr", "snd", "tp", "t2m" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -295,8 +295,8 @@ for var in vars:
         print command
         os.system(command)
 
-        if var == 'tp':
-            command = "ncatted -a units," + var + ",a,m,m/dy" + outfile
+        if var == 'tp' or var == 'evap':
+            command = "ncatted -a units," + var + ",a,m,mm/dy " + outfile
             print command
             os.system(command)
 

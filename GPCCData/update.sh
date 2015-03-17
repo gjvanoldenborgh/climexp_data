@@ -56,7 +56,11 @@ do
 		25) nx=144;ny=72;;
 		*) echo error hcpinxwyiwo;exit -1;;
 	esac
-	size=`stat -c "%s" gpcc_${res}_mon.dat`
+	if [ `uname` = Darwin ]; then
+	    size=`cat gpcc_${res}_mon.dat | wc -c`
+	else
+	    size=`stat -c "%s" gpcc_${res}_mon.dat`
+	fi
 	nt=`echo $size/$nx/$ny/4 | bc`
 	grads -b -l <<EOF
 open gpcc_${res}_mon.ctl
@@ -74,7 +78,12 @@ EOF
 	grads2nc gpcc_${res}_mon.ctl aap.nc
 	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_mon.nc
 	grads2nc gpcc_${res}_n1_mon.ctl aap.nc
-	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_n1_mon.nc
+	c=`describefield aap.nc 2>&1 | fgrep -c " -"`
+	if [ $c = 1 ]; then
+    	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_n1_mon.nc
+    else
+    	cdo -r -f nc4 -z zip invertlat aap.nc gpcc_${res}_n1_mon.nc
+    fi
 	grads2nc ngpcc_${res}_mon.ctl aap.nc
 	cdo -r -f nc4 -z zip copy aap.nc ngpcc_${res}_mon.nc
 	patchfield gpcc_V6_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_combined.nc

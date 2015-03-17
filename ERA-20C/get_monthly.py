@@ -6,11 +6,11 @@ import subprocess
 from datetime import datetime
 from ecmwfapi import ECMWFDataServer
 
-def get_from_ecmwf(date,var,type,file,ncfile):
+def get_from_ecmwf(date,var,type,ncfile):
     """ retrieve monthly data from ECMWF ERA-interim archive """
     
-    if not os.path.isfile(file) or os.stat(file).st_size == 0:
-        print "Retrieving " + file + " " + date
+    if not os.path.isfile(ncfile) or os.stat(ncfile).st_size == 0:
+        print "Retrieving " + ncfile + " " + date
         dataset = "era20cm"
         stream = "edmo"
         dict = {'dataset' : dataset,
@@ -23,7 +23,7 @@ def get_from_ecmwf(date,var,type,file,ncfile):
                 'class'   : "em",
                 'param'   : code,
                 'format'  : 'netcdf',
-                'target'  : file  }
+                'target'  : ncfile  }
         if levtype == "pl":
             if var == "t" or var == "u":
                 levellist = '1000/925/850/700/600/500/400/300/250/200/150/100/70/50/30/20/10'
@@ -32,40 +32,38 @@ def get_from_ecmwf(date,var,type,file,ncfile):
             dict.update({ 'levtype': levtype, \
                           'levellist' : levellist, \
                           'grid' : '64' })
-        dict.update({ 'grid' : '64' })
+        else:
+            dict.update({ 'grid' : '64' })
         print dict
         server.retrieve(dict)
 
-    if not os.path.isfile(file) or os.stat(file).st_size == 0:
+    if not os.path.isfile(ncfile) or os.stat(ncfile).st_size == 0:
         return False
 
-    mtime = os.stat(file).st_mtime
+    if levtype == "pl":
+        text = subprocess.check_output("describefield " + ncfile, shell=True, stderr=subprocess.STDOUT)
+        ###print text
+        for line in text.splitlines():
+            if line.startswith("Z axis"):
+                words = line.split()
+                ###print "words[5] = " + words[5]
+                ###print "words[6] = " + words[6]
+                if float(words[5]) > float(words[6]):
+                    command = cdo + " invertlev " + ncfile + " aap.nc"
+                    print command
+                    os.system(command)
+                    os.rename("aap.nc",ncfile)
 
-    if not os.path.isfile(ncfile):
-        ncmtime = 0.
-    else:
-        ncmtime = os.stat(ncfile).st_mtime
+    for iens in range(10):
+        ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
+        if not os.path.isfile(ensfile) or os.stat(ensfile).st_size == 0:
+            command = "ncks -d number,%i "%iens + ncfile + " " + ensfile
+            print command
+            os.system(command)
+            command = "ncatted -a axis,number,d,c,'' " + ensfile
+            print command
+            os.system(command)
 
-    if mtime > ncmtime:
-        # use months as units to keep time simple, get rid of scalefactor/offset, compress
-        command = cdo + " -settaxis," + date[0:4] + "-" + date[4:6] + "-15,0:00,1mon " + file + " " + ncfile
-        print command
-        os.system(command)
-
-        if levtype == "pl":
-            text = subprocess.check_output("describefield " + ncfile, shell=True, stderr=subprocess.STDOUT)
-            ###print text
-            for line in text.splitlines():
-                if line.startswith("Z axis"):
-                    words = line.split()
-                    ###print "words[5] = " + words[5]
-                    ###print "words[6] = " + words[6]
-                    if float(words[5]) > float(words[6]):
-                        command = cdo + " invertlev " + ncfile + " aap.nc"
-                        print command
-                        os.system(command)
-                        os.rename("aap.nc",ncfile)
-                    
     return True
 
 
@@ -75,12 +73,33 @@ currentyear = datetime.now().year
 currentmonth = datetime.now().month
 cdo = "cdo -r -R -b 32 -f nc4 -z zip "
 
-vars = [ "t2m", "ts", "msl", "u10", "v10", "wspd", "ci", "snd", "sst", 
+# get land/sea mask
+ncfile = "lsmask64.nc"
+if not os.path.isfile(ncfile):
+    dict = {'class'   : "em",
+            'dataset' : 'era20cm',
+            'date'    : '1899-01-01',
+            'expver'  : '1',
+            'levtype' : "sfc",
+            'number'  : "0",
+            'param'   : "172.128",
+            'step'    : '0',
+            'stream'  : 'enda',
+            'time'    : '00',
+            'type'    : "fc", # curiously all variables seem to have this
+            'format'  : 'netcdf',
+            'target'  : ncfile,  
+            'grid'    : '64' }
+    print dict
+    server.retrieve(dict)
+exit
+
+vars = [ "t2m", "ts", "msl", "u10", "v10",  "ci", "snd", "sst", 
          "tp", "evap", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
          "z", "t", "u", "v", "w", "q" ]
-vars = [ "evap", "wspd", "ci", "ssr", "snd", "tp", "t2m" ]
+vars = [ "tp", "t2m", "msl", "ssr", "evap" ]
 for var in vars:
-    ncfiles = ""
+    ncfiles = [ "" ]*10
     concatenate = False
     datavar = var
     levtype = ""
@@ -243,20 +262,22 @@ for var in vars:
                     cmonth = '0' + str(month)
                 else:
                     cmonth = str(month)
-                file = datavar + str(year) + cmonth + '_mo.nc3'
                 ncfile = var + str(year) + cmonth + '_mo.nc'
                 date = str(year) + cmonth + '01'
                 try:
-                    c = get_from_ecmwf(date,var,type,file,ncfile)
+                    c = get_from_ecmwf(date,var,type,ncfile)
                     if c:
                         concatenate = True
-                        ncfiles = ncfiles + " " + ncfile
+                        for iens in range(10):
+                            ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
+                            ncfiles[iens] = ncfiles[iens] + " " + ensfile
+
                 except RuntimeError:
                     print "OK, dat was het"
                     break
+
             # end of months loop
         else:
-            file = datavar + str(year) + '_mo.nc3'
             ncfile = var + str(year) + '_mo.nc'
             date = str(year) + '0101/' + str(year) + '0201/' + \
                    str(year) + '0301/' + str(year) + '0401/' + \
@@ -264,10 +285,12 @@ for var in vars:
                    str(year) + '0701/' + str(year) + '0801/' + \
                    str(year) + '0901/' + str(year) + '1001/' + \
                    str(year) + '1101/' + str(year) + '1201'
-            c = get_from_ecmwf(date,var,type,file,ncfile)
+            c = get_from_ecmwf(date,var,type,ncfile)
             if c:
                 concatenate = True
-            ncfiles = ncfiles + " " + ncfile
+            for iens in range(10):
+                ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
+                ncfiles[iens] = ncfiles[iens] + " " + ensfile
 
             # clean up the old monthly files if they exist
             for month in range(1,13):
@@ -285,18 +308,20 @@ for var in vars:
         ###print "concatenate = " + str(concatenate)    
     # end of years loop
 
-    outfile = "erai20c_" + var + ".nc"
-    if concatenate or os.path.isfile(file) == False:
-        command = cdo + " copy " + ncfiles + " " + outfile
-        print command
-        os.system(command)
+    outfile = "era20c_" + var + ".nc"
+    if concatenate or os.path.isfile(outfile) == False:
+        for iens in range(10):
+            ensoutfile = os.path.splitext(outfile)[0] + "_" + "%02i"%iens + ".nc"
+            command = cdo + " copy " + ncfiles[iens] + " " + ensoutfile
+            print command
+            os.system(command)
 
         command = "ncatted -a title,global,a,c,\"ERA-interim reanalysis from http://apps.ecmwf.int/datasets/\" " + outfile
         print command
         os.system(command)
 
-        if var == 'tp' or var == 'evap':
-            command = "ncatted -a units," + var + ",a,m,mm/dy " + outfile
+        if units == 'mm/dy' or units == 'W/m2':
+            command = "ncatted -a units," + var + ",m,c,mm/dy " + outfile
             print command
             os.system(command)
 

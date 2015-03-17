@@ -1,4 +1,7 @@
 #!/bin/sh
+wget -N http://lasp.colorado.edu/data/sorce/tsi_data/TSI_TIM_Reconstruction.txt
+sed -e 's/Year   //' -e 's/2]/2] Total Solar Irradiance/' TSI_TIM_Reconstruction.txt | tr ';' '#' > TSI_TIM_Reconstruction.dat
+
 make tenday2month
 base=http://sealevel.colorado.edu/files/current/
 for region in global \

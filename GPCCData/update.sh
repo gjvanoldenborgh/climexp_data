@@ -88,7 +88,7 @@ EOF
 	cdo -r -f nc4 -z zip copy aap.nc ngpcc_${res}_mon.nc
 	patchfield gpcc_V6_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_combined.nc
 	patchfield gpcc_V6_${res}_n1.nc gpcc_${res}_n1_mon.nc gpcc_${res}_n1_combined.nc
-	$HOME/NINO/copyfilesall.sh gpcc_${res}_n1_mon.nc gpcc_${res}_mon.nc ngpcc_${res}_mon.nc gpcc_${res}_combined.nc
+	$HOME/NINO/copyfilesall.sh gpcc_${res}_n1_mon.nc gpcc_${res}_mon.nc ngpcc_${res}_mon.nc gpcc_${res}_combined.nc gpcc_${res}_n1_combined.nc
 	###rm gpcc_${res}_mon.??? gpcc_${res}_n1_mon.??? ngpcc_${res}_mon.??? aap.nc
     
 done

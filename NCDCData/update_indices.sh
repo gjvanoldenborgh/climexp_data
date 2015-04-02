@@ -36,4 +36,7 @@ EOF
     done
 done
 $HOME/NINO/copyfilesall.sh $files
-
+file=ncdc_gl.dat
+filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
+daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%.dat}a_4yrlo.dat
+$HOME/NINO/copyfilesall.sh ${file%.dat}_4yrlo.dat ${file%m.dat}a_4yrlo.dat

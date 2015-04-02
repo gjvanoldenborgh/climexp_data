@@ -7,7 +7,7 @@ update=true # false
 # adjust with each version
 version=v10.0
 enddate="" # keep empty when shortening is not needed "2013-12-31"
-nextdate="" # keep empty when previous year is not needed
+nextdate="2014-01-01" # keep empty when previous year is not needed
 
 cdoflags="-r -f nc4 -z zip"
 

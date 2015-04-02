@@ -311,41 +311,42 @@ for var in vars:
     outfile = "era20c_" + var + ".nc"
     if concatenate or os.path.isfile(outfile) == False:
         for iens in range(10):
-            ensoutfile = os.path.splitext(outfile)[0] + "_" + "%02i"%iens + ".nc"
+            ens = "%02i"%iens
+            ensoutfile = os.path.splitext(outfile)[0] + "_" + ens + ".nc"
             command = cdo + " copy " + ncfiles[iens] + " " + ensoutfile
             print command
             os.system(command)
 
-        command = "ncatted -a title,global,a,c,\"ERA-interim reanalysis from http://apps.ecmwf.int/datasets/\" " + outfile
-        print command
-        os.system(command)
-
-        if units == 'mm/dy' or units == 'W/m2':
-            command = "ncatted -a units," + var + ",m,c,mm/dy " + outfile
+            command = "ncatted -a title,global,a,c,\"ERA-20C reanalysis from http://apps.ecmwf.int/datasets/\" " + ensoutfile
             print command
             os.system(command)
 
-        if factor != 1:
-            command = cdo + " mulc," + str(factor) + " " + outfile + " noot.nc; mv noot.nc " + outfile
-            print command
-            os.system(command)
-
-        if levtype == 'pl':
-            levellist = [ 850, 700, 500, 300, 200 ]
-            for level in levellist:
-                levelfile = "era20c_" + var + str(level) + ".nc"
-                command = "cdo sellevel," + str(level) + "00. " + outfile + " " + levelfile
-                print command
-                os.system(command)
-            if var == "t" or var == "u":
-                zonfile = "era20c_" + var + "zon.nc"
-                command = "cdo zonmean " + outfile + " " + zonfile
+            if units == 'mm/dy' or units == 'W/m2':
+                command = "ncatted -a units," + var + ",m,c,mm/dy " + ensoutfile
                 print command
                 os.system(command)
 
-    if var == "evap":
-        command = cdo + " sub era20c_tp.nc era20c_evap.nc era20c_pme.nc"
-        print command
-        os.system(command)
+            if factor != 1:
+                command = cdo + " mulc," + str(factor) + " " + ensoutfile + " noot.nc; mv noot.nc " + ensoutfile
+                print command
+                os.system(command)
+
+            if levtype == 'pl':
+                levellist = [ 850, 700, 500, 300, 200 ]
+                for level in levellist:
+                    levelfile = "era20c_" + var + str(level) + ".nc"
+                    command = "cdo sellevel," + str(level) + "00. " + outfile + " " + levelfile
+                    print command
+                    os.system(command)
+                if var == "t" or var == "u":
+                    zonfile = "era20c_" + var + "zon.nc"
+                    command = "cdo zonmean " + outfile + " " + zonfile
+                    print command
+                    os.system(command)
+
+            if var == "evap":
+                command = cdo + " sub era20c_tp_{ens}.nc era20c_evap_{ens}.nc era20c_pme_{ens}.nc".format(ens=ens)
+                print command
+                os.system(command)
 
 # end of var loop

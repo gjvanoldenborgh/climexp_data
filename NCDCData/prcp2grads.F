@@ -9,7 +9,7 @@
         real data(72,37)
         character dataset*5
         integer iargc
-        external iargc,getarg
+!!!        external iargc,getarg
 *       
         if ( iargc().ne.1 ) then
             print *,'usage: prcp2grads seas|month'

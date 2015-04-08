@@ -243,6 +243,7 @@
         yr1 = 9999
         yr2 = -9999
  300    read(2,'(a)',end=400) line
+        if ( line(1:1).eq.'#' .or. line.eq.' ' ) goto 300
         i1 = 1
         call readfield(line,i1,i)
         if ( i.ne.stationid ) then

@@ -61,9 +61,6 @@ echo @@@ GPCC
 echo @@@ GPCP
 (cd GPCPData; ./update.sh | 2>&1 tee update.log)
 
-echo @@@ TRMM
-(cd TRMMData; ./update.sh | 2>&1 tee update.log)
-
 echo @@@ TEMIS
 (cd TEMISData; ./update.sh | 2>&1 tee update.log)
 

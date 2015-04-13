@@ -29,7 +29,5 @@ echo @@@ YorkData
 (cd YorkData; ./update_fields.sh | 2>&1 tee update_fields.log)
 echo @@@ NODC
 (cd NODCData; ./update.sh | 2>&1 tee update.log )
-###echo @@@TRMM
-###(cd TRMMData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ finished @@@

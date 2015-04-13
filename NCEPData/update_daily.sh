@@ -13,7 +13,7 @@ do
 # $abbrv [1] $abbrv index
 EOF
     sed -e '/-0.99900E+34/d' -e '/\*/d' $file >> cpc_${abbrv}_daily.dat
+    $HOME/NINO/copyfiles.sh cpc_${abbrv}_daily.dat
   fi
-  $HOME/NINO/copyfiles.sh cpc_${abbrv}_daily.dat
 done
 

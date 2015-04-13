@@ -15,6 +15,7 @@ case $var in
 	tos|sos|zos*|msft*|mlotst) type=Omon;;
 	mr*) type=Lmon;;
 	sic) type=OImon;;
+	snc|snd) type=LImon;;
 	cdd|altcdd|csdi|cwd|altcwd|dtr|fd|gsl|id|prcptot|r1mm|r10mm|r20mm|r95p|r99p|rx1day|rx5day|sdii|su|tn10p|tn90p|tnn|tnx|tx10p|tx90p|txn|txx|wsdi) type=yr;;
 	*) type=Amon;;
 esac

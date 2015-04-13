@@ -1,5 +1,7 @@
 #!/bin/sh
 echo "Please download the file PIOMAS.vol.daily.1979.*.dat by hand from http://psc.apl.washington.edu/wordpress/research/projects/arctic-sea-ice-volume-anomaly/data/"
+zfile=`ls -t PIOMAS.vol.daily.1979.*.dat.gz | head -1`
+gunzip $zfile
 file=`ls -t PIOMAS.vol.daily.1979.*.dat | head -1`
 if [ $file -nt piomas_dy.dat ]; then
 	make piomas2dat

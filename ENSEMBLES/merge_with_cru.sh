@@ -1,5 +1,5 @@
 #!/bin/sh
-version=v10.0
+[ -z "$version" ] && echo "$0: error: please define version" && exit -1
 cversion=3.22
 for var in tg tx tn rr
 do
@@ -27,4 +27,5 @@ do
     if [ ! -s $outfile -o $outfile -ot $monfile -o $outfile -ot $cfile ]; then
         patchfield $monfile $cfile $outfile
     fi
+    $HOME/NINO/copyfiles.sh $outfile
 done

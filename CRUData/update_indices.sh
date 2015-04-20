@@ -40,7 +40,8 @@ cat > nao.dat <<EOF
 # NAO [1] North Atlantic Oscillation index
 EOF
 ./update_nao >> nao.dat
-$HOME/NINO/copyfilesall.sh nao.dat
+patchseries nao.dat $HOME/NINO/NCEPData/cpc_nao.dat > nao_combined.dat
+$HOME/NINO/copyfilesall.sh nao.dat nao_combined.dat
 #
 # SOI
 #

@@ -1,15 +1,16 @@
 #!/bin/sh
 set -x
-# download the EN3 objective ocean analysis
+# download the EN4 objective ocean analysis
 
-base=http://www.metoffice.gov.uk/hadobs/en3/data/EN3_v2a
-version=EN3_v2a
+base=http://www.metoffice.gov.uk/hadobs/en4/data/en4-0-2/
+version=EN.4.0.2
+mem=500
 
-yr=1949
+yr=1899
 yrnow=`date -d "1 year ago" "+%Y"`
 while [ $yr -lt $yrnow ]; do
     echo $((++yr))
-    file=${version}_ObjectiveAnalyses_$yr.tar
+    file=${version}.analyses.$yr.zip
     # the server is really slow, assume we have a complete set except for the last two years...
 	if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o ! -s $file ]; then
 	    wget -N $base/$file
@@ -21,29 +22,21 @@ while [ $yr -lt $yrnow ]; do
 			fi
 		fi
     fi
-    if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o \( ! -s EN3_v2a_ObjectiveAnalysis_${yr}01.nc.gz -a ! -s EN3_v2a_ObjectiveAnalysis_${yr}01.nc \) ]; then
-		tar xf ${version}_ObjectiveAnalyses_$yr.tar
-	fi
-done
-
-echo "Unzipping netcdf files"
-for file in ${version}_ObjectiveAnalysis_??????.nc.gz
-do
-	f=${file%.gz}
-	if [ ! -s $f -o $f -ot $file ]; then
-		gunzip -f $file
+    if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o ! -s $version.f.analysis.${yr}01.nc ]; then
+		unzip $file
 	fi
 done
 
 echo "Extracting temperature and salinity"
 doit_salt=false
 doit_temp=false
-for file in ${version}_ObjectiveAnalysis_??????.nc
+for file in $version.f.analysis.??????.nc
 do
-    string=${file##*_}
+    string=${file##*analysis.}
     yr=${string%??.nc}
     mo=${string%.nc}
     mo=${mo#????}
+    echo $yr $mo
     if [ ! -s temp_$file -o $file -nt temp_$file ]; then
 		ncks -O -v temperature $file aap.nc
 		cdo -f nc4 -z zip -r settaxis,${yr}-${mo}-01,0:00,1mon aap.nc temp_$file
@@ -58,31 +51,35 @@ done
 
 echo "Concatenating"
 if [ $doit_temp = true -o ! -s temp_${version}_ObjectiveAnalysis.nc ]; then
-	cdo -f nc4 -z zip copy temp_${version}_ObjectiveAnalysis_[12]?????.nc temp_${version}_ObjectiveAnalysis.nc
+	cdo -f nc4 -z zip copy temp_${version}.f.analysis.[12]?????.nc temp_${version}_ObjectiveAnalysis.nc
     $HOME/NINO/copyfiles.sh temp_${version}_ObjectiveAnalysis.nc
 fi
 if [ $doit_salt = true -o ! -s salt_${version}_ObjectiveAnalysis.nc ]; then
-	cdo -f nc4 -z zip copy salt_${version}_ObjectiveAnalysis_[12]?????.nc salt_${version}_ObjectiveAnalysis.nc
+	cdo -f nc4 -z zip copy salt_${version}.f.analysis.[12]?????.nc salt_${version}_ObjectiveAnalysis.nc
 	$HOME/NINO/copyfiles.sh salt_${version}_ObjectiveAnalysis.nc
 fi
 
 # SSS
-infile=salt_EN3_v2a_ObjectiveAnalysis.nc
-outfile=salt_EN3_v2a_ObjectiveAnalysis_5m.nc
+infile=salt_${version}_ObjectiveAnalysis.nc
+outfile=salt_${version}_ObjectiveAnalysis_5m.nc
 if [ ! -s $outfile -o $outfile -ot $infile ]; then
 	cdo sellevel,5.02159 $infile $outfile 
 	$HOME/NINO/copyfiles.sh $outfile
 fi
 
+nt=`describefield salt_${version}_ObjectiveAnalysis.nc 2>&1 | fgrep months | awk '{print $8}' | tr -d '()'`
+
 # integrated salinity
 for depth in 400 700 1000 2000
 do
-	outfile=salt_EN3_v2a_ObjectiveAnalysis_sal${depth}.nc
+	outfile=salt_${version}_ObjectiveAnalysis_sal${depth}.nc
 	if [ ! -s $outfile -o $outfile -ot $infile ]; then
-		ferret -memsize 500 <<EOF
+		ferret -memsize $mem <<EOF
 use "${infile}"
-let sal${depth} = salinity[z=0:${depth}@DIN]
+let sal${depth} = salinity[z=0:${depth}@DIN,l=1:700]
 save/file=${outfile}/clobber sal${depth}
+let sal${depth} = salinity[z=0:${depth}@DIN,l=701:$nt]
+save/file=${outfile}/append sal${depth}
 quit
 EOF
 		ncatted -a units,SAL${depth},c,c,"psu m" $outfile
@@ -91,15 +88,17 @@ EOF
 done
 
 # heat content
-infile=temp_EN3_v2a_ObjectiveAnalysis.nc
+infile=temp_${version}_ObjectiveAnalysis.nc
 for depth in 400 700 1000 2000
 do
-	outfile=temp_EN3_v2a_ObjectiveAnalysis_ohc${depth}.nc
+	outfile=temp_${version}_ObjectiveAnalysis_ohc${depth}.nc
 	if [ ! -s $outfile -o $outfile -ot $infile ]; then
-		ferret -memsize 500 <<EOF
+		ferret -memsize $mem <<EOF
 use "${infile}"
-let ohc${depth} = 1028*4186*temperature[z=0:${depth}@DIN]
+let ohc${depth} = 1028*4186*temperature[z=0:${depth}@DIN,l=1:700]
 save/file=${outfile}/clobber ohc${depth}
+let ohc${depth} = 1028*4186*temperature[z=0:${depth}@DIN,l=701:$nt]
+save/file=${outfile}/append ohc${depth}
 quit
 EOF
 		ncatted -a units,OHC${depth},c,c,"J/m2" $outfile

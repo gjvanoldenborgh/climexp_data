@@ -54,7 +54,7 @@ do
 	case $var in
 		TAVG) start="1750-01-01";;
 		TMAX) start="1833-01-01";;
-		TMIN) start="1833-04-01";;
+		TMIN) start="1833-01-01";;
 		*) echo "$0: error: unknow var $var"; exit -1;;
 	esac
 	ncfile=${var}_LatLong1.nc

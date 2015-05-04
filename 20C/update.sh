@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ 0 = 1 ]; then
-base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2/Monthlies/
+base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Monthlies/
 
-wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2/gaussian/time_invariant/land.nc
+wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/time_invariant/land.nc
+rsync -e ssh land.nc bhlclim:climexp/20C/
 ###wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2/time_invariant/hgt.sfc.nc
 
 for var in prmsl air.2m tmax.2m air.sfc tmin.2m prate vwnd.10m uwnd.10m wspd.10m uflx vflx icec snowc soilm lhtfl shtfl uswrf.sfc ulwrf.sfc air vwnd uwnd hgt shum shum.2m rhum # rhum.2m dswrf
@@ -31,7 +31,6 @@ do
   fi
 done
 ./make_snao.sh
-fi
 
 for var in prmsl air.2m tmax.2m prate vwnd.10m uwnd.10m wspd.10m icec snowc soilm lhtfl shtfl uswrf.sfc ulwrf.sfc
 do

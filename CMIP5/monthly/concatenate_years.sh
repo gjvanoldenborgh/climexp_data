@@ -82,6 +82,14 @@ do
 					echo "Skipping EC-EARTH piControl - unknown problems"| tee -a skipping_$var.log
 					donotdoit=true
 				fi
+				if [ $model = EC-EARTH -a $exp = rcp45 -a $var = hfss -a $r = 6 ]; then
+					echo "Skipping EC-EARTH $r$i$p $var $exp: missing year"| tee -a skipping_$var.log
+					donotdoit=true
+				fi
+				if [ $model = EC-EARTH -a $exp = rcp85 -a $var = hfss -a $r = 6 ]; then
+					echo "Skipping EC-EARTH $r$i$p $var $exp: missing year"| tee -a skipping_$var.log
+					donotdoit=true
+				fi
 				if [ ${model#GISS-E2-} != $model -a $exp = piControl -a $p = 1 ]; then
 					echo "Skipping $model p1 piControl - unknown problems"| tee -a skipping_$var.log
 					donotdoit=true

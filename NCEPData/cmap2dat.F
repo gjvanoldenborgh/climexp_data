@@ -8,7 +8,7 @@ c
         integer i,j,ii,jj,kyr,kmn,yr,mn,nrec,iret,iu
         real*4 rain1(144,72),rain2(144,72),error1(144,72),error2(144,72)
      +        ,rlat,rlon
-        character file*21,var*10,lvar*40
+        character file*255,file1*255,var*10,lvar*40,command*1023
         logical lexist
 c
 c     1.  to open the data file 
@@ -18,18 +18,21 @@ c
         open(13,file='cmapm.dat',access='direct',recl=144*72*recfa4)
         open(23,file='cmapmerr.dat',access='direct',recl=144*72*recfa4)
         nrec = 0
+        call getarg(1,file1)
         do yr=1979,2020
-            write(file,'(a,i2.2,a)') 'cmap_mon_v1201_',mod(yr,100)
+            write(file,'(a,i2.2,a)') file1(1:15),mod(yr,100)
      +            ,'.txt'
+            !!!print *,'looking for ',trim(file)
             inquire(file=trim(file),exist=lexist)
             if ( .not.lexist ) then
-                call mysystem('wget ftp://ftp.cpc.ncep.noaa.gov/'//
-     +               'precip/cmap/monthly/'//trim(file),iret)
+                command = 'gunzip -c '//trim(file)//'.gz > '//trim(file)
+                print *,trim(command)
+                call mysystem(trim(command),iret)
+                if ( iret.ne.0 ) goto 900
                 inquire(file=trim(file),exist=lexist)
                 if ( .not.lexist ) goto 900
             endif
-            !!!call mysystem('gunzip -c '//file//'.gz > '//file,iret)
-            open(unit=1,file=file,status='old')
+            open(unit=1,file=trim(file),status='old')
 c
 c     2.  to read the data 
 c 

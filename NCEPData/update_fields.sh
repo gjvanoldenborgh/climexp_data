@@ -7,6 +7,11 @@ $HOME/NINO/copyfiles.sh sstoi_v2.??? iceoi_v2.???
 
 base=ftp://ftp.cpc.ncep.noaa.gov/precip/cmap/monthly
 wget -N -q $base/\*.txt.gz
+for file in cmap_mon_*.txt.gz; do
+    if [ ${file%.gz} -ot $file ]; then
+        gunzip -c $file > ${file%.gz}
+    fi
+done
 file=`ls -t cmap_mon_*.txt.gz | head -1`
 make cmap2dat
 ./cmap2dat $file

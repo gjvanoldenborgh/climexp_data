@@ -15,4 +15,4 @@ do
         ./tenday2month $file > `basename $file .txt`.dat
     done
 done
-$HOME/NINO/copyfiles.sh sl*.dat
+$HOME/NINO/copyfiles.sh sl*.dat TSI_TIM_Reconstruction.dat

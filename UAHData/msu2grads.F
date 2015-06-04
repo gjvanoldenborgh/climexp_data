@@ -33,7 +33,11 @@
  101            format (16i5)
                 do iy=1,ny
                     do ix=1,nx
-                        data(ix,iy,mo,yr) = ndata(ix,iy)/100.
+                        if ( ndata(ix,iy).eq.-9999 ) then
+                            data(ix,iy,mo,yr) = 3e33
+                        else
+                            data(ix,iy,mo,yr) = ndata(ix,iy)/100.
+                        end if
                     end do
                 end do
                 nrec = nrec + 1

@@ -35,6 +35,35 @@ case $version in
 esac
 done # version
 
+yr=1979
+for version in "6.0beta2"
+do
+base=http://www.atmos.uah.edu/public/msu/v6.0beta/tlt/
+yrnow=`date -d "last month" +"%Y"`
+while [ $yr -le $yrnow ]
+do
+  file=tltmonamg.${yr}_$version
+  wget -q -N $base$file
+  size=`wc -c $file | awk '{print $1}'`
+  if [ -n "$size" -a ${size:-0} -lt 500 ]
+  then
+    echo "$0: error retrieving $base$file"
+    rm $file
+    yr=3000
+  fi
+  yr=$(($yr + 1))
+done
+
+make msu2grads
+./msu2grads $version
+grads2nc tlt.ctl tlt.nc
+case $version in
+    5.5) mv tlt.nc tlt_55.nc;;
+    5.6) mv tlt.nc tlt_56.nc;;
+    6.0beta2) mv tlt.nc tlt_60b2.nc;;
+esac
+done # version
+
 cp tlt_56.nc tlt.nc
 
 get_index tlt.nc 0 360 -90 90 > tlt_gl.dat

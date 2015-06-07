@@ -66,11 +66,4 @@ make hadsst2grads
 ./hadsst2grads
 $HOME/NINO/copyfiles.sh hadsst2.???
 
-
-exit
-
-wget -N --header="accept-encoding: gzip" http://www.metoffice.com/hadobs/mohmat/data/MOHMAT43_2000+.txt.gz 
-gunzip -c MOHMAT43_2000+.txt.gz > MOHMAT43_2000+.txt
-make mohmat2grads
-./mohmat2grads
-$HOME/NINO/copyfiles.sh mohmat43.???
+./update_hadnmat2.sh

@@ -16,10 +16,9 @@ wget -q -N $base/ghcnd_all.tar.gz
 cmp ghcnd_all.tar.gz ghcnd_all.tar.gz.old
 if [ $? = 0 ]; then
   echo ghcnd_all.tar.gz unchanged
+  mv ghcnd_all.tar.gz.old ghcnd_all.tar.gz
   exit
 fi
-wget -q --continue $base/ghcnd_all.tar.gz
-wget -q --continue $base/ghcnd_all.tar.gz
 cmp ghcnd_all.tar.gz ghcnd_all.tar.gz.old
 if [ $? = 0 ]; then
   echo ghcnd_all.tar.gz unchanged
@@ -32,6 +31,7 @@ if [ $? != 0 ]; then
   mv ghcnd_all.tar.gz.old ghcnd_all.tar.gz
   exit
 fi
+rm ghcnd_all.tar.gz.old # save space.
 
 # extract data
 echo "uncompressing and extracting tar file"

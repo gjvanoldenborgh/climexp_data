@@ -55,7 +55,7 @@ sed -e 's/-10\.00/-999.9/g' -e 's/-99\.99/-999.9/g' soi.dat.downloaded >> soi.da
 diff soi.dat soi.dat.old
 if [ $? != 0 ]; then
     rm soi.dat.old
-    $HOME/NINO/Fortran/filtermonthseries lo box 5 soi.dat > soi5.dat
+    filtermonthseries lo box 5 soi.dat > soi5.dat
     $HOME/NINO/copyfilesall.sh soi.dat soi5.dat
 else
     echo "soi.dat has not changed"

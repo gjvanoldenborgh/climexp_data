@@ -9,16 +9,17 @@
         parameter(yrbeg=1979,yrend=2020,nx=144,ny=72)
         integer yr,mo,ix,iy,isat,iyr,imo,ndata(nx,ny),nrec
         real data(nx,ny,12,yrbeg:yrend)
-        character acha*12,file*100,version*3
+        character acha*12,file*100,version*10
 
         call getarg(1,version)
         nrec = 0
         do yr=yrbeg,yrend
-            write(file,'(a,i4,2a)') 'tltmonamg.',yr,'_',version
+            write(file,'(a,i4,2a)') 'tltmonamg.',yr,'_',trim(version)
             open(1,file=file,status='old',err=10)
             goto 20
  10         continue
-            write(file,'(a,i4,3a)') 'tltmonamg.',yr,'_',version,'a'
+            write(file,'(a,i4,3a)') 'tltmonamg.',yr,'_',trim(version),
+     +           'a'
             open(1,file=file,status='old',err=800)
  20         continue
             do mo=1,12
@@ -32,7 +33,11 @@
  101            format (16i5)
                 do iy=1,ny
                     do ix=1,nx
-                        data(ix,iy,mo,yr) = ndata(ix,iy)/100.
+                        if ( ndata(ix,iy).eq.-9999 ) then
+                            data(ix,iy,mo,yr) = 3e33
+                        else
+                            data(ix,iy,mo,yr) = ndata(ix,iy)/100.
+                        end if
                     end do
                 end do
                 nrec = nrec + 1

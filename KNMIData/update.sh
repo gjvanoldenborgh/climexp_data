@@ -27,6 +27,7 @@ done
 ###make dat2dat_all_new
 wget -N http://www.knmi.nl/actueel/tabel_opgetreden_extremen.html
 ./dat2dat_all_new
+./merge_hom tx DeBiltTx.v0.csv
 $HOME/NINO/copyfiles.sh ?????.gz rd??????.gz list_??.txt
 ###make add_pluim
 ./add_pluim.sh

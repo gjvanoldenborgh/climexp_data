@@ -43,6 +43,9 @@ c       8 character other ID
 c       8 character other ID
 c
         lwrite = .false.
+        call getenv('LWRITE',string)
+        call tolower(string)
+        if ( string(1:1) == 't' ) lwrite = .true.
         if ( iargc().lt.1 ) then
             print '(a)','usage: gdcn{tmin|tmax|prcp|snow|snwd} '//
      +            '[lat lon|name] [min years]'

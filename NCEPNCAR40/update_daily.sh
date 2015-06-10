@@ -10,7 +10,7 @@ cdoflags="-r -f nc4 -z zip"
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/
 
-for dirvar in surface/slp surface_gauss/air.2m.gauss surface_gauss/prate.sfc.gauss pressure/hgt
+for dirvar in surface_gauss/air.2m.gauss surface_gauss/prate.sfc.gauss pressure/hgt
 do
 	dir=`dirname $dirvar`
 	var=`basename $dirvar`
@@ -21,14 +21,27 @@ do
 	cmp $head $oldhead.old
 	if [ $? != 0 ]; then
 		if [ $dir = surface -o $dir = surface_gauss ]; then
-			cdo $cdoflags copy $var.????.nc $var.daily.nc
+		    files=
+		    for file in $var.????.nc; do
+		        yr=${file%.nc}
+		        yr=${yr#${var}.}
+		        if [ $yr -ge 2015 ]; then
+		            newfile=${file%.nc}_patched.nc
+		            if [ $file -nt _$newfile ]; then
+    		            ncks -O -x -v time_bnds $file $newfile
+    		        fi
+		            file=$newfile
+		        fi
+		        files="$files $file"
+		    done
+			cdo $cdoflags copy $files $var.daily.nc
 			$HOME/NINO/copyfiles.sh	$var.daily.nc
 		elif [ $dir = pressure ]; then
 			for level in 200 500; do
 				for file in $var.????.nc; do
 					lfile=`echo $file | sed -e "s/$var/$var$level"/`
 					if [ ! -s $lfile -o	 $lfile -ot	 $file ]; then
-						ncks -O -d level,${level}. $file $lfile
+						ncks -O -d level,${level}. -x -v time_bnds $file $lfile
 					fi
 				done
 				cdo $cdoflags copy $var$level.????.nc $var$level.daily.nc

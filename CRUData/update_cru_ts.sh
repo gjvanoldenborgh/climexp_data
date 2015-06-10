@@ -22,11 +22,17 @@ prompt
 EOF
     for var in $vars
     do
+        case $var in
+            tmn|tmx|dtr) altvar=tmpdtr;;
+            *) altvar=$var
+        esac
         [ ! -d $var ] && mkdir $var
         f=`echo $vers.1901.2*.$var.dat.nc`
         if [ ! -s $f ]; then
             cat <<EOF >> commands.ftp
 mget $var/$vers.1901.2*.$var.dat.nc.gz
+mget $var/$vers.1901.2*.$altvar.st0.nc.gz
+mget $var/$vers.1901.2*.$altvar.stn.nc.gz
 EOF
         fi
     done

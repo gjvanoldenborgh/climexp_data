@@ -64,7 +64,7 @@ case $version in
 esac
 done # version
 
-cp tlt_56.nc tlt.nc
+cp tlt_60b2.nc tlt.nc
 
 get_index tlt.nc 0 360 -90 90 > tlt_gl.dat
 get_index tlt.nc 0 360 -90 0 > tlt_sh.dat

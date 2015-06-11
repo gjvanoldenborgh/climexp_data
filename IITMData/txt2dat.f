@@ -5,7 +5,8 @@
 *
         implicit none
         integer nyears,yr,i,j,n,iregion,isub,idata(12),lat,lon
-        character name*5,file*9,details*100,text*100
+        real data(12)
+        character name*5,file*9,details*100,text*100,string*80
 
         open(10,file='getindiaprcp')
         write(10,'(a)') '#!/bin/sh'
@@ -19,18 +20,19 @@
         write(1,'(a)') '=============================================='
 
         open(2,file='iitm-regionrf.txt',status='old')
+        read(2,'(a)',end=190) string
         iregion = 0
   100   continue
         iregion = iregion + 1
-        read(2,'(i3,x,a)',end=190) nyears,details
+        read(2,'(i3,a)',end=190) nyears,details
+        do while ( details(1:1).eq.' ' )
+            text = details(2:)
+            details = text
+        end do
         do i=1,nyears
             read(2,'(a5,i4,x,12i5)') name,yr,idata
             if ( i.eq.1 ) then
                 open(3,file=name//'.dat')
-                if ( details(1:1).eq.' ' ) then
-                    text = details(2:)
-                    details = text
-                endif
                 write(3,'(2a)') '# ',trim(details)
                 write(3,'(3a)') '# Data obtained from the Indian ',
      +                'Institute of Tropical Meteorology',
@@ -91,7 +93,7 @@
   120           continue
                 write(10,'(i3,3a)') 100+iregion,') name="',name,'";;'
             endif
-            write(3,'(i4,12f8.1') yr,(idata(j)/10.,j=1,12)
+            write(3,'(i4,12f8.1)') yr,(idata(j)/10.,j=1,12)
         enddo
         close(3)
         goto 100
@@ -107,6 +109,7 @@
         write(1,'(a)') '=============================================='
         
         open(2,file='iitm-subdivrf.txt',status='old')
+        read(2,'(a)',end=190) string
         iregion = 0
   200   continue
         iregion = iregion + 1
@@ -255,7 +258,7 @@
   220           continue
                 write(10,'(i3,3a)') isub,') name="',name,'";;'
             endif
-            write(3,'(i4,12f8.1') yr,(idata(j)/10.,j=1,12)
+            write(3,'(i4,12f8.1)') yr,(idata(j)/10.,j=1,12)
         enddo
         close(3)
         goto 200
@@ -285,7 +288,7 @@
         iregion = iregion + 1
         read(2,'(i3,6x,a,2x,a)',end=390) nyears,name,details
         do i=1,nyears
-            read(2,'(a5,i4,x,12i5)') name,yr,idata
+            read(2,'(a5,i4,x,12f6.1)') name,yr,data
             if ( i.eq.1 ) then
                 open(3,file='tn'//name//'.dat')
                 if ( details(1:1).eq.' ' ) then
@@ -353,7 +356,7 @@
   320           continue
                 write(10,'(i3,3a)') 100+iregion,') name="tn',name,'";;'
             endif
-            write(3,'(i4,12f8.1') yr,(idata(j)/10.,j=1,12)
+            write(3,'(i4,12f8.1)') yr,data
         enddo
         close(3)
         goto 300
@@ -383,7 +386,7 @@
         iregion = iregion + 1
         read(2,'(i3,x,a,x,a)',end=490) nyears,name,details
         do i=1,nyears
-            read(2,'(a5,i4,x,12i5)') name,yr,idata
+            read(2,'(a5,i4,x,12f6.1)') name,yr,data
             if ( i.eq.1 ) then
                 open(3,file='tx'//name//'.dat')
                 if ( details(1:1).eq.' ' ) then
@@ -448,7 +451,7 @@
   420           continue
                 write(10,'(i3,3a)') 100+iregion,') name="tx',name,'";;'
             endif
-            write(3,'(i4,12f8.1') yr,(idata(j)/10.,j=1,12)
+            write(3,'(i4,12f8.1)') yr,data
         enddo
         close(3)
         goto 400

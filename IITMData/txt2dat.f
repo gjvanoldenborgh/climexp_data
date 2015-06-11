@@ -384,7 +384,7 @@
         iregion = 0
   400   continue
         iregion = iregion + 1
-        read(2,'(i3,x,a,x,a)',end=490) nyears,name,details
+        read(2,'(i3,6x,a,x,a)',end=490) nyears,name,details
         do i=1,nyears
             read(2,'(a5,i4,x,12f6.1)') name,yr,data
             if ( i.eq.1 ) then

@@ -429,10 +429,10 @@
                     lon = 78
                 elseif ( name.eq.'ECIND' ) then
                     lat = 15
-                    lon = 74
+                    lon = 80
                 elseif ( name.eq.'WCIND' ) then
                     lat = 15
-                    lon = 80
+                    lon = 74
                 elseif ( name.eq.'ALLIN' ) then
                     lat = 20
                     lon = 80

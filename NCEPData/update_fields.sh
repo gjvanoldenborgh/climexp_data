@@ -15,7 +15,7 @@ echo "n=$n"
 grads -b -l <<EOF
 open cams_opi_$version/camsopi.ctl
 set x 1 144
-set t 1 $n
+set t 49 $n
 define prcp=comb
 define perc=gam
 set sdfwrite camsopi.nc
@@ -47,7 +47,6 @@ for file in cmap_mon_*.txt.gz; do
         gunzip -c $file > ${file%.gz}
     fi
 done
-n=`ls 
 file=`ls -t cmap_mon_*.txt.gz | head -1`
 make cmap2dat
 ./cmap2dat $file

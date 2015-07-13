@@ -22,7 +22,7 @@
             region = 'global'
         else if ( reg.eq.'NH') then
             rg = 'nh'
-            region = 'norther hemisphere'
+            region = 'northern hemisphere'
         else if ( reg.eq.'SH') then
             rg = 'sh'
             region = 'southern hemisphere'

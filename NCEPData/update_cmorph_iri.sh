@@ -1,5 +1,5 @@
 #!/bin/sh
-export PATH=/usr/local/free/bin:$PATH
+export PATH=$HOME/climexp/bin:/usr/local/free/bin:$PATH
 cdo="cdo -r -f nc4 -z zip"
 mkdir -p CMORPH
 yr=2002
@@ -59,7 +59,7 @@ while [ $yr -lt $yrnow -o \( $yr = $yrnow -a $mo -le $monow \) ]; do
     fi
     ###echo "d1,d2=$d1,$d2"
     ncks -O -d T,$d1,$d2 http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.CMORPH/.daily/.mean/.morphed/.cmorph/dods aap.nc
-    ncrename -O -v cmorph,prcp aap.nc noot.nc
+    ncrename -O -v cmorph,prcp -d T,time -d X,lon -d Y,lat -v T,time -v X,lon -v Y,lat aap.nc noot.nc
     ncatted -a units,prcp,m,c,"mm/dy" noot.nc
     $cdo invertlat noot.nc aap.nc
     $cdo settaxis,${yr}-${mo}-01,0:00,1day aap.nc noot.nc

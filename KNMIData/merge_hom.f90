@@ -20,10 +20,13 @@ program merge_hom
     open(1,file=trim(file),status='old')
     do
         read(1,'(a)',end=800) line
-        do i=1,len(line)
-            if ( line(i:i) == ',' ) line(i:i) = '.'
-            if ( line(i:i) == ';' ) line(i:i) = ' '
-        end do
+        if ( line(1:1).ne.'1' .and. line(1:1).ne.'2' ) cycle
+        if ( index(file,'.csv') /= 0 ) then
+            do i=1,len(line)
+                if ( line(i:i) == ',' ) line(i:i) = '.'
+                if ( line(i:i) == ';' ) line(i:i) = ' '
+            end do
+        end if
         read(line,*) vals
         yr = nint(vals(1))
         mo = nint(vals(2))

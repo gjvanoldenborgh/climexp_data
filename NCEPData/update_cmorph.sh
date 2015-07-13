@@ -18,6 +18,8 @@ if [ ! -s downloaded_cmorph_$date ]; then
     # v0.x for the rest
     wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr1/${yr1}12
     wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z/$yr/
+    # the most recent files are here in case they are missing in the above dir
+    ###wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/global_CMORPH/daily_025deg/
 
     #### get GrADS control files NOT USED
     ###wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/CTL
@@ -31,6 +33,7 @@ fi
 ncfiles=""
 nc1files=""
 root=ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z
+altroot=ftp.cpc.ncep.noaa.gov/precip/CMORPH_V0.x/RAW/0.25deg-DLY_00Z
 yyyy=1998
 m=1
 mm=01
@@ -46,7 +49,9 @@ while [ $ok = true ]; do
     else
         file=`echo $file | sed -e 's/V1.0/V0.x/g'`
         version="0.x"
-        if [ -s $file.bz2 ]; then
+        if [ -s $file.gz ]; then
+            ext=gz
+        elif [ -s $file.bz2 ]; then
             ext=bz2
         else
             echo "$0: cannot find $file"
@@ -81,8 +86,10 @@ while [ $ok = true ]; do
         dd=`printf %02i $d`
         dfile=${file%01}$dd
         list=""
+        echo "checking for $dfile.$ext"
+        ls -l $dfile.$ext
         while [ -s $dfile.$ext ]; do
-            if [ $ext = gz ]; then
+            if [ $ext = gz -o $ext = Z ]; then
                 ###echo "gunzip $dfile.$ext"
                 gunzip -c $dfile.$ext > $dfile
             elif [ $ext = bz2 ]; then
@@ -95,6 +102,7 @@ while [ $ok = true ]; do
             d=$((d+1))
             dd=`printf %02i $d`
             dfile=${file%01}$dd
+            echo "checking for $dfile.$ext"
             if [ ! -s $dfile.$ext -a $yyyy -lt $yr -a $d -le $dpm ]; then
                 echo "$0: inserting day of undefs at $yyyy$mm$dd"
                 makeundef 1440 480 1 -999.0 $dfile

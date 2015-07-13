@@ -9,8 +9,8 @@ else
   scp -q gjvo@shell.xs4all.nl:WWW/ip.txt $HOME/etc/ip2.txt
 fi
 echo @@@ GISS
-(cd NASAData; ./update.sh | 2>&1 tee update.log)
-(cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
+###(cd NASAData; ./update.sh | 2>&1 tee update.log)
+###(cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
 echo @@@ NCDC
 (cd NCDCData; ./update_indices.sh | 2>&1 tee update_indices.log)
 (cd NCDCData; ./update_fields.sh | 2>&1 tee update_fields.log)

@@ -75,5 +75,20 @@ else
 endif
 $HOME/NINO/copyfiles.sh cpc_mjo*.dat
 
+cp heat_content_index.txt heat_content_index.txt.old
+wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
+diff heat_content_index.txt heat_content_index.txt.old
+if ( $status ) then
+  cat > cpc_eq_heat300.dat <<EOF
+# CPC Equatorial Upper 300m temperature Average anomaly based on 1981-2010 Climatology, 130E-80W
+# Source <a href="">CPC/NCEP</a>
+# heat300 [K] temperature averaged to 300m
+EOF
+  tail -n +3 heat_content_index.txt | cut -b 1-20 >> cpc_eq_heat300.dat
+else
+  echo "new file is the same as old one, keeping old one"
+endif
+$HOME/NINO/copyfiles.sh cpc_eq_heat300.dat
+
 ./update_annular.sh
 ./update_daily.sh

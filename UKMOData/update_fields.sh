@@ -1,6 +1,6 @@
 #!/bin/sh
 base=http://www.metoffice.gov.uk/hadobs/crutem4/data/gridded_fields/
-version=4.3.0.0
+version=4.4.0.0
 file=CRUTEM.${version}.anomalies.nc
 wget -N --header="accept-encoding: gzip" $base/$file.gz
 gunzip -c $file.gz > $file

@@ -2,7 +2,7 @@
 
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
-get_index ersstv3b.ctl -75 -7 25 60 > ersst_natl.dat
+get_index ersstv4.nc -75 -7 25 60 > ersst_natl.dat
 correlate ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.dat
 a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
 export FORM_a1=1
@@ -23,8 +23,8 @@ $HOME/NINO/copyfiles.sh amo_ersst.dat
 
 # 2. Definition of Trenberth & Shea 2006
 
-get_index ersstv3b.ctl -80 0 0 60 > ersst_0-60N_0-80W.dat
-get_index ersstv3b.ctl 0 360 -60 60 > ersst_60S-60N.dat
+get_index ersstv4.nc -80 0 0 60 > ersst_0-60N_0-80W.dat
+get_index ersstv4.nc 0 360 -60 60 > ersst_60S-60N.dat
 cat > amo_ersst_ts.dat <<EOF
 # AMO index SST EQ-60N, 0-80W minus SST 60S-60N
 # as in <a href="http://www.agu.org/pubs/crossref/2006/2006GL026894.shtml">Trenberth and Shea 2006</a>
@@ -36,7 +36,7 @@ $HOME/NINO/copyfiles.sh amo_ersst_ts.dat
 
 # 3. Adjusted definition of Trenberth & Shea 2006
 
-get_index ersstv3b.ctl -80 0 30 60 > ersst_30-60N_0-80W.dat
+get_index ersstv4.nc -80 0 30 60 > ersst_30-60N_0-80W.dat
 cat > amo30_ersst_ts.dat <<EOF
 # AMO index SST 30-60N, 0-80W minus SST 60S-60N
 # based on ERSST v3b from NCDC

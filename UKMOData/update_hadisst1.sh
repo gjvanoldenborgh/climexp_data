@@ -2,7 +2,7 @@
 for file in HadISST1_SST_1870-1900.txt HadISST1_SST_1901-1930.txt HadISST1_SST_1931-1960.txt HadISST1_SST_1961-1990.txt HadISST1_SST_1991-2003.txt
 do
   cp $file.gz $file.gz.old
-  wget -N --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadisst/data/$file.gz
+  wget -q -N --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadisst/data/$file.gz
   cmp $file.gz $file.gz.old
   if [ $? != 0 ]; then
       c=`file $file.gz | fgrep -c ASCII`
@@ -21,7 +21,7 @@ while [ $yr -le $now ]
 do
   file=HadISST1_SST_$yr.txt
   cp $file.gz $file.gz.old
-  wget -N --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadisst/data/$file.gz
+  wget -q -N --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadisst/data/$file.gz
   cmp $file.gz $file.gz.old
   if [ $? != 0 ]; then
       c=`file $file.gz | fgrep -c ASCII`

@@ -2,7 +2,7 @@
 
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
-version=3.1.1.0
+[ -z "$version" ] && echo "$0: please define version" && exit -1
 get_index HadSST.${version}.median.nc -75 -7 25 60 > hadsst_natl.dat
 correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.dat
 a=`awk '{print -$10}' aap.dat | tr '\n' ':'`

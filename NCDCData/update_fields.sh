@@ -25,7 +25,15 @@ if [ $new = true ]; then
   cdo -r -f nc4 -z zip copy $filelist ersstv4_all.nc
   cdo selvar,sst ersstv4_all.nc ersstv4.nc
   cdo selvar,anom ersstv4_all.nc ersstv4a.nc
-  $HOME/NINO/copyfiles.sh ersstv4.nc ersstv4a.nc
+  $HOME/NINO/copyfilesall.sh ersstv4.nc ersstv4a.nc
+  ./makenino.sh
+  $HOME/NINO/copyfiles.sh ersst_nino*.dat
+  ./makeiozm.sh
+  $HOME/NINO/copyfiles.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
+  ./makesiod.sh
+  $HOME/NINO/copyfiles.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
+  ./update_amo.sh
+  $HOME/NINO/copyfiles.sh amo_ersst.dat amo_ersst_ts.dat
 fi
 
 # ERSST v3b
@@ -35,14 +43,6 @@ if [ $new = true ]; then
   rm ersstv3b.???
   ./ersstv3b2dat
   $HOME/NINO/copyfiles.sh ersstv3b.???
-  ./makenino.sh
-  $HOME/NINO/copyfiles.sh ersst_nino*.dat
-  ./makeiozm.sh
-  $HOME/NINO/copyfiles.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
-  ./makesiod.sh
-  $HOME/NINO/copyfiles.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
-  ./update_amo.sh
-  $HOME/NINO/copyfiles.sh amo_ersst.dat amo_ersst_ts.dat
 fi
 
 ###force=true

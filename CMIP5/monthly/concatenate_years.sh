@@ -74,6 +74,15 @@ do
 					echo "Skipping CESM1-CAM5-1-FV2 piControl = too short"| tee -a skipping_$var.log
 					donotdoit=true
 				fi
+				if [ $model = CESM1-CAM5 -a $var = rlut ]; then
+				    if [ $exp = historical ]; then
+				        file=ethz/cmip5/$exp/${type}/$var/$model/r${r}i${i}p${p}/${var}_${type}_${model}_${exp}_r${r}i${i}p${p}_185001-200512.nc
+					    [ -s $file -a -s $file.correct ] && cp $file.correct $file
+					else
+				        file=ethz/cmip5/$exp/${type}/$var/$model/r${r}i${i}p${p}/${var}_${type}_${model}_${exp}_r${r}i${i}p${p}_200601-210012.nc
+					    [ -s $file -a -s $file.correct ] && cp $file.correct $file
+					fi
+				fi
 				if [ $model = CMCC-CM -a $exp = piControl ]; then
 					echo "Skipping CMCC-CM piControl - unknown problems"| tee -a skipping_$var.log
 					donotdoit=true

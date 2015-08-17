@@ -5,7 +5,7 @@
         implicit none
         integer yr,mo,dy,i,j,yr2,mo2,dy2,jul1,jul2
         real nino(2:5,2),alpha,dum
-        character file*128,months*36,month*3
+        character file*128,months*36,month*3,line*80
 	logical myfile
         integer julday
         external julday
@@ -27,15 +27,18 @@
         enddo
         jul1 = -999
   100   continue
-        read(1,'(i3,a3,i4,4(f9.1,f4.1))',end=800,err=900) dy2,month,yr2
+        read(1,'(a)',end=800) line
+        !!!print *,trim(line)
+        read(line,'(i3,a3,i4,4(f9.1,f4.1))',err=900) dy2,month,yr2
      +        ,dum,nino(2,2),dum,nino(3,2),dum,nino(5,2),dum,nino(4,2)
         mo2 = (index(months,month)+2)/3
         if ( mo2.eq.0 ) then
             write(0,*) 'error: could not interpret month ',month
             call abort
         endif
+        jul2 = julday(mo2,dy2,yr2)
+        !!!print *,'jul1,jul2 = ',jul1,jul2
         if ( jul1.gt.-999 ) then
-            jul2 = julday(mo2,dy2,yr2)
             do j=1,jul2-jul1
                 alpha = j/real(jul2-jul1)
                 call caldat(jul1+j,mo,dy,yr)
@@ -44,17 +47,18 @@
      +                    (1-alpha)*nino(i,1) + alpha*nino(i,2)
                 enddo
             enddo
-            jul1 = jul2
             do i=2,5
                 nino(i,1) = nino(i,2)
             enddo
         endif
+        jul1 = jul2
         goto 100
   800   continue
         close(1)
         goto 999
   900   continue
         print *,'error reading from wksst.for'
+        print *,trim(line)
         close(1)
         goto 999
   999   continue

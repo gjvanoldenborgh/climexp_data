@@ -37,6 +37,7 @@ EOF
         fi
     done
     echo 'quit' >> commands.ftp
+    echo "downloading data ..."
     ftp ftp1.ceda.ac.uk < commands.ftp > ftp.lo1
 
     for var in $vars

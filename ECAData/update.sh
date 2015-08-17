@@ -28,7 +28,7 @@ do
     if [ $? != 0 -o $force = true ]; then
         # unpack
         cd data
-        unzip -o ../ECA_blend_$element.zip
+        unzip -o -q ../ECA_blend_$element.zip
         rm -f sources.txt stations.txt elements.txt
         rm -f ../years_$element.txt
         for file in *.txt
@@ -55,8 +55,8 @@ do
         done
         cd ..
         ./addyears $element
-        scp data/${element}*.dat.gz bhlclim:climexp/ECAData/data/
-        scp data/b${element}*.dat.gz bhlclim:climexp/ECAData/data/
+        rsync data/${element}*.dat.gz bhlclim:climexp/ECAData/data/ &
+        rsync data/b${element}*.dat.gz bhlclim:climexp/ECAData/data/ &
         $HOME/NINO/copyfiles.sh ECA_blend_station_$element.txt.withyears
         $HOME/NINO/copyfiles.sh ECA_nonblend_station_$element.txt.withyears
     fi

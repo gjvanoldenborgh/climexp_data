@@ -41,4 +41,4 @@ $HOME/NINO/copyfiles.sh ?????.gz rd??????.gz list_??.txt
 ./labrijn2dat > labrijn.dat
 ./makecnt.sh
 
-$HOME/NINO/copyfiles.sh precip13stations.dat labrijn.dat cnt.dat tg260_mean12.dat
+$HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat cnt.dat tg260_mean12.dat

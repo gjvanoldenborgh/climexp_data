@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ "$1" != noupdate ]; then
-    # from the source code of http://www.knmi.nl/klimatologie/uurgegevens/selectie.cgi
-    base=http://www.knmi.nl/klimatologie/uurgegevens
+    # from the source code of http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
+    base=http://projects.knmi.nl/klimatologie/uurgegevens
     yrnow=`date +%Y`
     if [ -s yr_hourly.txt ]; then
         yr=`cat yr_hourly.txt`

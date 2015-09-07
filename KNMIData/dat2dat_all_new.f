@@ -446,8 +446,8 @@
             if ( lwrite ) print *,'found station ',trim(stationname),
      +          ' ',trim(altname)
             read(3,'(a)',end=850) line
-            i = index(line,'right>') + 6
-            k = index(line,'&nbsp;') - 1
+            i = index(line,'right">') + 7
+            k = index(line,'</td>') - 1
             read(line(i:k),*,end=820) s
             if ( lwrite ) print *,'found Tn ',s
             do ivar=1,nvars
@@ -481,8 +481,8 @@
                 write(10+ivar,'(2a)') stationname,' (Netherlands)'
                 write(10+ivar,'(a,f8.2,a,f8.2,a,f8.1,4a)')
      +               'coordinates: ',lat,'N,',lon,'E, ',elev,
-     +               'm, <a href="http://www.knmi.nl/klimatologie/',
-     +               'metadata/',trim(metadatafile),
+     +               'm, <a href="http://projects.knmi.nl/klimatologie',
+     +               '/metadata/',trim(metadatafile),
      +               '" target="_new">metadata</a>'
                 write(10+ivar,'(a,i3,2a)') 'station code: ',stationid
      +               ,' ',trim(station_name)

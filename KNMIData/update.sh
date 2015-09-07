@@ -10,22 +10,22 @@ do
 ###    for var in DDVEC FG FHX FHN FXX TG TN TX T10N SQ SP Q DR RH PG PX PN VVN VVX NG UG UX UN EV24
 ###    do
 ###	if [ ! -s ${var}_$station.txt ]; then
-###	    wget -O ${var}_$station.txt --post-data="start=19010101&vars=$var&stns=$station" http://www.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi
+###	    wget -O ${var}_$station.txt --post-data="start=19010101&vars=$var&stns=$station" http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi
 ###	fi
 ###    done
     [ -f etmgeg_$station.txt ] && mv etmgeg_$station.txt etmgeg_$station.old
     echo -n "$station "
-    wget -q -O etmgeg_$station.txt --post-data="start=19010101&vars=DDVEC:FG:FHX:FHN:FXX:TG:TN:TX:T10N:SQ:SP:Q:DR:RH:PG:PX:PN:VVN:VVX:NG:UG:UX:UN:EV24&stns=$station" http://www.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi
+    wget -q -O etmgeg_$station.txt --post-data="start=19010101&vars=DDVEC:FG:FHX:FHN:FXX:TG:TN:TX:T10N:SQ:SP:Q:DR:RH:PG:PX:PN:VVN:VVX:NG:UG:UX:UN:EV24&stns=$station" http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi
     c=`cat etmgeg_$station.txt | wc -c`
     if [ $c -lt 2000 ]; then
-      echo "Something went wrong while retrieveing etmgeg_$station.txt"
+      echo "Something went wrong while retrieving etmgeg_$station.txt"
       ls l etmgeg_$station.txt etmgeg_$station.old
       mv etmgeg_$station.old etmgeg_$station.txt
     fi
 done
 
 ###make dat2dat_all_new
-wget -N http://www.knmi.nl/actueel/tabel_opgetreden_extremen.html
+curl http://www.knmi.nl/nederland-nu/weer/actueel-weer/extremen > tabel_opgetreden_extremen.html
 ./dat2dat_all_new
 ./merge_hom tx DeBiltTx.v2.txt
 $HOME/NINO/copyfiles.sh ?????.gz rd??????.gz list_??.txt
@@ -41,4 +41,4 @@ $HOME/NINO/copyfiles.sh ?????.gz rd??????.gz list_??.txt
 ./labrijn2dat > labrijn.dat
 ./makecnt.sh
 
-$HOME/NINO/copyfiles.sh precip13stations.dat labrijn.dat cnt.dat tg260_mean12.dat
+$HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat cnt.dat tg260_mean12.dat

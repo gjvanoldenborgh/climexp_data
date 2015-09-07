@@ -45,9 +45,15 @@ EOF
         ii=`printf %3.3i $i`
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -2 $file | tail -1 | sed -e 's/# //' -e 's/ [(].*//' -e 's/ /_/g'`
-            ###echo dat2nc $file p $station $ncfile
-            dat2nc $file p $station $ncfile
+            if [ ${file#rr} != $file ]; then
+                station=`head -2 $file | tail -1 | sed -e 's/# //' -e 's/ [(].*//' -e 's/ /_/g'`
+            elif [ ${file#rh} != $file ]; then
+                station=`head -3 $file | tail -1 | sed -e 's/# //' -e 's/ [(].*//' -e 's/ /_/g'`
+            else
+                echo "$0: internal error"; station=unknown
+            fi
+            echo dat2nc $file p "$station" $ncfile
+            dat2nc $file p "$station" $ncfile
         fi
         lfile=rrr_$ii.nc
         ln -s $ncfile $lfile

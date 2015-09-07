@@ -13,6 +13,6 @@ do
   echo $nino
   get_index ersstv4.nc $lon1 $lon2 $lat1 $lat2 > ersst_nino${nino}.dat
   egrep '^#' ersst_nino${nino}.dat | sed -e 's/SST/SSTA/' > ersst_nino${nino}a.dat
-  echo '# SSTA normalized to 1971-2000' >> ersst_nino${nino}a.dat
-  plotdat anomal 1971 2000 ersst_nino${nino}.dat | fgrep -v repeat >> ersst_nino${nino}a.dat
+  echo '# SSTA normalized to 1981-2010' >> ersst_nino${nino}a.dat
+  plotdat anomal 1981 2010 ersst_nino${nino}.dat | fgrep -v repeat >> ersst_nino${nino}a.dat
 done

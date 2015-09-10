@@ -14,7 +14,7 @@ do
 done
 for i in 2 3 4 5
 do
-    patchseries nino$i.dat kaplan_nino$i.dat aap.dat
+    patchseries nino$i.dat kaplan_nino$i.dat > aap.dat
     mv aap.dat nino$i.dat
 done
 $HOME/NINO/copyfilesall.sh *nino?.dat sstoi.indices
@@ -25,7 +25,7 @@ diff wksst8110.for wksst8110.for.old
 if [ $? != 0 ]; then
   echo "new file differs from old one"
   rm wksst8110.for.old
-  ./normalize_wksst wksst8110.for >! wksst.myfor
+  ./normalize_wksst wksst8110.for > wksst.myfor
   echo 'y' | gnuplot plotninoweek.gnu
   gs -q -r300 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dNOPAUSE -sDEVICE=ppmraw -sOutputFile=plotninoweek.ppm plotninoweek.eps -c quit
 ###  gsppm plotninoweek.ppm plotninoweek.eps
@@ -36,7 +36,7 @@ if [ $? != 0 ]; then
   ./ninoweek2daily
   for index in nino2 nino3 nino4 nino5
   do
-    daily2longer ${index}_daily.dat 73 mean >! ${index}_5daily.dat
+    daily2longer ${index}_daily.dat 73 mean > ${index}_5daily.dat
   done
 else
   echo "new file is the same as old one, keeping old one"
@@ -51,7 +51,7 @@ diff soi soi.old
 if [ $? != 0 ]; then
   echo "new file differs from old one"
   rm soi.old
-  ./makesoi >! cpc_soi.dat
+  ./makesoi > cpc_soi.dat
 else
   echo "new file is the same as old one, keeping old one"
 fi
@@ -77,7 +77,7 @@ if [ $? != 0 ]; then
   rm proj_norm_order.ascii.old
     ./mjo2dat
   for file in cpc_mjo*_daily.dat
-    daily2longer $file 12 mean >! `basename $file _daily.dat`_mean12.dat
+    daily2longer $file 12 mean > `basename $file _daily.dat`_mean12.dat
   end
 else
   echo "new file is the same as old one, keeping old one"

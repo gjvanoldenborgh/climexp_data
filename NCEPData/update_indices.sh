@@ -12,6 +12,7 @@ do
         echo "new $file is the same as old one, keeping old one"
     fi
 done
+# extend with Kaplan inices, offset added to reflect differing climateologies.
 sstoi2dat sstoi.indices # otherwise it accumulates...
 for i in 2 3 4 5
 do

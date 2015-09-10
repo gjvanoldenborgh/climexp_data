@@ -1,5 +1,5 @@
 #!/bin/sh
-for file in ersst4.nino.mth.81-10.ascii sstoi.indices
+for file in ersst4.nino.mth.81-10.ascii sstoi.indices sstkap.indices
 do
     cp $file $file.old
     wget -q -N http://www.cpc.noaa.gov/data/indices/$file
@@ -11,8 +11,13 @@ do
     else
         echo "new $file is the same as old one, keeping old one"
     fi
-    $HOME/NINO/copyfilesall.sh nino?.dat sstoi.indices
 done
+for i in 2 3 4 5
+do
+    patchseries nino$i.dat kaplan_nino$i.dat aap.dat
+    mv aap.dat nino$i.dat
+done
+$HOME/NINO/copyfilesall.sh *nino?.dat sstoi.indices
 
 cp wksst8110.for wksst8110.for.old
 wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for
@@ -71,7 +76,7 @@ if [ $? != 0 ]; then
   echo "new file differs from old one"
   rm proj_norm_order.ascii.old
     ./mjo2dat
-  foreach file ( cpc_mjo*_daily.dat )
+  for file in cpc_mjo*_daily.dat
     daily2longer $file 12 mean >! `basename $file _daily.dat`_mean12.dat
   end
 else

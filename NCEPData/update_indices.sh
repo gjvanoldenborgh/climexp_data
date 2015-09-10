@@ -15,7 +15,7 @@ done
 sstoi2dat sstoi.indices # otherwise it accumulates...
 for i in 2 3 4 5
 do
-    patchseries nino$i.dat kaplan_nino$i.dat > aap.dat
+    patchseries nino$i.dat kaplan_nino$i.dat noscale > aap.dat
     mv aap.dat nino$i.dat
 done
 $HOME/NINO/copyfilesall.sh *nino?.dat sstoi.indices

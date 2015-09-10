@@ -76,7 +76,7 @@ if [ $? != 0 ]; then
   echo "new file differs from old one"
   rm proj_norm_order.ascii.old
     ./mjo2dat
-  foreach file ( cpc_mjo*_daily.dat )
+  for file in cpc_mjo*_daily.dat
     daily2longer $file 12 mean >! `basename $file _daily.dat`_mean12.dat
   end
 else

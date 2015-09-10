@@ -77,8 +77,9 @@ if [ $? != 0 ]; then
   rm proj_norm_order.ascii.old
     ./mjo2dat
   for file in cpc_mjo*_daily.dat
+  do
     daily2longer $file 12 mean > `basename $file _daily.dat`_mean12.dat
-  end
+  done
 else
   echo "new file is the same as old one, keeping old one"
 fi

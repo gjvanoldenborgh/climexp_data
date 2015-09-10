@@ -1,5 +1,5 @@
 #!/bin/sh
-for file in ersst4.nino.mth.81-10.ascii sstoi.indices sstkap.indices
+for file in ersst4.nino.mth.81-10.ascii sstoi.indices
 do
     cp $file $file.old
     wget -q -N http://www.cpc.noaa.gov/data/indices/$file
@@ -12,6 +12,7 @@ do
         echo "new $file is the same as old one, keeping old one"
     fi
 done
+sstoi2dat sstoi.indices # otherwise it accumulates...
 for i in 2 3 4 5
 do
     patchseries nino$i.dat kaplan_nino$i.dat > aap.dat

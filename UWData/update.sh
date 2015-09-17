@@ -1,7 +1,8 @@
 #!/bin/sh
+set -x
 echo "Please download the file PIOMAS.vol.daily.1979.*.dat by hand from http://psc.apl.washington.edu/wordpress/research/projects/arctic-sea-ice-volume-anomaly/data/"
 zfile=`ls -t PIOMAS.vol.daily.1979.*.dat.gz | head -1`
-gunzip $zfile
+[ -s "$zfile" ] && gunzip -f $zfile
 file=`ls -t PIOMAS.vol.daily.1979.*.dat | head -1`
 if [ $file -nt piomas_dy.dat ]; then
 	make piomas2dat
@@ -29,7 +30,8 @@ patternfield hadsst3-tglobal.ctl eof1.ctl eof1 1 > aap.dat
 scaleseries 3 aap.dat > pdo_hadsst3.dat
 $HOME/NINO/copyfilesall.sh pdo_hadsst3.dat
 
-echo y | subfieldseries ~/NINO/NCDCData/ersstv3b.ctl ~/NINO/NCDCData/ncdc_gl.dat ./ersst-tglobal.ctl
+extend_series ~/NINO/NCDCData/ncdc_gl.dat > ncdc_gl1.dat
+echo y | subfieldseries ~/NINO/NCDCData/ersstv4a.nc ncdc_gl1.dat ./ersst-tglobal.ctl
 rm eof1.???
 eof ./ersst-tglobal.ctl 1 normalize varspace mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 eof1.ctl
 patternfield ersst-tglobal.ctl eof1.ctl eof1 1 > aap.dat

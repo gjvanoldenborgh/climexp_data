@@ -1,7 +1,7 @@
 #!/bin/sh
 ###getit="wget -q --user-agent="" -N"
 # GISS requires HTTP/1.1, which wget does not have at the server but curl does...
-getit="curl -s -O -z"
+getit="curl -O -z"
 
 # GISTEMP
 
@@ -34,7 +34,7 @@ $HOME/NINO/copyfilesall.sh giss*.dat
 
 base=http://data.giss.nasa.gov/modelforce/strataer
 file=tau.line_2012.12.txt
-$getit $file $base/$file
+wget -N $file $base/$file
 mv tau.line_2012.12.txt tau_line.txt
 ./saod2dat
 $HOME/NINO/copyfilesall.sh saod*.dat

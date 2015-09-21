@@ -7,7 +7,7 @@ else
 fi
 ###getit="wget -q -N"
 # GISS requires HTTP/1.1, which wget does not have at the server but curl does...
-getit="curl -s -O -z"
+getit="curl -O -z"
 
 base=ftp://data.giss.nasa.gov/pub/gistemp/download_v3/
 base=http://data.giss.nasa.gov/gistemp/sbbx/
@@ -41,14 +41,17 @@ do
 		sed -e "s/CURRENTYEAR/$yr/" sbbx2nc.in > sbbx2nc.f
 		make sbbx2nc
 		./sbbx2nc 0
-		mv gistemp.nc giss_temp_land_$decor.nc
+		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_land_$decor.nc
+		rm gistemp.nc
 		./sbbx2nc 1
 		[ ! -L SST_DATA ] && rm SBBX.ERSST
 		[ ! -s SBBX.ERSST ] && exit -1
-		mv gistemp.nc giss_temp_sea_$decor.nc
+		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_sea_$decor.nc
+		rm gistemp.nc
 		./sbbx2nc 2
-		mv gistemp.nc giss_temp_both_$decor.nc
-		$HOME/NINO/copyfiles.sh giss_temp_land_$decor.nc giss_temp_both_$decor.nc
+		cdo -r -f nc4 -z zip gistemp.nc giss_temp_both_$decor.nc
+		rm gistemp.nc
+		$HOME/NINO/copyfiles.sh copy giss_temp_land_$decor.nc giss_temp_both_$decor.nc
 	fi
 done
 

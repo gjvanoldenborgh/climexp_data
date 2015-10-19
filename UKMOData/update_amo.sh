@@ -1,11 +1,17 @@
 #!/bin/sh
+export LANG=C
 
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
 [ -z "$version" ] && echo "$0: please define version" && exit -1
 get_index HadSST.${version}.median.nc -75 -7 25 60 > hadsst_natl.dat
-correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.dat
-a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
+correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.txt
+a=`awk '{print -$10}' aap.txt | tr '\n' ':'`
+echo "$a"
+if [ ${a#0:} != $a ]; then
+    echo "Error in awk, a=$a"
+    exit -1
+fi
 export FORM_a1=1
 export FORM_a2=$a
 gen_time 1700 2200 12 > dummy.12.dat

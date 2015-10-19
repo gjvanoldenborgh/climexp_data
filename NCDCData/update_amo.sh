@@ -1,12 +1,18 @@
 #!/bin/sh
+export LANG=C
 
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
-get_index ersstv4.nc -75 -7 25 60 > ersst_natl.dat
-correlate ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.dat
-a=`awk '{print -$10}' aap.dat | tr '\n' ':'`
+get_index ersstv4a.nc -75 -7 25 60 > ersst_natl.dat
+correlate ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.txt
+a=`awk '{print -$10}' aap.txt | tr '\n' ':'`
 export FORM_a1=1
 export FORM_a2=$a
+echo $a
+if [ ${a#0:} != $a ]; then
+    echo "Error in awk, a=$a"
+    exit -1
+fi
 gen_time 1700 2200 12 > dummy.12.dat
 addseries dummy.12.dat file ersst_natl.dat file ../NASAData/giss_al_gl_m.dat  mon 1:12 plot aap.dat > /tmp/addseries.log
 file=`tail -1 /tmp/addseries.log`
@@ -20,6 +26,7 @@ EOF
 fgrep -v '#' aap.dat >> amo_ersst.dat
 rm $file aap.dat
 $HOME/NINO/copyfiles.sh amo_ersst.dat
+
 
 # 2. Definition of Trenberth & Shea 2006
 

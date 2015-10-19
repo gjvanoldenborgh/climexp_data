@@ -55,26 +55,31 @@ EOF
             cdo -r -f nc4 -z zip copy $file $f
             rm $file
         fi
-
-        f1=${f%.nc}_1.nc
-        echo "generating $f1"
-        averagefieldspace $f 2 2 $f1
-        cdo -r -f nc4 -z zip copy $f1 aap.nc
-        mv aap.nc $f1
-
-        f25=${f%.nc}_25.nc
-        echo "generating $f25"
-        averagefieldspace $f 5 5 $f25
-        cdo -r -f nc4 -z zip copy $f25 aap.nc
-        mv aap.nc $f25
-        
-        echo "copying"
-        $HOME/NINO/copyfiles.sh $f $f1 $f25
     done
     mail -s "new version CRU TS!" oldenborgh@knmi.nl <<EOF
 New version $version of CRU TS has been downloaded, please adjust queryfield.cgi and selectfield_obs.html
 EOF
-fi
+fi # action necessary?
+for var in $vars; do
+    f=`echo $vers.1901.2*.$var.dat.nc`
+    f1=${f%.nc}_1.nc
+    if [ ! -f $f1 ]; then
+        echo "generating $f1"
+        averagefieldspace $f 2 2 $f1
+        cdo -r -f nc4 -z zip copy $f1 aap.nc
+        mv aap.nc $f1
+    fi
+    f25=${f%.nc}_25.nc
+    if [ ! -f $f25 ]; then
+        echo "generating $f25"
+        averagefieldspace $f 5 5 $f25
+        cdo -r -f nc4 -z zip copy $f25 aap.nc
+        mv aap.nc $f25
+    fi
+    echo "copying"
+    $HOME/NINO/copyfiles.sh $f $f1 $f25
+done
+
 
 exit 
 # old version

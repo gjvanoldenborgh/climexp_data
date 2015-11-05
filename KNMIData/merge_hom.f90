@@ -49,4 +49,5 @@ program merge_hom
     call printdatfile(1,data,npermax,nperyear,yrbeg,yrend)
     close(1)
     call mysystem('gzip -c '//var//station//'_hom.dat > '//var//station//'.gz',iret)
+    call mysystem('mv '//var//station//'_hom.dat > '//var//station//'.dat',iret)
 end program

@@ -69,9 +69,9 @@
      +       ,val,qq
         yr = datum/10000
         do iblend=2,3
-            if ( iblend.eq.2 .and. (qq.ne.0 .or.sourceid.ge.900000) )
-     +           goto 190
-            if ( qq.gt.1 .or. val.eq.-999 .or. val.eq.-9999 ) goto 200
+            if ( qq.ne.0 ) goto 200 ! throw away all suspect data
+            if ( iblend.eq.2 .and. sourceid.ge.900000 ) goto 190 ! synop data has SOUID>900000
+            if ( val.eq.-999 .or. val.eq.-9999 ) goto 200 ! these should have qq > 0, just to make sure
             yr1(iblend) = min(yr1(iblend),yr)
             yr2(iblend) = max(yr2(iblend),yr)
             if ( yr.ne.lastyr(iblend) ) then

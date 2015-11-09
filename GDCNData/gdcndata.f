@@ -11,7 +11,8 @@
         integer i,j,k,jj,kk,n,ldir,nmin(0:48),yr,nok,nlist
      +        ,idates(18),iecd,ist,iwm,igsn
         integer iwmo(nn),firstyr(nn),lastyr(nn),nyr(nn),ind(nn)
-     +        ,type,tmin,tmax,temp,prcp,mo,dy,ielev,vals(31)
+     +       ,type,tmin,tmax,temp,prcp,mo,dy,ielev,vals(31)
+     +       ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)
         real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon
      +        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin
      +        ,rlatmax,val,elev(nn)
@@ -359,6 +360,31 @@ c
      +                   ,stations(jj),id
                     call abort
                 endif
+                if ( type.eq.5 ) then
+                    if ( element.eq.'TMIN' ) then
+                        tminvals = vals
+                        tminyr = yr
+                        tminmo = mo
+                    else if ( element.eq.'TMAX' ) then
+                        tmaxvals = vals
+                        tmaxyr = yr
+                        tmaxmo = mo
+                    end if
+                    if ( tminyr.eq.tmaxyr .and.
+     +                   tminmo.eq.tmaxmo ) then
+                        do i=1,31
+                            if ( tminvals(i).ne.-9999 .and.
+     +                           tmaxvals(i).ne.-9999 ) then
+                                vals(i) = 5*(tminvals(i) + tmaxvals(i))
+                            else
+                                vals(i) = -9999
+                            end if
+                        end do
+                        tminyr = -1
+                        tmaxyr = -1
+                        element = 'TAVE' ! so that the rest goes OK
+                    end if
+                end if
                 if ( element.ne.elements(type) ) goto 600
                 do i=1,31
                     if ( vals(i).eq.-9999 ) then
@@ -393,8 +419,7 @@ c
 			    goto 650
 			endif
                     elseif ( type.eq.5 ) then
-                        write(0,*) 'tave not yet implemented'
-                        call abort
+                        val = vals(i)/100.
                     elseif ( type.eq.8 ) then
                         val = vals(i)
                     elseif ( type.eq.9 ) then

@@ -19,6 +19,12 @@ do
         [ -f $file ] && rm $file # they all have the same name...
         echo wget $base/$dir/$area/p12/12/$file
         wget $base/$dir/$area/p12/12/$file
+        c=`cat $file | wc -l`
+        if [ $c -lt 100 ]; then
+            echo "$0: error: incomplete file $file from $base/$dir/$area/p12/12/$file"
+            mv $file $file.wrong
+            exit
+        fi
         if [ $area = land_ocean ]; then
             myfile=ncdc_${region}.dat
         else

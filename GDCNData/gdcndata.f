@@ -20,7 +20,7 @@
      +       datasource*1,qcflag*1
         character station*11,id*11,list(nn)*11,id1*8,id2*8,wmo*5
         character flags1(31)*1,flags2(31)*1,flags3(31)*1,dummy1*1,
-     +       dummy2*1
+     +       dummy2*1,tminflags(31)*1,tmaxflags(31)*1
         character country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4
      +       ,units(9)*10
         character string*200,line*500,sname*25
@@ -363,23 +363,29 @@ c
                 if ( type.eq.5 ) then
                     if ( element.eq.'TMIN' ) then
                         tminvals = vals
+                        tminflags = flags2
                         tminyr = yr
                         tminmo = mo
                     else if ( element.eq.'TMAX' ) then
                         tmaxvals = vals
+                        tmaxflags = flags2
                         tmaxyr = yr
                         tmaxmo = mo
                     end if
                     if ( tminyr.eq.tmaxyr .and.
      +                   tminmo.eq.tmaxmo ) then
                         do i=1,31
-                            if ( tminvals(i).ne.-9999 .and.
-     +                           tmaxvals(i).ne.-9999 ) then
+                            if ( tminvals(i).ne.-9999 .and. 
+     +                           tminflags(i).eq.' ' .and.
+     +                           tmaxvals(i).ne.-9999 .and.  
+     +                           tmaxflags(i).eq.' ' ) then
                                 vals(i) = 5*(tminvals(i) + tmaxvals(i))
                             else
                                 vals(i) = -9999
                             end if
                         end do
+                        tminvals = -9999
+                        tmaxvals = -9999
                         tminyr = -1
                         tmaxyr = -1
                         element = 'TAVE' ! so that the rest goes OK

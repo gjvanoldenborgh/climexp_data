@@ -51,6 +51,8 @@ do
         # clean up the operational analyses if the ERA-interim exists
         [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
         [ -f oper_$var$yr$mo.nc ] && rm oper_*$yr$mo.nc
+    elif [ -s complete_oper_$var$yr$mo.txt ]; then
+        echo "using old oper_$var$yr$mo.grib"
     else
         echo "downloading oper_$var$yr$mo.grib ..."
         dates="$dates $yr$mo"
@@ -68,7 +70,9 @@ do
             else
                 lastday=31
             fi
+            completemonth=true
         else
+            completemonth=false
             lastday=`date "+%d"` # today
             lastday=${lastday#0} # NOT octal
             lastday=$((lastday-1)) # yesterday
@@ -145,6 +149,9 @@ do
             	fi
             fi
         done
+        if [ $completemonth = true ]; then
+            date > complete_oper_$var$yr$mo.txt
+        fi
 
         cvars=`fgrep "for var in tp" marsoper.sh | sed -e "s/for var in //"`
         for var in $cvars

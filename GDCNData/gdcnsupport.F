@@ -104,7 +104,7 @@
             if ( slon.gt.180 ) slon = slon-360
             if ( slon.lt.-180 .or. slon.gt.180 ) goto 901
             if ( i.ne.1+len_trim(string) ) then
-                read(string(i+1:),*,err=900) slon1
+                read(string(i+1:),*,err=901) slon1
                 if ( slon1.gt.180 ) slon1 = slon1-360
                 if ( slon1.lt.-180 .or. slon1.gt.180 ) goto 901
                 if ( abs(slon-slon1).lt.1e-3 ) then

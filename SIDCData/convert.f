@@ -4,10 +4,10 @@
 *       into standard sunspot.dat file
 *
         implicit none
-        integer yr,mn,i
+        integer yr,mn,i,j
         real xyr,s,ss(12)
 *
-        open(1,file='monthssn.dat',status='old')
+        open(1,file='SN_m_tot_V2.0.txt',status='old')
         open(2,file='sunspots.dat',status='new')
 *
         write(2,'(a)') '# sunspot [1] monthly mean sunspot number'
@@ -15,12 +15,12 @@
 *
         do yr=1749,2100
             do mn=1,12
-                read(1,*,end=800) i,xyr,ss(mn)
-                if ( i/100.ne.yr ) then
+                read(1,*,end=800) i,j,xyr,ss(mn)
+                if ( i.ne.yr ) then
                     print *,'error in year: ',yr,mn,i
                     stop
                 endif
-                if ( mod(i,100).ne.mn ) then
+                if (j.ne.mn ) then
                     print *,'error in month ',yr,mn,i
                     stop
                 endif

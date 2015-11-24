@@ -49,9 +49,9 @@ do
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_sea_$decor.nc
 		rm gistemp.nc
 		./sbbx2nc 2
-		cdo -r -f nc4 -z zip gistemp.nc giss_temp_both_$decor.nc
+		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_both_$decor.nc
 		rm gistemp.nc
-		$HOME/NINO/copyfiles.sh copy giss_temp_land_$decor.nc giss_temp_both_$decor.nc
+		$HOME/NINO/copyfiles.sh giss_temp_land_$decor.nc giss_temp_both_$decor.nc
 	fi
 done
 

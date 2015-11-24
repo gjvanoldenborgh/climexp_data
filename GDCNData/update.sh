@@ -55,4 +55,7 @@ make addyears
 echo "copy to climexp"
 $HOME/NINO/copyfiles.sh -r ghcnd
 $HOME/NINO/copyfiles.sh ghcnd-countries.txt ghcnd-stations.txt ghcnd2.inv.withyears
+
+# make Tmean
+
 date > downloaded_$yr$mo

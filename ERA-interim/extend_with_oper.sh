@@ -53,6 +53,7 @@ do
         [ -f oper_$var$yr$mo.nc ] && rm oper_*$yr$mo.nc
     elif [ -s complete_oper_$var$yr$mo.txt ]; then
         echo "using old oper_$var$yr$mo.grib"
+        dates="$dates $yr$mo"
     else
         echo "downloading oper_$var$yr$mo.grib ..."
         dates="$dates $yr$mo"
@@ -149,9 +150,6 @@ do
             	fi
             fi
         done
-        if [ $completemonth = true ]; then
-            date > complete_oper_$var$yr$mo.txt
-        fi
 
         cvars=`fgrep "for var in tp" marsoper.sh | sed -e "s/for var in //"`
         for var in $cvars
@@ -238,6 +236,9 @@ do
                 [ -f noot.nc ] && rm noot.nc
             fi
         done
+        if [ $completemonth = true ]; then
+            date > complete_oper_tp$yr$mo.txt
+        fi
         fi # any days in the month?
     fi # download or not?
 done # loop over yr,mo
@@ -365,6 +366,7 @@ do
     rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
     echo cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
+    echo "copying to bhlclim..."
     $HOME/NINO/copyfiles.sh erai_${var}_daily_extended.nc
 done
 

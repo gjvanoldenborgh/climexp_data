@@ -28,7 +28,9 @@ done
 curl http://www.knmi.nl/nederland-nu/weer/actueel-weer/extremen > tabel_opgetreden_extremen.html
 ./dat2dat_all_new
 ./merge_hom tx DeBiltTx.v2.txt
-$HOME/NINO/copyfiles.sh ?????.gz rd??????.gz list_??.txt
+./merge_hom tg DeBiltTg.v2.txt
+./merge_hom tn DeBiltTn.v2.txt
+$HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
 ###make add_pluim
 ./add_pluim.sh
 ###./maketxt.sh

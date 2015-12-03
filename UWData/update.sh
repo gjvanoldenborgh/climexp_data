@@ -12,7 +12,7 @@ fi
 $HOME/NINO/copyfilesall.sh piomas_??.dat
 
 cp PDO.latest PDO.latest.old
-wget -N http://jisao.washington.edu/pdo/PDO.latest
+wget -N ftp://ftp.atmos.washington.edu/mantua/pnw_impacts/INDICES/PDO.latest
 diff PDO.latest PDO.latest.old
 if [ $? != 0 ]; then
     make latest2dat

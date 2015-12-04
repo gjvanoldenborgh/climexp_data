@@ -1,6 +1,6 @@
 #!/bin/sh
 [ -z "$version" ] && echo "$0: error: please define version" && exit -1
-cversion=3.22
+cversion=3.23
 for var in tg tx tn rr
 do
     file=${var}_0.50deg_reg_${version}u.nc

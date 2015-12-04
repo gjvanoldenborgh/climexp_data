@@ -29,5 +29,7 @@ echo @@@ YorkData
 (cd YorkData; ./update_fields.sh | 2>&1 tee update_fields.log)
 echo @@@ NODC
 (cd NODCData; ./update.sh | 2>&1 tee update.log )
+echo @@@ JAMSTEC
+(cd JAMSTECData; ./update.sh | 2>&1 tee update.log )
 
 echo @@@ finished @@@

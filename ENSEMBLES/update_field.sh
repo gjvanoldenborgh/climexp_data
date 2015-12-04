@@ -5,8 +5,8 @@ force=false # true
 update=true # false
 
 # adjust with each version
-version=v11.0
-enddate="" # keep empty when shortening is not needed "2013-12-31"
+version=v12.0
+enddate="2015-06-30" # keep empty when shortening is not needed "2013-12-31"
 nextdate="" # keep empty when previous year is not needed "2014-01-01"
 
 cdoflags="-r -f nc4 -z zip"
@@ -24,10 +24,6 @@ do
     if [ $force = true -o ${var}_${res}deg_reg_$yr.nc.gz -nt ${var}_${res}deg_reg_${version}u.nc ]; then
         if [ ! -s ${var}_${res}deg_reg_${version}.nc.gz -o ${var}_${res}deg_reg_${version}.nc -ot ${var}_${res}deg_reg_${version}.nc.gz ]; then
             gunzip -c ${var}_${res}deg_reg_${version}.nc.gz > ${var}_${res}deg_reg_${version}.nc
-            if [ -n "$enddate" ]; then
-                cdo $cdoflags seldate,1950-01-01,$enddate ${var}_${res}deg_reg_${version}.nc aap.nc
-            fi
-            mv aap.nc ${var}_${res}deg_reg_${version}.nc
         fi
         if [ $update = true ]; then
             if [ -n "$nextdate" ]; then
@@ -38,7 +34,15 @@ do
             # this gets the whole of the year but I am too lazy to fix it now
             gunzip -c ${var}_${res}deg_reg_$yr.nc.gz > ${var}_${res}deg_reg_$yr.nc
             # convert to netcdf4
-            cdo $cdoflags copy ${var}_${res}deg_reg_$yr.nc aap.nc
+            if [ -n "$enddate" ]; then
+            mv aap.nc ${var}_${res}deg_reg_${version}.nc
+                endyr=`echo $enddate | cut -d '-' -f 1`
+                endmo=`echo $enddate | cut -d '-' -f 2`
+                endmo=${endmo#0}
+                cdo $cdoflags seldate,${endyr}-$((endmo+1))-01,${yr}-12-31 ${var}_${res}deg_reg_$yr.nc aap.nc
+            else
+                cdo $cdoflags copy ${var}_${res}deg_reg_$yr.nc aap.nc
+            fi
             mv aap.nc ${var}_${res}deg_reg_$yr.nc
 
             rm -f ${var}_${res}deg_reg_${version}u.nc

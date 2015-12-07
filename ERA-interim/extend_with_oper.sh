@@ -367,7 +367,7 @@ do
     echo cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     echo "copying to bhlclim..."
-    $HOME/NINO/copyfiles.sh erai_${var}_daily_extended.nc
+    $HOME/NINO/copyfiles.sh erai_${var}_daily_extended.nc &
 done
 
         

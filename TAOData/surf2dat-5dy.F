@@ -13,7 +13,7 @@ c
 c
         integer i,j,k,l,m,n,iq,yr,mn,dy,nrec
         integer nblock, nk, nn, nday, n1, n2, jdate, iqual(6)
-        integer depuwnd,depvwnd,deprh,depairt,depsst
+        real depuwnd,depvwnd,deprh,depairt,depsst
         integer ilat,ilon,lat,lon,maxnt,ntimes,lastyear,ii(8)
         integer iwrite
         logical lexist
@@ -28,7 +28,6 @@ c
         character ns*1, ew*1, string*80, extension*8
         logical lintdep,lintlatlon
         integer iargc
-        external iargc,getarg
 #include "grid.h"
         iwrite = 0
         call date_and_time(values=ii)
@@ -187,10 +186,15 @@ c
                                 write(0,*) 'error: dy = ',dy
                                 stop
                             endif
-                            if ( rlat.eq.-99.9 .or. rlon.eq.-99.9 )
-     +                            goto 200
-                            if ( abs(rlat-lat).gt.0.3 .or. abs(rlon-lon)
-     +                            .gt.3 ) then
+                            if ( rlat.eq.-99.9 .or. rlon.eq.-99.9 ) then
+                                if ( jdate.ge.20151101 ) then
+                                    print *,jdate,
+     +                                   ' go on with unknown position'
+                                else
+                                    goto 200
+                                end if
+                            else if ( abs(rlat-lat).gt.0.3 .or. 
+     +                                abs(rlon-lon).gt.3 ) then
                                 print *,'discarded point: buoy drifted '
      +                                ,rlat,rlon,lat,lon
                                 goto 200

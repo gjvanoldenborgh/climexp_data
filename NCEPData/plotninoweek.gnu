@@ -7,6 +7,7 @@ set title "CPC/NCEP ENSO indices"
 set xrange [2003:2016]
 set term postscript epsf color solid
 set output 'plotninoweek0.eps'
+set yrange [-3:5]
 set xrange [1990:2004]
 plot 'wksst.myfor' using (1990+(7*$1-5)/365.25):($3) title 'NINO12 index' w lines lt 5 lw 1, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($5) title 'NINO3 index' w lines lt 1 lw 5, \

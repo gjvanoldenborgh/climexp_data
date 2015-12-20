@@ -296,7 +296,16 @@ c       other documentation
 *           look for a station with sname as substring
             if ( index(name(i),sname(1:llen(sname))).ne.0 ) then
                 okstation = .true.
-                endif
+            else if ( sname(1:1).eq.'(' ) then
+                do k=1,ncountry
+                    if ( ic(i).eq.icountry(k) ) goto 110
+                enddo
+                k = 0
+ 110            continue
+                if ( index(country(k),trim(sname(2:))).ne.0 ) then
+                    okstation = .true.
+                end if
+            end if
         elseif ( slat1.lt.1e33 ) then
             if ( (slon1.gt.slon .and. 
      +            rlon(i).gt.slon .and. rlon(i).lt.slon1

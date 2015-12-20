@@ -9,13 +9,13 @@ c
         implicit none
 c
         integer nz, nt, nlat, nlon, firstyear
-        parameter(nz = 42, nt = 10000, nlat=10, nlon=19, firstyear=1980)
+        parameter(nz = 42, nlat=10, nlon=19, firstyear=1980)
 c
         integer i,j,k,l,m,n,iq,yr,mn,dy,day,nrec,dpm(12)
         integer nblock, nk, nn, nday, n1, n2, jdate, iqual(6)
-        integer depuwnd,depvwnd,deprh,depairt,depsst
+        real depuwnd,depvwnd,deprh,depairt,depsst
         integer ilat,ilon,lat,lon,maxnt,ntimes,lastyear,ii(8)
-        integer iwrite
+        integer iwrite,lastdate,lastday
         logical lexist
         real flag, t(nz), rlat,rlon,data(5)
         real, allocatable ::
@@ -25,20 +25,21 @@ c
      +        airt(:,:,:,:),
      +        sst(:,:,:,:)
         character infile*80, header*132, line*132, line2*132
-        character ns*1, ew*1, string*80, extension*8
+        character ns*1, ew*1, string*80, extension*12
         logical lintdep,lintlatlon
         integer iargc
-        external iargc,getarg
 #include "grid.h"
         data dpm /31,29,31,30,31,30,31,31,30,31,30,31/
         iwrite = 0
+        lastdate = 20151101
+        lastday = 300
         call date_and_time(values=ii)
         lastyear = ii(1)
-	allocate(windu(366,firstyear:lastyear,nlat,nlon))
-	allocate(windv(366,firstyear:lastyear,nlat,nlon))
-	allocate(rh(366,firstyear:lastyear,nlat,nlon))
-	allocate(airt(366,firstyear:lastyear,nlat,nlon))
-	allocate(sst(366,firstyear:lastyear,nlat,nlon))
+        allocate(windu(366,firstyear:lastyear,nlat,nlon))
+        allocate(windv(366,firstyear:lastyear,nlat,nlon))
+        allocate(rh(366,firstyear:lastyear,nlat,nlon))
+        allocate(airt(366,firstyear:lastyear,nlat,nlon))
+        allocate(sst(366,firstyear:lastyear,nlat,nlon))
 c
 c .......................................................................
 *
@@ -129,8 +130,8 @@ c
    30                   format(50x,i6,3x,i6,x,i6)
                         read(1,'(a)') line
                         line2 = line(25:55)
-                        read(line2,*) depuwnd, depvwnd, deprh, depairt,
-     +                        depsst
+                        read(line2,*,err=901) depuwnd, depvwnd, deprh, 
+     +                       depairt, depsst
                         read(1,'(a)') header
                         do n = n1, n2
                             read(1,'(a)') line
@@ -149,6 +150,9 @@ c
                             if ( ew.eq.'W' .and. rlon.ne. flag ) 
      +                            rlon = 360 - rlon
                             yr = jdate/10000
+                            if ( jdate.gt.lastdate ) then
+                                lastdate = jdate
+                            end if
                             mn = mod(jdate,10000)/100
                             dy = mod(jdate,100)
                             if ( yr.lt.firstyear .or. yr.gt.lastyear )
@@ -165,10 +169,15 @@ c
                                 write(0,*) 'error: dy = ',dy
                                 stop
                             endif
-                            if ( rlat.eq.-99.9 .or. rlon.eq.-99.9 )
-     +                            goto 200
-                            if ( abs(rlat-lat).gt.0.3 .or. abs(rlon-lon)
-     +                            .gt.3 ) then
+                            if ( rlat.eq.-99.9 .or. rlon.eq.-99.9 ) then
+                                if ( jdate.ge.20151101 ) then
+                                    print *,jdate,
+     +                                   ' go on with unknown position'
+                                else
+                                    goto 200
+                                end if
+                            else if ( abs(rlat-lat).gt.0.3 .or.
+     +                                abs(rlon-lon).gt.3 ) then
                                 print *,'discarded point: buoy drifted '
      +                                ,rlat,rlon,lat,lon
                                 goto 200
@@ -198,8 +207,15 @@ c
                             endif
                             if (  iqual(6).ne.0 .and.
      +                            iqual(6).le.3 ) then
-                                if ( data(5).ne.flag )
-     +                               sst(day,yr,ilat,ilon) = data(5)
+                                if ( data(5).ne.flag ) then
+                                    sst(day,yr,ilat,ilon) = data(5)
+                                    if ( yr.eq.2015 .and. 
+     +                                        ilon.eq.11 .and.
+     +                                        day.gt.lastday ) then
+                                        print *,'sst fill at day ',day
+                                        lastday = day
+                                    end if
+                                end if
                             endif
                             if ( iwrite.ge.4 ) then
                                 print '(i4,2i2.2,5f7.2)',yr,mn,dy,data
@@ -253,6 +269,11 @@ c
         call writeit('tao_sst'//extension,sst,1,firstyear,lastyear,
      +        nlat,nlon,iwrite)
 c
+        print *,'last date read = ',lastdate
+        goto 999
+ 901    write(0,*) 'error reading from line2 = ',trim(line2)
+        call exit(-1)
+ 999    continue
         end
         
 
@@ -312,18 +333,18 @@ c
         enddo
         end
 
-	integer function leap(yr)
-	implicit none
-	integer yr
-	if ( mod(yr,4).ne.0 ) then
-	    leap = 1
-	elseif ( mod(yr,100).ne.0 ) then
-	    leap = 2
-	elseif ( mod(yr,400).ne.0 ) then
-	    leap = 1
-	else	
-	    leap = 2
-	endif
-	end
+        integer function leap(yr)
+        implicit none
+        integer yr
+        if ( mod(yr,4).ne.0 ) then
+            leap = 1
+        elseif ( mod(yr,100).ne.0 ) then
+            leap = 2
+        elseif ( mod(yr,400).ne.0 ) then
+            leap = 1
+        else    
+            leap = 2
+        endif
+        end
 
 

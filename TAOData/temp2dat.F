@@ -26,7 +26,6 @@ c
         character ns*1, ew*1, string*80, formatstring*40
         logical lintdep,lintlatlon
         integer iargc
-        external iargc,getarg
 #include "grid.h"
         ihmsold = -1
         iwrite = 0

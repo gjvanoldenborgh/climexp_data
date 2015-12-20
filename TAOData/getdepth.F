@@ -12,7 +12,6 @@
         logical lintlatlon
         character string*80, extensie*8
         integer iargc
-        external iargc,getarg
 #include "grids.h"
 *       
         lintlatlon = .TRUE.
@@ -65,7 +64,7 @@
                         ztemp(mn,j,i) = 3e33
                     enddo
                 enddo
-                read(1,rec=nt*(yr-firstyear)+mn,end=800,err=800) mtemp
+                read(1,rec=nt*(yr-firstyear)+mn,err=800) mtemp
                 do k=1,nz-1
                     do j=1,nlat
                         do i=1,nlon

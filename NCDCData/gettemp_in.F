@@ -154,7 +154,7 @@ c       other documentation
         else
             print *,'do not know which database to use when running as '
      +            ,string(1:llen(string))
-            call abort
+            call exit(-1)
         endif
         invfile = trim(dir)//'ghcnm/'//trim(file)//'.inv.withmonth'
         datfile = trim(dir)//'ghcnm/'//trim(file)//'.dat'
@@ -235,9 +235,18 @@ c       other documentation
             endif
         elseif ( sname.ne.' ' ) then
 *           look for a station with sname as substring
-            if ( index(name(i),sname(1:llen(sname))).ne.0 ) then
+            if ( index(name(i),trim(sname)).ne.0 ) then
                 okstation = .true.
-                endif
+            else if ( sname(1:1).eq.'(' ) then
+                do k=1,ncountry
+                    if ( ic(i).eq.icountry(k) ) goto 110
+                enddo
+                k = 0
+ 110            continue
+                if ( index(country(k),trim(sname(2:))).ne.0 ) then
+                    okstation = .true.
+                end if
+            end if
         elseif ( slat1.lt.1e33 ) then
             if ( (slon1.gt.slon .and. 
      +            rlon(i).gt.slon .and. rlon(i).lt.slon1
@@ -263,7 +272,7 @@ c       other documentation
             enddo
         else
             print *,'internal error 31459263'
-            call abort
+            call exit(-1)
         endif
 !
 !       check range of years 
@@ -288,7 +297,7 @@ c       other documentation
                 print *,'gettemp: error: too many stations (>',nn
      +               ,')'
                 print *,'         use a more specific substring'
-                call abort
+                call exit(-1)
             endif
         end if
 
@@ -436,20 +445,20 @@ c       other documentation
      +        ,'=============================================='
         goto 999
   900   print *,'please give latitude in degrees N, not ',string
-        call abort
+        call exit(-1)
   901   print *,'please give longitude in degrees E, not ',string
-        call abort
+        call exit(-1)
   902   print *,'error reading country.codes',string
-        call abort
+        call exit(-1)
   903   print *,'please give number of stations to find, not ',string
-        call abort
+        call exit(-1)
   904   print *,'please give station ID or name, not ',string
-        call abort
+        call exit(-1)
  905    read(1,'(a)') line
         print *,'error reading data from line ',iline, ' of ',
      +       trim(invfile)
         print *,trim(line)
-        call abort
+        call exit(-1)
  999    continue
         end
 
@@ -481,6 +490,6 @@ c       other documentation
             end do
         else
             write(0,*) 'error: what is ',type,'?'
-            call abort
+            call exit(-1)
         end if
         end subroutine

@@ -5,8 +5,8 @@
         subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station
      +        ,ifac,nmin,rmin,elevmin,elevmax,qcflag,list,nl,nlist)
         implicit none
-        integer n,nn,ifac,nmin(0:48),nl,nlist
-        character sname*(*),station*11,list(nl)*11,qcflag*1
+        integer n,nn,ifac,nmin(0:48),nl,nlist,narg
+        character sname*(*),station*11,list(nl)*11,qcflag*1,minnum*20
         real slat,slon,slat1,slon1,rmin,elevmin,elevmax
 *
         integer i,j,mon,lsum,m
@@ -30,11 +30,15 @@
         lsum = 1
         qcflag = 'O'
 *
+        narg = 9999
         call getarg(1,string)
-        if ( iargc().eq.1 ) then
+        minnum=""
+        if ( iargc().ge.3 ) call getarg(2,minnum)
+        if ( iargc().eq.1 .or. minnum(1:3).eq.'min' .or.
+     +       minnum(1:4).eq.'elev' ) then
 !           is it a station ID?  I demand 11 letters, no spaces
 !           and at least 1 digit
-            if ( len_trim(string).eq.11 .and.
+            if ( iargc().eq.1 .and. len_trim(string).eq.11 .and.
      +           index(string(1:11),' ').eq.0 .and. (
      +           index(string,'0').ne.0 .or. index(string,'1').ne.0 .or.
      +           index(string,'2').ne.0 .or. index(string,'3').ne.0 .or.
@@ -49,10 +53,14 @@
                 station = '-1'
                 do i=1,len_trim(sname)
                     if ( sname(i:i).eq.'+' ) sname(i:i) = ' '
+                    if ( sname(i:i).eq.'_' ) sname(i:i) = ' '
                 enddo
                 print *,'Looking for stations with substring '
      +                ,trim(sname)
                 n = 0
+                if ( iargc().gt.1 ) then
+                    narg = 2
+                end if
             endif
         elseif ( string(1:4).eq.'list' ) then
             call getarg(2,string)
@@ -121,148 +129,151 @@
                     read(string,*,err=903) n
                     if ( n.gt.nn ) then
                         print *,'recompile with nn larger'
-                        call abort
+                        call exit(-1)
                     endif
-                    i = 4
+                    narg = 4
                 else
-                    i = 3
+                    narg = 3
                 endif
-  100           continue
-                if ( iargc().ge.i+1 ) then
-                    call getarg(i,string)
-                    if ( index(string,'elevmin').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=907) elevmin
-                    elseif ( index(string,'elevmax').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=908) elevmax
-                    elseif ( index(string,'min').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=904) nmin(0)
-                    elseif ( index(string,'mon').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=904) mon
-                        if ( mon.lt.0 .or. mon.gt.12 ) then
-                            write(0,*) 'error: mon = ',12
-                            write(*,*) 'error: mon = ',12
-                            call abort
-                        endif
-                        if ( mon.eq.0 ) then
-                            do m=1,12
-                                nmin(m) = nmin(0)
-                            enddo
-                        else
-                            nmin(mon) = nmin(0)
-                        endif
-                        nmin(0) = 0
-                    elseif ( index(string,'sum').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=904) lsum
-                        if ( mon.eq.-1 ) then
-                            write(0,*) 'please specify mon and sum'
-                            write(*,*) 'please specify mon and sum'
-                            call abort
-                        endif
-                        if ( lsum.gt.4 .or. lsum.lt.1 ) then
-                            write(0,*) 'error: 0 <= sum <= 4: ',lsum
-                            write(*,*) 'error: 0 <= sum <= 4: ',lsum
-                            call abort
-                        endif
-                        if ( lsum.gt.1 ) then
-                            if ( mon.eq.0 ) then
-                                do m=1,12
-                                    nmin(m+12*(lsum-1)) = nmin(m)
-                                    nmin(m) = 0
-                                enddo
-                            else
-                                nmin(mon+12*(lsum-1)) = nmin(mon)
-                                nmin(mon) = 0
-                            endif
-                        endif
-                    elseif ( index(string,'dist').ne.0 ) then
-                        call getarg(i+1,string)
-                        read(string,*,err=906) rmin
-                    elseif ( index(string,'qc').ne.0 ) then
-                        call getarg(i+1,qcflag)
+            end if
+        end if
+        i = narg
+ 100    continue
+        if ( iargc().ge.i+1 ) then
+            call getarg(i,string)
+            if ( index(string,'elevmin').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=907) elevmin
+            elseif ( index(string,'elevmax').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=908) elevmax
+            elseif ( index(string,'min').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=904) nmin(0)
+            elseif ( index(string,'mon').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=904) mon
+                if ( mon.lt.0 .or. mon.gt.12 ) then
+                    write(0,*) 'error: mon = ',12
+                    write(*,*) 'error: mon = ',12
+                    call exit(-1)
+                endif
+                if ( mon.eq.0 ) then
+                    do m=1,12
+                        nmin(m) = nmin(0)
+                    enddo
+                else
+                    nmin(mon) = nmin(0)
+                endif
+                nmin(0) = 0
+            elseif ( index(string,'sum').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=904) lsum
+                if ( mon.eq.-1 ) then
+                    write(0,*) 'please specify mon and sum'
+                    write(*,*) 'please specify mon and sum'
+                    call exit(-1)
+                endif
+                if ( lsum.gt.4 .or. lsum.lt.1 ) then
+                    write(0,*) 'error: 0 <= sum <= 4: ',lsum
+                    write(*,*) 'error: 0 <= sum <= 4: ',lsum
+                    call exit(-1)
+                endif
+                if ( lsum.gt.1 ) then
+                    if ( mon.eq.0 ) then
+                        do m=1,12
+                            nmin(m+12*(lsum-1)) = nmin(m)
+                            nmin(m) = 0
+                        enddo
                     else
-                        print *,'error: unrecognized argument: ',string
-                        call abort
+                        nmin(mon+12*(lsum-1)) = nmin(mon)
+                        nmin(mon) = 0
                     endif
-                    i = i+2
-                    goto 100
+                endif
+            elseif ( index(string,'dist').ne.0 ) then
+                call getarg(i+1,string)
+                read(string,*,err=906) rmin
+            elseif ( index(string,'qc').ne.0 ) then
+                call getarg(i+1,qcflag)
+            else
+                print *,'error: unrecognized argument: ',string
+                call exit(-1)
+            endif
+            i = i+2
+            goto 100
+        endif
+!
+        if ( n.gt.1 ) print '(a,i4,a)','Looking up ',n,' stations'
+        if ( n.gt.1 .or. slat1.lt.1e33 ) then
+            if ( slat1.gt.1e33 ) then
+                print '(a,f6.2,a,f7.2,2a)'
+     +               ,'Searching for stations near ',slat,'N, '
+     +               ,slon,'E'
+            else
+                print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,2a)'
+     +               ,'Searching for stations in ',slat,'N:',slat1,
+     +               'N, ',slon,'E:',slon1,
+     +               'E'
+            endif
+            if ( elevmin.gt.-1e33 ) then
+                print '(a,f8.2,a)'
+     +               ,'Searching for stations higher than ',elevmin
+     +               ,'m'
+            endif
+            if ( elevmax.lt.+1e33 ) then
+                print '(a,f8.2,a)'
+     +               ,'Searching for stations lower than ',elevmax
+     +               ,'m'
+            endif
+            if ( mon.eq.-1 ) then
+                if ( nmin(0).gt.0 ) print '(a,i4,a)',
+     +               'Requiring at least ',nmin(0),
+     +               ' years with data'
+            elseif ( mon.eq.0 ) then
+                if ( lsum.eq.1 ) then
+                    print '(a,i4,a)','Requiring at least ',
+     +                   nmin(1),' years with data in all months'
+                else
+                    print '(a,i4,a,i1,a)','Requiring at least ',
+     +                   nmin(1+(lsum-1)*12),
+     +                   ' years with data in all ',lsum
+     +                   ,'-month seasons'
+                endif
+            elseif ( mon.gt.0 ) then
+                if ( lsum.eq.1 ) then
+                    print '(a,i4,2a)','Requiring at least ',
+     +                   nmin(mon),' years with data in '
+     +                   ,months(mon)
+                else
+                    print '(a,i4,4a)','Requiring at least ',
+     +                   nmin(mon+(lsum-1)*12),
+     +                   ' years with data in ',months(mon),'-',
+     +                   months(1+mod(mon+lsum-2,12))
                 endif
             endif
-            if ( n.gt.1 ) print '(a,i4,a)','Looking up ',n,' stations'
-            if ( n.gt.1 .or. slat1.lt.1e33 ) then
-                if ( slat1.gt.1e33 ) then
-                    print '(a,f6.2,a,f7.2,2a)'
-     +                    ,'Searching for stations near ',slat,'N, '
-     +                    ,slon,'E'
-                else
-                    print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,2a)'
-     +                    ,'Searching for stations in ',slat,'N:',slat1,
-     +                   'N, ',slon,'E:',slon1,
-     +                   'E'
-                endif
-                if ( elevmin.gt.-1e33 ) then
-                    print '(a,f8.2,a)'
-     +                    ,'Searching for stations higher than ',elevmin
-     +                    ,'m'
-                endif
-                if ( elevmax.lt.+1e33 ) then
-                    print '(a,f8.2,a)'
-     +                    ,'Searching for stations lower than ',elevmax
-     +                    ,'m'
-                endif
-                if ( mon.eq.-1 ) then
-                    if ( nmin(0).gt.0 ) print '(a,i4,a)',
-     +                    'Requiring at least ',nmin(0),
-     +                    ' years with data'
-                elseif ( mon.eq.0 ) then
-                    if ( lsum.eq.1 ) then
-                        print '(a,i4,a)','Requiring at least ',
-     +                        nmin(1),' years with data in all months'
-                    else
-                        print '(a,i4,a,i1,a)','Requiring at least ',
-     +                        nmin(1+(lsum-1)*12),
-     +                        ' years with data in all ',lsum
-     +                        ,'-month seasons'
-                    endif
-                elseif ( mon.gt.0 ) then
-                    if ( lsum.eq.1 ) then
-                        print '(a,i4,2a)','Requiring at least ',
-     +                        nmin(mon),' years with data in '
-     +                        ,months(mon)
-                    else
-                        print '(a,i4,4a)','Requiring at least ',
-     +                        nmin(mon+(lsum-1)*12),
-     +                        ' years with data in ',months(mon),'-',
-     +                        months(1+mod(mon+lsum-2,12))
-                    endif
-                endif
-                if ( rmin.gt.0 ) then
-                    print '(a,f8.2,a)','Requiring at least ',rmin
-     +                    ,' degrees of separation'
-                endif
+            if ( rmin.gt.0 ) then
+                print '(a,f8.2,a)','Requiring at least ',rmin
+     +               ,' degrees of separation'
             endif
         endif
+
         goto 999
   900   print *,'please give latitude in degrees N, not ',string
-        call abort
+        call exit(-1)
   901   print *,'please give longitude in degrees E, not ',string
-        call abort
+        call exit(-1)
   903   print *,'please give number of stations to find, not ',string
-        call abort
+        call exit(-1)
   904   print *,'please give inimum number of years, not ',string
-        call abort
+        call exit(-1)
   905   print *,'please give range on both longitude and latitude'
-        call abort
+        call exit(-1)
   906   print *,'please give minimum distance between stations, ',string
-        call abort
+        call exit(-1)
   907   print *,'please give minimum elevation of station, ',string
-        call abort
+        call exit(-1)
   908   print *,'please give maximum elevation of station, ',string
-        call abort
+        call exit(-1)
   999   continue
         end
 *  #] getgetargs:
@@ -415,7 +426,7 @@ C  (C) Copr. 1986-92 Numerical Recipes Software +.-).
         jstack=jstack+2
         if(jstack.gt.NSTACK)then
             write(0,*) 'NSTACK too small in indexx'
-            call abort
+            call exit(-1)
         end if
         if(ir-i+1.ge.j-l)then
           istack(jstack)=ir

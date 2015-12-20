@@ -22,7 +22,7 @@
         character flags1(31)*1,flags2(31)*1,flags3(31)*1,dummy1*1,
      +       dummy2*1,tminflags(31)*1,tmaxflags(31)*1
         character country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4
-     +       ,units(9)*10
+     +       ,units(9)*10,uppercountry*50
         character string*200,line*500,sname*25
         character dir*256,command*1024
         logical lwrite
@@ -77,7 +77,7 @@ c
         else
             print *,'do not know which database to use when running as '
      +            ,string(1:llen(string))
-            call abort
+            call exit(-1)
         endif
         call gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station,1
      +        ,nmin,rmin,elevmin,elevmax,qcflag,list,nn,nlist)
@@ -178,7 +178,7 @@ c
             lastyr(i) = idates(18)
         else
             print *,'error: unknown type ',type
-            call abort
+            call exit(-1)
         endif
         if ( nyr(i).le.0 ) goto 100
         if ( nmin(0).gt.0 ) then
@@ -205,7 +205,12 @@ c
             endif
         elseif ( sname.ne.' ' ) then
 *           look for a station with sname as substring
-            if (  index(name(i),sname(1:llen(sname))).ne.0 ) then
+            k = getcode(stations(i)(1:2),cc)
+            uppercountry = country(k)
+            call toupper(uppercountry)
+            if ( index(name(i),trim(sname)).ne.0 .or.
+     +           sname(1:1).eq.'(' .and. 
+     +           index(uppercountry,trim(sname(2:))).ne.0 ) then
                 i = i + 1
                 if ( i.gt.nn ) then
                     print *,'Maximum ',nn,' stations'
@@ -244,7 +249,7 @@ c
             enddo
         else
             print *,'internal error 31459263'
-            call abort
+            call exit(-1)
         endif
         goto 100
 *       
@@ -290,7 +295,7 @@ c
             k = getcode(stations(jj)(1:2),cc)
             if ( station(1:1).eq.'-' ) then
                 print '(4a)',name(jj),' (',
-     +                country(k)(1:llen(country(k))),')'
+     +                trim(country(k)),')'
                 if ( elevflag(jj).eq.'E' ) then
                     print '(a,f6.2,a,f7.2,a,f8.1,a)','coordinates: ',
      +                   rlat(jj),'N, ',rlon(jj),'E, ',elev(jj),
@@ -300,7 +305,7 @@ c
      +                   rlat(jj),'N, ',rlon(jj),'E, ',elev(jj),'m'
                 endif
                 print '(a,a11,4a)','GHCN-D station code: ',stations(jj)
-     +               ,' ',name(jj)(1:llen(name(jj)))
+     +               ,' ',trim(name(jj))
                 if ( iwmo(jj).ne.-9999 ) then
                     print '(a,i5)','WMO station: ',iwmo(jj)
                 endif
@@ -358,7 +363,7 @@ c
                     write(0,*)
      +                   'gdcndata: error: inconsistent station ID:'
      +                   ,stations(jj),id
-                    call abort
+                    call exit(-1)
                 endif
                 if ( type.eq.5 ) then
                     if ( element.eq.'TMIN' ) then
@@ -432,7 +437,7 @@ c
                         val = vals(i)
                     else
                         print *,'error: type cannot be ',type
-                        call abort
+                        call exit(-1)
                     endif
  2001               format(i5,2i3,f10.2)
                     if ( lwrite ) then
@@ -457,23 +462,23 @@ c
      +        ,'=============================================='
         goto 999
   900   print *,'please give latitude in degrees N, not ',string
-        call abort
+        call exit(-1)
   901   print *,'please give longitude in degrees E, not ',string
-        call abort
+        call exit(-1)
   902   print *,'error reading country.codes',string
-        call abort
+        call exit(-1)
   903   print *,'please give number of stations to find, not ',string
-        call abort
+        call exit(-1)
   904   print *,'please give station ID or name, not ',string
-        call abort
+        call exit(-1)
   920   print *,'error reading information, last station was ',
      +        stations(i),name(i)
-        call abort
+        call exit(-1)
   930   print *,'error reading data at/after line ',j,yr
-        call abort
+        call exit(-1)
   940   print *,'error: cannot locate data file ',dir(1:ldir)
         write(0,*)'error: cannot locate data file ',dir(1:ldir)
-        call abort
+        call exit(-1)
   999   continue
         end
 

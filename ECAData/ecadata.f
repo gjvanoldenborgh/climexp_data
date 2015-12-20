@@ -223,7 +223,8 @@
             endif
         elseif ( sname.ne.' ' ) then
 *           look for a station with sname as substring
-            if (  index(name(i),sname(1:llen(sname))).ne.0 ) then
+            if ( index(name(i),trim(sname)).ne.0 .or.
+     +           sname(1:1).eq.'(' .and. sname(2:3).eq.country(i) ) then
                 i = i + 1
                 if ( i.gt.nn ) then
                     print *,'Maximum ',nn,' stations'
@@ -296,7 +297,7 @@
             enddo
             if ( istation.le.0 ) then
                 print '(4a)',name(jj),' (',
-     +                country(jj)(1:llen(country(jj))),')' 
+     +                trim(country(jj)),')' 
                 print '(a,f6.2,a,f7.2,a,f8.1,a)','coordinates: ',
      +                rlat(jj),'N, ',rlon(jj),'E, ',elev(jj),'m'
                 print '(a,i10,4a)','ECA station code: ',iecd(jj)
@@ -307,8 +308,7 @@
                 print '(a,f6.2,a,f7.2,a,f8.1,a,i10,10a)'
      +               ,'# coordinates: ',rlat(jj),'N, ',rlon(jj),'E, '
      +               ,elev(jj),'m; ECA station code: ',iecd(jj)
-     +               ,' ',name(jj)(1:llen(name(jj))),' '
-     +               ,country(jj)(1:llen(country(jj)))
+     +               ,' ',trim(name(jj)),' ',trim(country(jj))
             endif
             if ( istation.le.0 ) then
                 print '(a,i4,a,i4,a,i4)','Found ',nyr(jj)

@@ -7,10 +7,13 @@ if [ -f downloaded_$yr$mo ]; then
   echo "Already downloaded TAO this month"
   exit
 fi
+
+if [ 0 = 1 ]; then
 # OHC
 wget -N http://oceans.pmel.noaa.gov/Data/OHCA_700.txt
 ./ohc2dat.sh
 $HOME/NINO/copyfiles.sh pmel_ohc700.dat
+fi
 
 # 3D temperature
 

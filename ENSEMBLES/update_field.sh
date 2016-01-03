@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x
-cleanup=false # true
+cleanup=true
 force=false # true
 update=true # false
 

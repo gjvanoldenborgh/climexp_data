@@ -6,9 +6,6 @@ else
 	force=false
 fi
 
-### The HDF is horrible (as usual)
-###wget -q -r -N -nH --cut-dirs=1 ftp://goldsmr2.sci.gsfc.nasa.gov/data/s4pa/MERRA_MONTHLY/MATMNXSLV.5.2.0
-
 yr=`date +%Y`
 mo=`date +%m`
 if [ force != true -a -f downloaded_$yr$mo ]; then
@@ -19,9 +16,8 @@ fi
 # invariants
 if [ ! -s lsmask.nc ]; then
 	for var in FRLAKE FRLAND FRLANDICE FROCEAN; do
-		ncks -v ${var} http://goldsmr2.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY/MAC0NXASM.5.2.0/1979/MERRA300.prod.assim.const_2d_asm_Nx.00000000.hdf merra_${var}.nc
-		ncrename -d XDim,lon -v XDim,lon \
-				-d YDim,lat -v YDim,lat merra_${var}.nc
+	    url=http://goldsmr4.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY/M2C0NXASM.5.12.4/1980/MERRA2_100.const_2d_asm_Nx.00000000.nc4
+		ncks -v ${var} ${url} merra_${var}.nc
 		if [ $var = FROCEAN ]; then
 			cdo mulc,-1 merra_FROCEAN.nc aap.nc
 			cdo addc,1 aap.nc noot.nc
@@ -33,7 +29,7 @@ if [ ! -s lsmask.nc ]; then
 	done
 fi
 
-for var in t2m u10 v10 ts slp # z t u v lhtfl shtfl taux tauy wspd evap tp ci # 
+for var in z t u v t2m u10 v10 ts slp lhtfl shtfl taux tauy wspd evap tp ci 
 do
 	case $var in
 		slp) eosvar=SLP;type=2D;levtype=pres;;
@@ -57,7 +53,7 @@ do
 		*) echo "$0: error: cannot handle var $var yet"; exit -1;;
 	esac
 	
-	yr=1979
+	yr=1980
 	m=1
 	yrnow=`date "+%Y"`
 	mnow=`date "+%m"`
@@ -70,30 +66,49 @@ do
 		[ ! -d $yr ] && mkdir -p $yr
 		file=$yr/merra_${var}_$yr$mo.nc
 		if [ ! -s $file ]; then
-			if [ $yr -le 1992 ]; then
-				number=100
-			elif [ $yr -le 2000 ]; then
-				number=200
-			elif [ $yr = 2010 -a $m -ge 5 -a $m -le 8 ]; then
-				number=301
-			else
-				number=300
-			fi
+		    if [ $yr -le 1991 ]; then
+    			number=100
+    		elif [ $yr -le 2000 ]; then
+    		    number=200
+    		elif [ $yr -le 2010 ]; then
+    		    number=300
+    		else
+    		    number=400
+    		fi
 			if [ $levtype = 1lev ]; then
-				base=http://goldsmr2.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY
-				path=MATMNXSLV.5.2.0/$yr/MERRA$number.prod.assim.tavgM_2d_slv_Nx.$yr$mo.hdf
+				base=http://goldsmr4.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
+				path=M2TMNXSLV.5.12.4/$yr/MERRA2_$number.tavgM_2d_slv_Nx.$yr$mo.nc4
 			elif [ $levtype = flux ]; then
-				base=http://goldsmr2.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY
-				path=MATMNXFLX.5.2.0/$yr/MERRA$number.prod.assim.tavgM_2d_flx_Nx.$yr$mo.hdf
+				base=http://goldsmr4.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
+				path=M2TMNXFLX.5.12.4/$yr/MERRA2_$number.tavgM_2d_flx_Nx.$yr$mo.nc4
+			elif [ $levtype = pres ]; then
+				base=http://goldsmr5.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
+				path=M2IMNPASM.5.12.4/$yr/MERRA2_$number.instM_3d_asm_Np.$yr$mo.nc4
 			else
-				base=http://goldsmr3.sci.gsfc.nasa.gov/opendap/MERRA_MONTHLY
-				path=MAIMCPASM.5.2.0/$yr/MERRA$number.prod.assim.instM_3d_asm_Cp.$yr$mo.hdf
+				base=http://goldsmr4.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
+				path=M2IMNXASM.5.12.4/$yr/MERRA2_$number.instM_2d_asm_Nx.$yr$mo.nc4
 			fi
-			ncks -v $eosvar $base/$path $file
-			ncrename -v $eosvar,$var \
-					-d XDim,lon -v XDim,lon \
-					-d YDim,lat -v YDim,lat \
-					$file
+			use_cdo=false
+			use_nco=false
+			if [ $use_cdo = true ]; then
+    			cdo selvar,$eosvar $base/$path $file
+    			exit
+    		elif [ $use_nco = true ]; then
+	    		ncks -v $eosvar $base/$path $file
+	    	else
+	    	    mkdir -p MERRA2_MONTHLY/`dirname $path`
+	    	    if [ $levtype = pres ]; then
+	    	        base=ftp://goldsmr5.sci.gsfc.nasa.gov/data/s4pa/MERRA2_MONTHLY
+	    	    else
+	    	        base=ftp://goldsmr4.sci.gsfc.nasa.gov/data/s4pa/MERRA2_MONTHLY
+	    	    fi
+	    	    (cd MERRA2_MONTHLY/`dirname $path`; wget -q -N $base/$path)
+	    	    cdo -f nc4 -z zip selvar,$eosvar MERRA2_MONTHLY/$path $file
+	    	    if [ $var = v ]; then
+	    	        rm MERRA2_MONTHLY/$path
+	    	    fi
+	    	fi
+			ncrename -v $eosvar,$var $file
 			[ $type = 3D ] && ncrename \
 					-d Height,lev -v Height,lev $file
 					
@@ -104,7 +119,8 @@ do
 			yr=$((yr+1))
 		fi
 	done
-	cdo -f nc4 -z zip copy ????/merra_${var}_??????.nc merra_${var}.nc
+	cdo -b 32 -f nc4 -z zip copy ????/merra_${var}_??????.nc merra_${var}.nc
+	describefield merra_${var}.nc
 	if [ $type = 2D ]; then
 		$HOME/NINO/copyfiles.sh merra_${var}.nc
 	else
@@ -115,7 +131,7 @@ do
 		$HOME/NINO/copyfiles.sh merra_${var}*0.nc merra_${var}zon.nc
 	fi
 	# to save disk space
-	rm merra_${var}.nc
+	###rm merra_${var}.nc
 done
 
 date > downloaded_$yr$mo

@@ -38,13 +38,13 @@ if [ $? != 0 ]; then
   ./ninoweek2daily
   for index in nino2 nino3 nino4 nino5
   do
-    daily2longer ${index}_daily.dat 73 mean > ${index}_5daily.dat
+    daily2longer ${index}_weekly.dat 73 mean > ${index}_5daily.dat
   done
 else
   echo "new file is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfilesall.sh plotninoweek.??? 
-$HOME/NINO/copyfiles.sh nino?_daily.dat
+$HOME/NINO/copyfiles.sh nino?_weekly.dat
 $HOME/NINO/copyfiles.sh nino?_5daily.dat
 
 cp soi soi.old

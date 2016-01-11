@@ -9,6 +9,7 @@ fi
 # the new data is dated 9:30 GMT, so if we download it at 10:30we should be OK
 # TO BE CHECKED
 yr=`date +%Y`
+mo=`date +%m`
 yr1=$((yr-1))
 date=`date +%Y%m%d`
 if [ ! -s downloaded_cmorph_$date ]; then
@@ -62,7 +63,12 @@ while [ $ok = true ]; do
         ncfiles="$ncfiles CMORPH/cmorph_$yyyy$mm.nc"
         nc1files="$nc1files CMORPH/cmorph_$yyyy${mm}_05.nc"
     fi
-    if [ $ok = true -a \( ! -s CMORPH/cmorph_$yyyy$mm.nc -o $yyyy = $yr \) ]; then
+    yyyy1=`date -d "last month" +%Y`
+    mm1=`date -d "last month" +%m`
+    if [ $ok = true -a \( ! -s CMORPH/cmorph_$yyyy$mm.nc -o \
+        \( $yyyy = $yr -a $mm = $mo \) -o \
+        \( $yyyy = $yyyy1 -a $mm = $mm1 \) \
+        \) ]; then
         case $m in
             1) month=jan;dpm=31;;
             2) month=feb;dpm=28;;

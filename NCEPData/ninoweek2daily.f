@@ -16,7 +16,7 @@
             read(1,'(a)')
         enddo
         do i=2,5
-            write(file,'(a,i1,a)') 'nino',i,'_daily.dat'
+            write(file,'(a,i1,a)') 'nino',i,'_weekly.dat'
             open(10+i,file=file,status='unknown')
             write(10+i,'(a,i2,3a)') '# NINO index #',i,' (5=3.4) from ',
      +           '<a href="http://www.cpc.noaa.gov/data/indices/">CPC',

@@ -176,7 +176,8 @@ do
   cp $file $file.old
   wget -q -N $base/monthly/$file
   outfile=`basename $file .txt`.dat
-  echo '# from <a href="http://www.metoffice.gov.uk/hadobs/hadukp" target="_new">Hadley Centre</a>' > $outfile
+  echo '# From <a href="http://www.metoffice.gov.uk/hadobs/hadukp" target="_new">Hadley Centre</a>' > $outfile
+  echo "# prcp [mm/month] precipitation" >> $outfile
   sed -e 's/-99.9/-999.9/g' -e 's/  0.0/-999.9/g' -e 's/^\([^ ]\)/# \1/' $file >> $outfile
   $HOME/NINO/copyfiles.sh $outfile
 

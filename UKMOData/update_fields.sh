@@ -1,6 +1,7 @@
 #!/bin/sh
+
+export version=4.4.0.0
 base=http://www.metoffice.gov.uk/hadobs/crutem4/data/gridded_fields/
-version=4.4.0.0
 file=CRUTEM.${version}.anomalies.nc
 wget -q -N --header="accept-encoding: gzip" $base/$file.gz
 gunzip -c $file.gz > $file
@@ -9,7 +10,6 @@ mv aap.nc $file
 $HOME/NINO/copyfilesall.sh $file
 
 base=http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/gridded_fields
-version=4.4.0.0
 file=HadCRUT.${version}.median_netcdf.zip
 wget -q -N --header="accept-encoding: gzip" $base/$file
 unzip -o $file
@@ -27,8 +27,7 @@ if [ -n "$also_download_ensemble" ]; then
 	done
 fi
 
-
-version=3.1.1.0
+export version=3.1.1.0
 base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
 file=HadSST.${version}.median_netcdf.zip
 wget -q -N --header="accept-encoding: gzip" $base/$file

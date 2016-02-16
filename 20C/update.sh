@@ -6,7 +6,7 @@ wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/time_invariant/la
 rsync -e ssh land.nc bhlclim:climexp/20C/
 ###wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2/time_invariant/hgt.sfc.nc
 
-for var in prmsl air.2m tmax.2m air.sfc tmin.2m prate vwnd.10m uwnd.10m wspd.10m uflx vflx icec snowc soilm lhtfl shtfl uswrf.sfc ulwrf.sfc air vwnd uwnd hgt shum shum.2m rhum # rhum.2m dswrf
+for var in prmsl air.2m tmax.2m air.sfc tmin.2m prate vwnd.10m uwnd.10m wspd.10m uflx vflx icec snowc soilm lhtfl shtfl dswrf.sfc ulwrf.toa air vwnd uwnd hgt shum shum.2m rhum # rhum.2m dswrf
 do
 
   case $var in

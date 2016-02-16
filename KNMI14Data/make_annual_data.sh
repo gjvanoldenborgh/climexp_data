@@ -3,18 +3,19 @@
 var=rx1day
 case $var in
     rx1day) invar=pr;args="max";;
+    rx3day) invar=pr;args="max sum 3";;
     *) echo "$0: error: please give definition of $var";exit -1;;
 esac
 
 r=0
 while [ $r -lt 16 ]; do
     r=$((r+1))
-    indir=CMIP5/output/KNMI/ECEARTH23/rcp85/day/atmos/day/r${r}i1p1/v1/$invar
-    outdir=CMIP5/output/KNMI/ECEARTH23/rcp85/yr/atmos/yr/r${r}i1p1/v1/$var
+    indir=CMIP5/output/KNMI/ECEARTH23/rcp85/day/atmos/Amon/r${r}i1p1/v1/$invar
+    outdir=CMIP5/output/KNMI/ECEARTH23/rcp85/yr/atmos/Amon/r${r}i1p1/v1/$var
     mkdir -p $outdir
     infiles=$indir/${invar}_day_ECEARTH23_rcp85_r${r}i1p1_*.nc
     outfiles=""
-    varfile=${var}_yr_ECEARTH23_rcp85_r${r}i1p1_18600101-21001231.nc
+    varfile=${var}_yr_ECEARTH23_rcp85_r${r}i1p1_186001-210012.nc
     varfile=$outdir/$varfile
     if [ ! -s $varfile ]; then
         for infile in $infiles; do

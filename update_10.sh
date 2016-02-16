@@ -133,6 +133,9 @@ echo @@@ GHCN-D
 echo @@@ SSMI
 (cd SSMIData; ./update.sh | 2>&1 tee update.log)
 
+echo @@@ NCEP daily SST
+(ssh zuidzee "cd NCEPData; ./update_sstoiv2_daily.sh | 2>&1 tee update_update_sstoiv2_daily.log")
+
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)
 

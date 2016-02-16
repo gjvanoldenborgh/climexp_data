@@ -36,8 +36,10 @@ esac
 done # version
 
 yr=1979
-for version in "6.0beta4"
+for beta in 5
 do
+version="6.0beta$beta"
+myversion="60b$beta"
 base=http://www.atmos.uah.edu/public/msu/v6.0beta/tlt/
 yrnow=`date -d "last month" +"%Y"`
 while [ $yr -le $yrnow ]
@@ -57,14 +59,10 @@ done
 make msu2grads
 ./msu2grads $version
 grads2nc tlt.ctl tlt.nc
-case $version in
-    5.5) mv tlt.nc tlt_55.nc;;
-    5.6) mv tlt.nc tlt_56.nc;;
-    6.0beta4) mv tlt.nc tlt_60b4.nc;;
-esac
+mv tlt.nc tlt_$myversion.nc
 done # version
 
-cp tlt_60b4.nc tlt.nc
+cp tlt_$myversion.nc tlt.nc
 
 get_index tlt.nc 0 360 -90 90 > tlt_gl.dat
 get_index tlt.nc 0 360 -90 0 > tlt_sh.dat

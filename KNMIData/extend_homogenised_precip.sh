@@ -9,11 +9,12 @@ do
     id=${id%%_*}
     oper=rr$id.gz
     if [ -s $oper ]; then
-        newfile=${file%2009.dat.gz}now.dat
+        newfile=${file%-2009.dat.gz}.dat
+        newfile=`echo $newfile | tr -d '_'`
         echo "# extended with operational data from KNMI 2010-now" > $newfile
         zcat $file >> $newfile
         zcat $oper | egrep '^20[1234]' >> $newfile
         gzip -f $newfile
     fi
 done
-rsync *-now.dat.gz bhlclim:climexp/KNMIData/
+rsync precip???hom19??.dat.gz bhlclim:climexp/KNMIData/

@@ -1,3 +1,4 @@
+set colors classic
 set size 0.745,0.5
 set xrange [1995:2020]
 set yrange [0:4]

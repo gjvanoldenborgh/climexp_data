@@ -38,7 +38,7 @@ $HOME/NINO/copyfiles.sh camsopi.nc camsopi_perc.nc
 make oiv22grads
 ./oiv22grads
 describefield sstoi_v2.ctl
-$HOME/NINO/copyfiles.sh sstoi_v2.??? iceoi_v2.???
+$HOME/NINO/copyfilesall.sh sstoi_v2.??? iceoi_v2.???
 
 base=ftp://ftp.cpc.ncep.noaa.gov/precip/cmap/monthly
 wget -N -q $base/\*.txt.gz

@@ -6,8 +6,8 @@ update=true # false
 
 # adjust with each version
 version=v12.0
-enddate="2015-06-30" # keep empty when shortening is not needed "2013-12-31"
-nextdate="" # keep empty when previous year is not needed "2014-01-01"
+enddate="" # keep empty when shortening is not needed "2013-12-31"
+nextdate="2015-07-01" # keep empty when previous year is not needed "2014-01-01"
 
 cdoflags="-r -f nc4 -z zip"
 
@@ -35,7 +35,6 @@ do
             gunzip -c ${var}_${res}deg_reg_$yr.nc.gz > ${var}_${res}deg_reg_$yr.nc
             # convert to netcdf4
             if [ -n "$enddate" ]; then
-            mv aap.nc ${var}_${res}deg_reg_${version}.nc
                 endyr=`echo $enddate | cut -d '-' -f 1`
                 endmo=`echo $enddate | cut -d '-' -f 2`
                 endmo=${endmo#0}

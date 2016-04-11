@@ -32,6 +32,6 @@ echo @@@ NODC
 echo @@@ JAMSTEC
 (cd JAMSTECData; ./update.sh | 2>&1 tee update.log )
 echo @@@ MERRA
-(ssh zuidzee "cd MERRA; ./update_fields.sh | 2>&1 tee update_fields.log")
+(ssh zuidzee "cd NINO/MERRA; ./update_fields.sh | 2>&1 tee update_fields.log")
 
 echo @@@ finished @@@

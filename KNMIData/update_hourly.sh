@@ -1,5 +1,6 @@
 #!/bin/sh
-if [ "$1" != noupdate ]; then
+method=old
+if [ $method  = 'old' ]; then
     # from the source code of http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
     base=http://projects.knmi.nl/klimatologie/uurgegevens
     yrnow=`date +%Y`
@@ -21,6 +22,14 @@ if [ "$1" != noupdate ]; then
     if [ ! -f rx260.dat -o rx260.dat -ot KNMI_${yr}_hourly.txt ]; then
         ./hourly2maxdaily KNMI_1???s_hourly.txt KNMI_2???_hourly.txt
     fi
+elif [ $method = mew ]; then
+    (cd ../KNMIUurData/update.sh; ./update.sh)
+    for file in ../KNMIUurData/td???_hr.dat ../KNMIUurData/rh???_hr.dat 
+    do
+        newfile=`basename $file .dat | sed -e 's/rh/rx'`
+        daily2longer $file 366 max > $newfile
+    done
+    echo "generating tp (dewpoint 4 hours earlier) not yet ready"
 fi
 i=0
 rm -f rx_??.dat rx_??.nc

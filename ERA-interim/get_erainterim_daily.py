@@ -89,7 +89,7 @@ server = ECMWFDataServer()
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
-vars = [ "t2m", "tmin", "tmax", "msl", "z500", "tp", "evap" ]
+vars = [ "t2m", "tmin", "tmax", "tdew", "msl", "sp", "z500", "tp", "evap" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -98,6 +98,10 @@ for var in vars:
     levelist = ""
     if var == "t2m":
         code = "167.128"
+        type = "an"
+        units = "K"
+    elif var == "tdew":
+        code = "168.128"
         type = "an"
         units = "K"
     elif var == "tmin":
@@ -110,6 +114,10 @@ for var in vars:
         units = "K"
     elif var == "msl":
         code = "151.128"
+        type = "an"
+        units = "Pa"
+    elif var == "sp":
+        code = "134.128"
         type = "an"
         units = "Pa"
     elif var == "z500":

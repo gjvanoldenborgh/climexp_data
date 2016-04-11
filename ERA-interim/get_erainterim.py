@@ -91,9 +91,9 @@ currentyear = datetime.now().year
 currentmonth = datetime.now().month
 cdo = "cdo -r -R -b 32 -f nc4 -z zip "
 
-vars = [ "t2m", "ts", "msl", "u10", "v10", "wspd", "ci", "snd", "sst", 
+vars = [ "t2m", "ts", "msl", "u10", "v10", "wspd", "ci", "snd", "sst", "vap",
          "tp", "evap", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
-         "z", "t", "u", "v", "w", "q" ]
+         "z", "t", "u", "v", "w", "q", "rh" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -236,11 +236,22 @@ for var in vars:
         units = "Pa/s"
         levtype = "pl"
     elif var == "q":
-        long_name = "humidity"
+        long_name = "specific humidity"
         code = "133.128"
         type = "an"
         units = "kg/kg"
         levtype = "pl"
+    elif var == "rh":
+        long_name = "relative humidity"
+        code = "157.128"
+        type = "an"
+        units = "%"
+        levtype = "pl"
+    elif var == "vap":
+        long_name = "vertical integral of water vapour"
+        code = "55.162"
+        type = "an"
+        units = "kg/m2"
     else:
         raise SystemExit("unknown var: " + var)
 

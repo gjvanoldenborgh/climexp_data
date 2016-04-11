@@ -2,15 +2,15 @@
 set -x
 # download the EN4 objective ocean analysis
 
-base=http://www.metoffice.gov.uk/hadobs/en4/data/en4-0-2/
-version=EN.4.0.2
+base=http://www.metoffice.gov.uk/hadobs/en4/data/en4-1-1/
+version=EN.4.1.1
 mem=500
 
 yr=1899
 yrnow=`date -d "1 year ago" "+%Y"`
 while [ $yr -lt $yrnow ]; do
     echo $((++yr))
-    file=${version}.analyses.$yr.zip
+    file=${version}.analyses.g10.$yr.zip
     # the server is really slow, assume we have a complete set except for the last two years...
 	if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o ! -s $file ]; then
 	    wget -N $base/$file
@@ -22,17 +22,17 @@ while [ $yr -lt $yrnow ]; do
 			fi
 		fi
     fi
-    if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o ! -s $version.f.analysis.${yr}01.nc ]; then
-		unzip $file
+    if [ $yr = $yrnow -o $yr = $((yrnow - 1)) -o ! -s $version.f.analysis.g10.${yr}01.nc ]; then
+		unzip -u -o $file
 	fi
 done
 
 echo "Extracting temperature and salinity"
 doit_salt=false
 doit_temp=false
-for file in $version.f.analysis.??????.nc
+for file in $version.f.analysis.g10.??????.nc
 do
-    string=${file##*analysis.}
+    string=${file##*analysis.g10.}
     yr=${string%??.nc}
     mo=${string%.nc}
     mo=${mo#????}
@@ -51,11 +51,11 @@ done
 
 echo "Concatenating"
 if [ $doit_temp = true -o ! -s temp_${version}_ObjectiveAnalysis.nc ]; then
-	cdo -f nc4 -z zip copy temp_${version}.f.analysis.[12]?????.nc temp_${version}_ObjectiveAnalysis.nc
+	cdo -f nc4 -z zip copy temp_${version}.f.analysis.g10.[12]?????.nc temp_${version}_ObjectiveAnalysis.nc
     $HOME/NINO/copyfiles.sh temp_${version}_ObjectiveAnalysis.nc
 fi
 if [ $doit_salt = true -o ! -s salt_${version}_ObjectiveAnalysis.nc ]; then
-	cdo -f nc4 -z zip copy salt_${version}.f.analysis.[12]?????.nc salt_${version}_ObjectiveAnalysis.nc
+	cdo -f nc4 -z zip copy salt_${version}.f.analysis.g10.[12]?????.nc salt_${version}_ObjectiveAnalysis.nc
 	$HOME/NINO/copyfiles.sh salt_${version}_ObjectiveAnalysis.nc
 fi
 

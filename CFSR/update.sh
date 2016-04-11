@@ -1,15 +1,13 @@
 #!/bin/sh
 
 yrnow=`date +%Y`
+yrend=2010
 yr=1979
-mo=0
-while [ $yr -le $yrnow ]
+mo=1
+# the 2011 data are on a higher-resolution grid and from a different model :-(
+# I could try and regrid and harmonise the orography some day.
+while [ $yr -le $yrend ]
 do
-    mo=$((mo+1))
-    if [ $mo -gt 12 ]; then
-        mo=1
-        yr=$((yr+1))
-    fi
     if [ $mo -lt 10 ]; then
         mm=0$mo
     else
@@ -18,10 +16,17 @@ do
     for type in flxf06 pgblnl
     do
         file=$type.gdas.$yr$mm.grb2
-        echo "getting $file..."
-        wget -N -q http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file
-        ###wget -N http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file.inv
+        if [ ! -s $file ]; then
+            echo "getting $file..."
+            wget -N -q http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file
+            ###wget -N http://nomads.ncdc.noaa.gov/data/cfsrmon/$yr$mm/$file.inv
+        fi
     done
+    mo=$((mo+1))
+    if [ $mo -gt 12 ]; then
+        mo=1
+        yr=$((yr+1))
+    fi
 done
 
 for var in tmp2m tmin2m tmax2m tmpsfc prate uflx vflx u10m v10m shtfl lhtfl dlwrf_sfc ulwrf_sfc ulwrf_toa dswrf_sfc uswrf_sfc dswrf_toa uswrf_toa slp hgt t u v w q qrel
@@ -67,16 +72,10 @@ do
         ncfile=cfsr_$var$lev.nc
         [ -f $ncfile ] && mv $ncfile $ncfile.old
         
-        yrnow=`date +%Y`
         yr=1979
-        mo=0
-        while [ $yr -le $yrnow ]
+        mo=1
+        while [ $yr -le $yrend ]
         do
-            mo=$((mo+1))
-            if [ $mo -gt 12 ]; then
-                mo=1
-                yr=$((yr+1))
-            fi
             if [ $mo -lt 10 ]; then
                 mm=0$mo
             else
@@ -85,13 +84,20 @@ do
             
             file=$type.gdas.$yr$mm.grb2
             if [ -f $file ]; then
+                echo "wgrib2 -fix_ncep -inv /tmp/inv.txt $file -match "$pat1" -match "$lev$pat2" -append -netcdf $ncfile"
                 wgrib2 -fix_ncep -inv /tmp/inv.txt $file -match "$pat1" -match "$lev$pat2" -append -netcdf $ncfile
             fi
+            mo=$((mo+1))
+            if [ $mo -gt 12 ]; then
+                mo=1
+                yr=$((yr+1))
+            fi
         done
-        cdo -r -settaxis,1979-01-01,0:00,1mon $ncfile $ncfile.new
+        echo "cdo -r -f nc4 -z zip -settaxis,1979-01-01,0:00,1mon $ncfile $ncfile.new"
+        cdo -r -f nc4 -z zip -settaxis,1979-01-01,0:00,1mon $ncfile $ncfile.new
         mv $ncfile.new $ncfile
 
-    $HOME/NINO/copyfiles.sh $ncfile
+        $HOME/NINO/copyfiles.sh $ncfile
     done # lev
 done # var
 

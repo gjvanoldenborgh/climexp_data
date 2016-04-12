@@ -24,7 +24,7 @@ do
     if [ ! -s $newfile -o $newfile -ot $file ]; then
         cdo -r -f nc4 -z zip selvar,Ann $file $newfile
         ncrename -v Ann,$var $newfile
-        ncatted -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" $newfile
+        ncatted -a long_name,${var},a,c,"$long_name" -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" $newfile
     fi
     c=`ncdump -h $file | fgrep -c 'float Jan'`
     if [ $c != 0 ]; then
@@ -51,7 +51,7 @@ do
                 cdo -r -f nc4 -z zip selvar,$month $file aap.nc
                 cdo -r -f nc4 -z zip settaxis,1901-${mm}-01,0:00:00,1year aap.nc aap_$month.nc
                 ncrename -v ${month},$var aap_$month.nc
-                ncatted -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" aap_$month.nc
+                ncatted -a long_name,${var},a,c,"$long_name" -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" aap_$month.nc
             done
             cdo -r -f nc4 -z zip mergetime aap_???.nc $newfile
             rm -f aap*.nc

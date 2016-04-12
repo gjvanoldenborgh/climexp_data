@@ -96,6 +96,7 @@ do
         echo "cdo -r -f nc4 -z zip -settaxis,1979-01-01,0:00,1mon $ncfile $ncfile.new"
         cdo -r -f nc4 -z zip -settaxis,1979-01-01,0:00,1mon $ncfile $ncfile.new
         mv $ncfile.new $ncfile
+        ncatted -a long_name,time,d,c,"" $ncfile
 
         $HOME/NINO/copyfiles.sh $ncfile
     done # lev

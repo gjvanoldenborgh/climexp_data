@@ -44,10 +44,11 @@ if [ -n "$also_download_ensemble" ]; then
 	done
 fi
 
+. ./update_ipo.sh
+echo "version=$version"
+. ./update_amo.sh
 . ./update_hadisst1.sh
 . ./update_hadslp2.sh
-. ./update_ipo.sh
-. ./update_amo.sh
 
 exit
 

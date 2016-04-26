@@ -15,6 +15,7 @@ if [ 1 = 1 ]; then
 ./get_erainterim.py
 ./get_erainterim_daily.py
 ./update_tglobal.sh
+./update_twetbulb.sh
 $HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
 fi
 

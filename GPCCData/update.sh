@@ -96,7 +96,7 @@ done
 
 echo "Checking for new data in the full dataset"
 root=ftp://ftp-anon.dwd.de/pub/data/gpcc/full_data_daily_V1
-wget -q $wgetflags -N $root/full_data_daily_\*.nc.gz
+[ "$debug" != true ] && wget -q $wgetflags -N $root/full_data_daily_\*.nc.gz
 for file in full_data_daily_*.nc.gz; do
     f=${file%.gz}
     if [ ! -s $f -o $f -ot $file ]; then
@@ -107,8 +107,11 @@ done
 
 echo "Updating the first guess dataset"
 root=ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess_daily
-wget -q $wgetflags -N $root/$thisyr/*.nc.gz
-wget -q $wgetflags -N $root/$lastyr/*.nc.gz
+yr=2014
+while [ $yr -le $thisyr ]; do
+    [ "$debug" != true ] && wget -q $wgetflags -N $root/$yr/*.nc.gz
+    yr=$((yr+1))
+done
 for file in first_guess_daily*.nc.gz
 do
     f=${file%.gz}
@@ -150,7 +153,7 @@ ffiles=""
 doit=false
 file=first_guess_daily_$yr$mm.nc
 while [ -s $file ]; do
-    if [ ! -s gpcc_firstguess_daily.nc -o gpcc_firstguess_daily.nc -ot $file ]; then
+    if [ ! -s gpcc_combined_daily.nc -o gpcc_combined_daily.nc -ot $file ]; then
         doit=true
     fi
     ffiles="$ffiles $file"

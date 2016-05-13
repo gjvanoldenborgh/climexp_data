@@ -54,6 +54,7 @@ while [ -s t2m$yr$mm.nc ]; do
     fi
     mm=`printf %02i $mo`
 done
-"cdo -r -f nc4 -z zip copy $list erai_twetbulb_daily.nc"
+echo "cdo -r -f nc4 -z zip copy $list erai_twetbulb_daily.nc"
 cdo -r -f nc4 -z zip copy $list erai_twetbulb_daily.nc
+echo "$HOME/NINO/copyfiles.sh erai_twetbulb_daily.nc"
 $HOME/NINO/copyfiles.sh erai_twetbulb_daily.nc

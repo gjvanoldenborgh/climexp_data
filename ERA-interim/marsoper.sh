@@ -114,7 +114,7 @@ date=DATE
 # Retrieve the data from MARS to the target data file "grib_file". 
 
 # instantaneous surface variables
-for var in t2m msl z500
+for var in t2m msl z500 tdew sp
 do
 
     file=$SCRATCH/oper_$var$date.grb
@@ -123,6 +123,8 @@ do
         case $var in
 	        t2m)  par=167.128;;
             ts)   par=139.128;;
+            tdew) par=168.128;;
+            sp)   par=134.128;;
             msl)  par=151.128;;
             u10)  par=165.128;;
             v10)  par=166.128;;

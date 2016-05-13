@@ -6,7 +6,7 @@ trendname="co2eq"
 
 fullensemble=true
 
-for model in hadsst3 hadisst1 ersstv3b
+for model in hadsst3 hadisst1 ersstv4
 do
     case $model in
         hadsst*) xave=1;yave=1;;

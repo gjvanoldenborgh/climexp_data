@@ -1,16 +1,18 @@
 #!/bin/sh
 fac=1
 case $var in
-    t2m) par=167; long_name="2m temperature"; units="K";;
+    t2m)  par=167; long_name="2m temperature"; units="K";;
     tmin) par=122; long_name="daily minimum of 2m temperature";units="K";;
     tmax) par=121; long_name="daily maximum of 2m temperature";units="K";;
-    ts)  par=139; long_name="surface temperature"; units="K";;
-    msl) par=151; long_name="mean sea-level pressure"; units="Pa";;
+    tdew) par=168; long_name="daily maximum of 2m dew point temperature";units="K";;
+    ts)   par=139; long_name="surface temperature"; units="K";;
+    sp)   par=134; long_name="surface pressure"; units="Pa";;
+    msl)  par=151; long_name="mean sea-level pressure"; units="Pa";;
     z500) par=129; long_name="500hPa geopotential"; units="m2 s-2";;
-    u10) par=165; long_name="10m zonal wind"; units="m/s";;
-    v10) par=166; long_name="10m meridional wind"; units="m/s";;
+    u10)  par=165; long_name="10m zonal wind"; units="m/s";;
+    v10)  par=166; long_name="10m meridional wind"; units="m/s";;
     wspd) par=207; long_name="wind speed"; units="m/s";;
-    tp)  par=228; long_name="precipitation"; units="mm/dy";fac=0.001;;
+    tp)   par=228; long_name="precipitation"; units="mm/dy";fac=0.001;;
     evap) par=182; long_name="evaporation"; units="m/dy";fac=2;;
     ustrs) par=180; long_name="zonal wind stress"; units="N/m2";fac=172800;;
     vstrs) par=181; long_name="meridional wind stress"; units="N/m2";fac=172800;;

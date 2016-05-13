@@ -15,9 +15,9 @@
       integer system
       external system
       lwrite = .false.
-      call getenv('LWRITE',string)
-      call tolower(string)
-      if ( string(1:1) == 't' ) lwrite = .true.
+      call getenv('LWRITE',line)
+      call tolower(line)
+      if ( line(1:1) == 't' ) lwrite = .true.
       errstation=' '
       failed = 0
       cfailed = 'UNKNOWN'

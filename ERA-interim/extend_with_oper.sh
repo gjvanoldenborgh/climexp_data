@@ -7,7 +7,7 @@ else
     force=false
     download=true
 fi
-if [ $HOST != bhw330.knmi.nl -a $force != true ]; then
+if [ $HOST != pc160050.knmi.nl -a $force != true ]; then
     echo "$0: error: only works on bhw330.knmi.nl, not $HOST"
     exit -1
 fi
@@ -126,7 +126,12 @@ do
 		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb aap.nc
                     # shift time so that the 00, 06, 12 and 18 analyses are averaged
 		            cdo $cdoflags shifttime,3hour aap.nc noot.nc
-		            cdo $cdoflags daymean noot.nc aap.nc
+		            if [ $var = tdew ]; then
+		                oper=daymax
+		            else
+		                oper=daymean
+		            fi
+		            cdo $cdoflags $oper noot.nc aap.nc
 		            if [ 0 = 1 ]; then
     		            # shift time back from 21 to 12 UTC in order not to confuse the next program
 	    	            cdo $cdoflags shifttime,-9hour aap.nc oper_${var}${yr}${mo}.nc
@@ -236,6 +241,11 @@ do
                 [ -f noot.nc ] && rm noot.nc
             fi
         done
+        wetbulb_field oper_tmax${yr}${mo}.nc \
+            oper_tdew${yr}${mo}.nc \
+            oper_sp_${yr}${mo}.nc \
+            oper_twetbub${yr}${mo}.nc
+
         if [ $completemonth = true ]; then
             date > complete_oper_tp$yr$mo.txt
         fi
@@ -276,7 +286,12 @@ do
     mv $netcdffile aap.nc
     # shift time so that the 00, 06, 12 and 18 analyses are averaged
     cdo $cdoflags shifttime,3hour aap.nc noot.nc
-    cdo $cdoflags daymean noot.nc aap.nc
+    if [ $var = tdew ]; then
+        oper=daymax
+    else
+        oper=daymean
+    fi
+    cdo $cdoflags $oper noot.nc aap.nc
     if [ 0 = 1 ]; then
         # shift time back from 21 to 12 UTC in order not to confuse the next program
         cdo $cdoflags shifttime,-9hour aap.nc $netcdffile
@@ -350,8 +365,12 @@ do
         [ -f noot.nc ] && rm noot.nc
     fi
 done
+wetbulb_field forecast_tmax${curyr}-${curmo}-${curdy}.nc \
+    forecast_tdew${curyr}-${curmo}-${curdy}.nc \
+    forecast_sp${curyr}-${curmo}-${curdy}.nc \
+    forecast_twetbulb${curyr}-${curmo}-${curdy}.nc
 
-for var in $ivars $cvars
+for var in $ivars $cvars twetbulb
 do
     files=""
     for date in $dates
@@ -364,12 +383,9 @@ do
     fi
     echo "Getting erai_${var}_daily.nc from bvlclim"
     rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
-    echo cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
+    echo "cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc"
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     echo "copying to bhlclim..."
     $HOME/NINO/copyfiles.sh erai_${var}_daily_extended.nc &
 done
 
-        
-        
-###$HOME/NINO/copyfiles.sh eraint_pme.nc

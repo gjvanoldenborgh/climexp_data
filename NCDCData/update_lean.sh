@@ -26,14 +26,13 @@ while [ -n "$file" -a -s "$file" ]; do
         doit=true
     fi
     files="$files $file"
+    echo $file
     yr=$((yr+1))
     file=`ls -t $base/*${yr}01_*.nc | fgrep -v preliminary | head -1`
-    ###echo $file
 done
 # back up and look for monthly files
 now=`date +%Y`
-yr=$((yr-2))
-m=2
+m=1
 while [ $yr -le $now ]; do
     mo=`printf %02i $m`
     file=`ls -t $base/*s${yr}${mo}_*.nc | fgrep preliminary | head -1`
@@ -52,6 +51,7 @@ while [ $yr -le $now ]; do
 done
 
 if [ $doit = true ]; then
+    ###echo "cdo copy $files aap.nc"
     cdo copy $files aap.nc
     cdo selname,TSI aap.nc $myfile
     rm aap.nc

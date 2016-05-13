@@ -66,6 +66,19 @@ do
 	fi
 	
 done
+
+for var in txx tnn
+do
+    case $var in
+        txx) basevar=TMAX;oper=max;;
+        tnn) basevar=TMIN;oper=min;;
+        *) echo "$0: unknown var $var"; exit -1;;
+    esac
+    echo "Computing $var"
+    daily2longerfield Complete_${basevar}_LatLong1.nc 1 $oper minfac 75 berkeley_$var.nc
+    $HOME/NINO/copyfiles.sh berkeley_$var.nc
+done
+
 date > downloaded_$yr$mo
 
 exit
@@ -80,4 +93,5 @@ do
 	fi
 	cd ..
 done
+
 

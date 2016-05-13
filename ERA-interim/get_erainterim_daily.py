@@ -48,7 +48,7 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
     if  mtime > ncmtime:
         if var == "tmin":
             oper = "daymin"
-        elif var == "tmax":
+        elif var == "tmax" or var == "tdew":
             oper = "daymax"
         elif type == "fc":
             oper = "daysum"

@@ -1,9 +1,15 @@
 #!/bin/sh
 # make annual derived data such as RXnday from the EC-Earth daily data
-var=rx1day
+vars="rx1day rx3day rx5day txx txn tnx tnn"
+for var in $vars; do
 case $var in
     rx1day) invar=pr;args="max";;
     rx3day) invar=pr;args="max sum 3";;
+    rx5day) invar=pr;args="max sum 5";;
+    txx) invar=tasmax;args="max";;
+    txn) invar=tasmax;args="min";;
+    tnx) invar=tasmin;args="max";;
+    tnn) invar=tasmin;args="min";;
     *) echo "$0: error: please give definition of $var";exit -1;;
 esac
 
@@ -35,3 +41,4 @@ while [ $r -lt 16 ]; do
         rm $outfiles
     fi
 done
+done # var

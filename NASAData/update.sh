@@ -12,6 +12,7 @@ do
 	do
 		file=$region.$type.txt
 		cp $file $file.old
+		echo $getit $file $base/$file
 		$getit $file $base/$file
 		[ ! -s $file ] && echo "problems downloading $base/$file" && exit -1
 		c=`file $file | fgrep -c HTML`

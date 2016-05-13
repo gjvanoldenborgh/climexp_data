@@ -32,6 +32,7 @@ if [ $? != 0 ]; then
   exit
 fi
 rm ghcnd_all.tar.gz.old # save space.
+rm -rf ghcnd
 
 # extract data
 echo "uncompressing and extracting tar file"
@@ -42,8 +43,6 @@ echo "and compressing all data files again"
 gzip -r -f ghcnd_all
 
 # swap
-rm -rf ghcnd.old
-mv ghcnd ghcnd.old
 mv ghcnd_all ghcnd
 
 # update metadata

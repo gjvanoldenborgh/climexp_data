@@ -12,9 +12,9 @@ if [ $HOST != pc160050.knmi.nl -a $force != true ]; then
     exit -1
 fi
 if [ "$download" != false ]; then
-    c=`ecls | wc -l`
+    c=`ecaccess-file-dir | wc -l`
     if [ $c -lt 2 ]; then
-        echo "Make sure you are logged in with eccert"
+        echo "Make sure you are logged in with ecaccess-certificate-create"
         exit -1
     fi
 fi
@@ -95,14 +95,14 @@ do
         if [ "$download" != false ]; then
 	        echo "submit MARS job to retrieve operational fields"
 	        sed -e "s@LIST@$list@" -e "s/DATE/$yr$mo/" marsoper.sh > marsoper$yr$mo.sh
-	        ecjput ecgate marsoper$yr$mo.sh
+	        ecaccess-job-submit marsoper$yr$mo.sh
 	
 	        c=1
 	        while [ $c = 1 ]
 	        do
     	        echo "wait for it to finish"
 		        sleep 60
-		        c=`ecjls|egrep -c 'INIT|WAIT|EXEC'`
+		        c=`ecaccess-job-list | egrep -c 'INIT|WAIT|EXEC'`
 	        done
 	        sleep 15 # to give ECMWF time to finish copying the files
         fi
@@ -113,13 +113,13 @@ do
             if [ $var != "#" ]; then
 	            if [ "$download" != false ]; then
 	                [ -f oper_${var}${yr}${mo}.grb ] && rm oper_${var}${yr}${mo}.grb
-		            echo ecget oper_${var}${yr}${mo}.grb
+		            echo ecaccess-file-get scratch:oper_${var}${yr}${mo}.grb
 		            while [ ! -s oper_${var}${yr}${mo}.grb ]; do
-		                ecget oper_${var}${yr}${mo}.grb
+		                ecaccess-file-get scratch:oper_${var}${yr}${mo}.grb
 		                [ ! -s oper_${var}${yr}${mo}.grb ] && sleep 60
 		            done
-		            echo ecdelete oper_${var}${yr}${mo}.grb
-		            ecdelete oper_${var}${yr}${mo}.grb
+		            echo ecaccess-file-delete oper_${var}${yr}${mo}.grb
+		            ecaccess-file-delete oper_${var}${yr}${mo}.grb
 	            fi
 	            if [ force=true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}.nc -ot oper_${var}${yr}${mo}.grb ]; then
 		            echo "converting oper_${var}${yr}${mo} to netcdf"
@@ -171,13 +171,13 @@ do
 	                    ext=${iext#@}
 	                    file=oper_${var}${yr}${mo}$ext.grb
     	                [ -f $file ] && rm $file
-	    	            echo ecget $file
+	    	            echo ecaccess-file-get scratch:$file
 		                while [ ! -s $file ]; do
-		                    ecget $file
+		                    ecaccess-file-get scratch:$file
 		                    [ ! -s $file ] && sleep 60
 		                done
-		                echo ecdelete $file
-		                ecdelete $file
+		                echo ecaccess-file-delete $file
+		                ecaccess-file-delete $file
 		            done
 	            fi
             fi
@@ -221,8 +221,8 @@ do
 	            for step in 12 24
             	do
 		            if [ ! -s oper_${var}${yr}${mo}_$step.grb ]; then
-			            echo "ecget oper_${var}${yr}${mo}_$step.grb"
-			            ecget oper_${var}${yr}${mo}_$step.grb
+			            echo "ecaccess-file-get scratch:oper_${var}${yr}${mo}_$step.grb"
+			            ecaccess-file-get scratch:oper_${var}${yr}${mo}_$step.grb
 		            fi
 	            done
 	            if [ force = true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}_$step.nc -ot oper_${var}${yr}${mo}_24.grb ]; then
@@ -257,14 +257,14 @@ if [ "$forecast" != false ]; then
     echo "submit MARS job to retrieve forecast fields"
     curdy=`date "+%d"` # today
     sed -e "s/DATE/${curyr}-${curmo}-${curdy}/" marsforecast.sh > marsforecast$curyr$curmo$curdy.sh
-    ecjput ecgate marsforecast$curyr$curmo$curdy.sh
+    ecaccess-job-submit marsforecast$curyr$curmo$curdy.sh
 
     c=1
     while [ $c = 1 ]
     do
         echo "wait for it to finish"
         sleep 60
-        c=`ecjls|egrep -c 'INIT|WAIT|EXEC'`
+        c=`ecaccess-job-list|egrep -c 'INIT|WAIT|EXEC'`
     done
     sleep 15 # to give ECMWF time to finish copying the files
 fi
@@ -274,14 +274,14 @@ do
     gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
     netcdffile=${gribfile%.grb}.nc
     if [ ! -f $netcdffile ]; then
-        echo ecget $netcdffile
+        echo ecaccess-file-get scratch:$netcdffile
         while [ ! -s $netcdffile ]; do
-            ecget $netcdffile
+            ecaccess-file-get scratch:$netcdffile
             [ ! -s $netcdffile ] && sleep 60
         done
-        echo ecdelete $gribfile $netcdffile
-        ecdelete $gribfile
-        ecdelete $netcdffile
+        echo ecaccess-file-delete $gribfile $netcdffile
+        ecaccess-file-delete $gribfile
+        ecaccess-file-delete $netcdffile
     fi
     mv $netcdffile aap.nc
     # shift time so that the 00, 06, 12 and 18 analyses are averaged
@@ -312,14 +312,14 @@ do
     gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
     netcdffile=${gribfile%.grb}.nc
     if [ ! -f $gribfile ]; then
-        echo ecget $gribfile
+        echo ecaccess-file-get scratch:$gribfile
         while [ ! -s $gribfile ]; do
-            ecget $gribfile
+            ecaccess-file-get scratch:$gribfile
             [ ! -s $gribfile ] && sleep 60
         done
-        echo ecdelete $gribfile $gribfile
-        ecdelete $gribfile
-        ecdelete $gribfile
+        echo ecaccess-file-delete $gribfile $gribfile
+        ecaccess-file-delete $gribfile
+        ecaccess-file-delete $gribfile
     fi
     if [ $var = tmin -o $var = tmax ]; then
         if [ $var = tmin ]; then

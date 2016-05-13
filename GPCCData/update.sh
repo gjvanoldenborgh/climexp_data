@@ -1,95 +1,183 @@
 #!/bin/sh
+debug=false
+if [ "$1" = debug ]; then
+    debug=true
+fi
 wgetflags="--no-passive-ftp"
 if [ `uname` == Darwin ]; then
     wgetflags=""
 fi
 thisyr=`date "+%Y"`
 lastyr=$((thisyr-1))
+
+# monthly data
+
 for res in 10 25
 do
-
-	wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/gpcc${res}\*.zip
-	wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring/gpcc${res}\*.zip
+    yr=1982
+    files=""
+    ffiles=""
+    doit=false
+    echo "Updating the $res monitoring analysis"
+    while [ $yr -le $thisyr ]; do
+        for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
+            file=monitoring_v5_${res}_${yr}_$mo.nc
+    	    if [ $debug = false ]; then
+    	        wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz
+    	    fi
+    	    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
+    	        gunzip -c $file.gz > $file
+    	    fi
+    	    if [ -s $file ]; then
+    	        files="$files $file"
+        	    if [ ! -s $file -o $file -nt gpcc_${res}_mon_all.nc ]; then
+        	        doit=true
+    	        fi
+    	    fi
+    	done
+    	yr=$((yr+1))
+	done
 	if [ $res = 10 ]; then
-		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$lastyr/*.gz
-		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$thisyr/*.gz
-		for file in gpcc_first_guess_??_????.gz
-		do
-			gunzip -c $file > `basename $file .gz`
+        echo "Updating the $res first guess analysis"
+	    for yr in $lastyr $thisyr; do
+            for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
+	            if [ ! -s monitoring_v5_${res}_${yr}_$mo.nc ]; then
+	                file=first_guess_monthly_${yr}_$mo.nc
+            	    if [ $debug = false ]; then
+                		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz                
+        		    fi
+        		    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
+    			        gunzip -c $file.gz > $file
+    			    fi
+    			    if [ -s $file ]; then
+    			        ffiles="$ffiles $file"
+                	    if [ ! -s $file -o $file -nt gpcc_${res}_mon_all.nc ]; then
+            	            doit=true
+    	                fi
+    			    fi
+    			fi
+    		done
 		done
 	fi
-
-	yr=1985
-	ready=false
-	while [ $ready = false ]
-	do
-		yr=$((yr + 1))
-		yy=`echo $yr | cut -b 3-4`
-		if [ -s gpcc${res}$yy.zip ]; then
-			file=gpcc${res}$yy.zip
-		elif [ -s gpcc${res}$yr.zip ]; then
-			file=gpcc${res}$yr.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v6.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v6.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v5.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v5.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v4.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v4.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v3.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v3.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v2.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v2.zip
-		elif [ -s gpcc${res}${yr}_monitoring_v1.zip ]; then
-			file=gpcc${res}${yr}_monitoring_v1.zip
-		else
-			ready=true
-			file=""
-		fi
-		echo "file=$file"
-		[ -n "$file" ] && unzip -u $file
-	done
-	./gauge2dat ${res}
-	rm gpcc_${res}*_monitor_*
-	sed -e "s/gpcc_${res}_mon.dat/gpcc_${res}_n1_mon.dat/" -e 's/dataset/dataset with at least 1 station in or next to grid box/' -e 's/3e33/-9.99e8/' -e 's/YREV//' gpcc_${res}_mon.ctl > gpcc_${res}_n1_mon.ctl
-	case $res in
-		10) nx=360;ny=180;;
-		25) nx=144;ny=72;;
-		*) echo error hcpinxwyiwo;exit -1;;
-	esac
-	if [ `uname` = Darwin ]; then
-	    size=`cat gpcc_${res}_mon.dat | wc -c`
-	else
-	    size=`stat -c "%s" gpcc_${res}_mon.dat`
-	fi
-	nt=`echo $size/$nx/$ny/4 | bc`
-	grads -b -l <<EOF
-open gpcc_${res}_mon.ctl
-open ngpcc_${res}_mon.ctl
-set gxout fwrite
-set x 1 $nx
-set y 1 $ny
-set t 1 $nt
-set gxout fwrite
-set fwrite gpcc_${res}_n1_mon.dat
-d maskout(prcp.1,smth9(nprcp.2-0.1))
-disable fwrite
-quit
-EOF
-	grads2nc gpcc_${res}_mon.ctl aap.nc
-	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_mon.nc
-	grads2nc gpcc_${res}_n1_mon.ctl aap.nc
-	c=`describefield aap.nc 2>&1 | fgrep -c " -"`
-	if [ $c = 1 ]; then
-    	cdo -r -f nc4 -z zip copy aap.nc gpcc_${res}_n1_mon.nc
-    else
-    	cdo -r -f nc4 -z zip invertlat aap.nc gpcc_${res}_n1_mon.nc
+	if [ $doit = true ]; then
+	    ###set -x
+	    echo "Making gpcc_${res}_mon.nc"
+        cdo -r -f nc4 -z zip copy $files gpcc_${res}_mon_all.nc
+        ncatted -a units,lat,m,c,"degrees_north" gpcc_${res}_mon_all.nc
+        cdo -r -f nc4 -z zip selvar,p gpcc_${res}_mon_all.nc gpcc_${res}_mon.nc
+        cdo -r -f nc4 -z zip selvar,s gpcc_${res}_mon_all.nc gpcc_${res}_n_mon.nc
+        if [ $res = 10 ]; then
+            cdo -r -f nc4 -z zip copy $ffiles gpcc_${res}_first_all.nc
+            ncatted -a units,lat,m,c,"degrees_north" gpcc_${res}_first_all.nc
+            cdo -r -f nc4 -z zip selvar,p gpcc_${res}_first_all.nc gpcc_${res}_first.nc
+            cdo -r -f nc4 -z zip selvar,s gpcc_${res}_first_all.nc gpcc_${res}_n_first.nc
+            cdo -r -f nc4 -z zip copy gpcc_${res}_mon.nc gpcc_${res}_first.nc aap.nc
+            mv aap.nc gpcc_${res}_mon.nc
+            cdo -r -f nc4 -z zip copy gpcc_${res}_n_mon.nc gpcc_${res}_n_first.nc aap.nc
+            mv aap.nc gpcc_${res}_n_mon.nc
+        fi
+        ncrename -v p,prcp gpcc_${res}_mon.nc
+        ncrename -v s,n gpcc_${res}_n_mon.nc
+        cdo -r -f nc4 -z zip ifthen gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
+        $HOME/NINO/copyfilesall.sh gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
+	    echo "Making gpcc_${res}_combined.nc"
+        cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_mon.nc gpcc_${res}_mon1.nc
+        cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
+        cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_n1_mon.nc gpcc_${res}_n1_mon1.nc
+        cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
+        ###patchfield gpcc_V7_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_patched.nc
+        ###patchfield gpcc_V7_${res}_n1.nc gpcc_${res}_n1_mon.nc gpcc_${res}_n1_patched.nc
+        $HOME/NINO/copyfilesall.sh gpcc_${res}*combined.nc gpcc_${res}*patched.nc
+        ###set +x
     fi
-	grads2nc ngpcc_${res}_mon.ctl aap.nc
-	cdo -r -f nc4 -z zip copy aap.nc ngpcc_${res}_mon.nc
-	patchfield gpcc_V6_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_combined.nc
-	patchfield gpcc_V6_${res}_n1.nc gpcc_${res}_n1_mon.nc gpcc_${res}_n1_combined.nc
-	$HOME/NINO/copyfilesall.sh gpcc_${res}_n1_mon.nc gpcc_${res}_mon.nc ngpcc_${res}_mon.nc gpcc_${res}_combined.nc gpcc_${res}_n1_combined.nc
-	###rm gpcc_${res}_mon.??? gpcc_${res}_n1_mon.??? ngpcc_${res}_mon.??? aap.nc
-    
 done
 
+# daily data
+
+echo "Checking for new data in the full dataset"
+root=ftp://ftp-anon.dwd.de/pub/data/gpcc/full_data_daily_V1
+[ "$debug" != true ] && wget -q $wgetflags -N $root/full_data_daily_\*.nc.gz
+for file in full_data_daily_*.nc.gz; do
+    f=${file%.gz}
+    if [ ! -s $f -o $f -ot $file ]; then
+        gunzip -c $file > aap.nc
+        cdo -r -f nc4 -z zip copy aap.nc $f
+    fi
+done
+
+echo "Updating the first guess dataset"
+root=ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess_daily
+yr=2014
+while [ $yr -le $thisyr ]; do
+    [ "$debug" != true ] && wget -q $wgetflags -N $root/$yr/*.nc.gz
+    yr=$((yr+1))
+done
+for file in first_guess_daily*.nc.gz
+do
+    f=${file%.gz}
+    if [ ! -s $f -o $f -ot $file ]; then
+        gunzip -c $file > aap.nc
+        cdo -r -f nc4 -z zip copy aap.nc $f
+    fi
+done
+
+yr=1988
+file=full_data_daily_$yr.nc
+files=""
+doit=false
+while [ -s $file ]; do
+    if [ ! -s gpcc_full_daily.nc -o gpcc_full_daily.nc -ot $file ]; then
+        doit=true
+    fi
+    files="$files $file"
+    yr=$((yr+1))
+    file=full_data_daily_$yr.nc
+done
+if [ $doit = true ]; then
+    echo "Making gpcc_full_daily.nc"
+    cdo -r -f nc4 -z zip copy $files gpcc_full_daily_all.nc
+    cdo -r -f nc4 -z zip selvar,p gpcc_full_daily_all.nc gpcc_full_daily.nc
+    ncatted -a long_name,p,m,c,"precipitation" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily.nc
+    cdo -r -f nc4 -z zip selvar,s gpcc_full_daily_all.nc gpcc_full_daily_n.nc
+    ncatted -a long_name,s,m,c,"number of gauges per grid box" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n.nc
+    ncrename -v p,prcp gpcc_full_daily.nc
+    ncrename -v s,n gpcc_full_daily_n.nc
+    cdo -r -f nc4 -z zip ifthen gpcc_full_daily_n.nc gpcc_full_daily.nc gpcc_full_daily_n1.nc
+    ncatted -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n1.nc
+fi
+$HOME/NINO/copyfilesall.sh gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc
+
+mo=1
+mm=`printf %02i $mo`
+ffiles=""
+doit=false
+file=first_guess_daily_$yr$mm.nc
+while [ -s $file ]; do
+    if [ ! -s gpcc_combined_daily.nc -o gpcc_combined_daily.nc -ot $file ]; then
+        doit=true
+    fi
+    ffiles="$ffiles $file"
+    mo=$((mo+1))
+    if [ $mo -gt 12 ]; then
+        mo=1
+        yr=$((yr+1))
+    fi
+    mm=`printf %02i $mo`
+    file=first_guess_daily_$yr$mm.nc
+done
+if [ $doit = true ]; then
+    echo "Making gpcc_combined_daily.nc"
+    cdo -r -f nc4 -z zip copy $ffiles gpcc_firstguess_daily_all.nc
+    cdo -r -f nc4 -z zip selvar,p gpcc_firstguess_daily_all.nc gpcc_firstguess_daily.nc
+    cdo -r -f nc4 -z zip selvar,s gpcc_firstguess_daily_all.nc gpcc_firstguess_daily_n.nc
+    ncrename -v p,prcp gpcc_firstguess_daily.nc
+    ncrename -v s,n gpcc_firstguess_daily_n.nc
+    cdo -r -f nc4 -z zip ifthen gpcc_firstguess_daily_n.nc gpcc_firstguess_daily.nc gpcc_firstguess_daily_n1.nc
+    cdo -r -f nc4 -z zip copy gpcc_full_daily.nc gpcc_firstguess_daily.nc gpcc_combined_daily.nc
+    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily.nc
+    cdo -r -f nc4 -z zip copy gpcc_full_daily_n.nc gpcc_firstguess_daily_n.nc gpcc_combined_daily_n.nc
+    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n.nc
+    cdo -r -f nc4 -z zip copy gpcc_full_daily_n1.nc gpcc_firstguess_daily_n1.nc gpcc_combined_daily_n1.nc
+    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
+fi
+$HOME/NINO/copyfiles.sh gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc

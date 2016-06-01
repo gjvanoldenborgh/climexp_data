@@ -1,7 +1,11 @@
 #!/bin/sh
 cwd=`pwd`
-domain=EUR-44
-newgridfile=$domain/eobs_0.50deg_reg_grid_smaller.nc
+domain=EUR-11
+case $domain in
+  EUR-44) newgridfile=$domain/eobs_0.50deg_reg_grid_smaller.nc;;
+  EUR-11) newgridfile=$domain/eobs_0.125deg_reg_grid_smaller.nc;;
+  *) echo "unknown doamin $domain"; exit -1;;
+esac
 timescale="$3"
 if [ -z "$timescale" ]; then
     echo "usage: $0 var exp day|mon|annual"
@@ -383,33 +387,39 @@ do
             
             # fixed files
             
+            mkdir -p $domain/fx
             lsmask=$domain/fx/sftlf_${domain}_${gcm}_${exp}_r0i0p0_${rcm}_${version}_fx.nc
+            latlonmask=${lsmask%.nc}_latlon.nc
+            reallatlonmask=`echo $latlonmask | sed -e 's/sftlf/lsmask/g'`
             fxfile=`ls ethz/$domain/$exp/fx/sftlf/$institute/$gcm/$rcm/*/sftlf_${domain}_${gcm}_${exp}_*_${rcm}_${version}_fx.nc 2> /dev/null | head -1`
             if [ -n "$fxfile" -a -s "$fxfile" ]; then
-                if [ ! -s "$lsmask" -o "$lsmask" -ot "$fxfile" ]; then
-                    cp $fxfile $lsmask
-                fi
-                latlonmask=${lsmask%.nc}_latlon.nc
-                if [ ! -s $latlonmask -o $latlonmask -ot $lsmask ]; then
-                    remap=remapbil
-                    echo "$cdo $remap,$newgridfile $lsmask $latlonmask"
-                    $cdo $remap,$newgridfile $lsmask $latlonmask
-                    if [ ! -s $latlonmask ]; then
-                        echo "$0: error: something went wrong in creating $latlonmask"
-                        exit -1
+                if [ ! -s $reallatlonmask -o $reallatlonmask -ot $fxfile ]; then
+                    if [ ! -s "$lsmask" -o "$lsmask" -ot "$fxfile" ]; then
+                        cp $fxfile $lsmask
                     fi
-                fi
-                reallatlonmask=`echo $latlonmask | sed -e 's/sftlf/lsmask/g'`
-                if [ ! -s $reallatlonmask -o $reallatlonmask -ot $latlonmask ]; then
-                    c=`ncdump $latlonmask | fgrep 'sftlf:units' | fgrep -c '%'`
-                    if [ $c = 0 ]; then
-                        cp $latlonmask $reallatlonmask
-                    else
-                        cdo divc,100 $latlonmask $reallatlonmask
-                        ncatted -a units,sftlf,m,c,'1' $reallatlonmask
+                    if [ ! -s $latlonmask -o $latlonmask -ot $lsmask ]; then
+                        remap=remapbil
+                        [ -f $latlonmask ] && rm $latlonmask
+                        echo "$cdo $remap,$newgridfile $lsmask $latlonmask"
+                        $cdo $remap,$newgridfile $lsmask $latlonmask
+                        if [ ! -s $latlonmask ]; then
+                            echo "$0: error: something went wrong in creating $latlonmask"
+                            exit -1
+                        fi
                     fi
-                    masks=`ls $domain/fx/lsmask*.nc | fgrep -v _ave`
-                    cdo ensavg $masks $domain/fx/lsmask_EUR-44_cordex_ave.nc
+                    if [ ! -s $reallatlonmask -o $reallatlonmask -ot $latlonmask ]; then
+                        c=`ncdump $latlonmask | fgrep 'sftlf:units' | fgrep -c '%'`
+                        if [ $c = 0 ]; then
+                            cp $latlonmask $reallatlonmask
+                        else
+                            [ -f $reallatlonmask ] && rm $reallatlonmask
+                            cdo divc,100 $latlonmask $reallatlonmask
+                            ncatted -a units,sftlf,m,c,'1' $reallatlonmask
+                        fi
+                        masks=`ls $domain/fx/lsmask*.nc | fgrep -v _ave`
+                        [ -f $domain/fx/lsmask_EUR-44_cordex_ave.nc ] && rm $domain/fx/lsmask_EUR-44_cordex_ave.nc
+                        cdo ensavg $masks $domain/fx/lsmask_EUR-44_cordex_ave.nc
+                    fi
                 fi
             fi
         done # rcm

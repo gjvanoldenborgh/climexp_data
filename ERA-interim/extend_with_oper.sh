@@ -52,7 +52,7 @@ do
         [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
         [ -f oper_$var$yr$mo.nc ] && rm oper_*$yr$mo.nc
     elif [ -s complete_oper_$var$yr$mo.txt ]; then
-        echo "using old oper_$var$yr$mo.grib"
+        echo "found complete_oper_$var$yr$mo.txt, using old oper_$var$yr$mo.grib"
         dates="$dates $yr$mo"
     else
         echo "downloading oper_$var$yr$mo.grib ..."
@@ -118,8 +118,8 @@ do
 		                ecaccess-file-get scratch:oper_${var}${yr}${mo}.grb
 		                [ ! -s oper_${var}${yr}${mo}.grb ] && sleep 60
 		            done
-		            echo ecaccess-file-delete oper_${var}${yr}${mo}.grb
-		            ecaccess-file-delete oper_${var}${yr}${mo}.grb
+		            echo ecaccess-file-delete scratch:oper_${var}${yr}${mo}.grb
+		            ecaccess-file-delete scratch:oper_${var}${yr}${mo}.grb
 	            fi
 	            if [ force=true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}.nc -ot oper_${var}${yr}${mo}.grb ]; then
 		            echo "converting oper_${var}${yr}${mo} to netcdf"
@@ -142,10 +142,10 @@ do
 		            rm -f aap.nc noot.nc
 		            . ./gribcodes.sh
 		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
-		            ncatted -O -a long_name,$var,a,c,"$long_name" \
-				        -a units,$var,a,c,"$units" \
-				        -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
-				        -a title,global,a,c,"operational analysis" \
+		            ncatted -O -a long_name,$var,o,c,"$long_name" \
+				        -a units,$var,o,c,"$units" \
+				        -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
+				        -a title,global,o,c,"operational analysis" \
 			            aap.nc oper_${var}${yr}${mo}.nc
 			        if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
 			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
@@ -176,8 +176,8 @@ do
 		                    ecaccess-file-get scratch:$file
 		                    [ ! -s $file ] && sleep 60
 		                done
-		                echo ecaccess-file-delete $file
-		                ecaccess-file-delete $file
+		                echo ecaccess-file-delete scratch:$file
+		                ecaccess-file-delete scratch:$file
 		            done
 	            fi
             fi
@@ -206,10 +206,10 @@ do
 		            rm -f aap.nc noot.nc
 		            . ./gribcodes.sh
 		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
-		            ncatted -O -a long_name,$var,a,c,"$long_name" \
-				        -a units,$var,a,c,"$units" \
-				        -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
-				        -a title,global,a,c,"operational analysis" \
+		            ncatted -O -a long_name,$var,o,c,"$long_name" \
+				        -a units,$var,o,c,"$units" \
+				        -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
+				        -a title,global,o,c,"operational analysis" \
 			            aap.nc oper_${var}${yr}${mo}.nc
 			        if [ $var = tmin -o $var = tmax ]; then
 			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
@@ -279,9 +279,9 @@ do
             ecaccess-file-get scratch:$netcdffile
             [ ! -s $netcdffile ] && sleep 60
         done
-        echo ecaccess-file-delete $gribfile $netcdffile
-        ecaccess-file-delete $gribfile
-        ecaccess-file-delete $netcdffile
+        echo ecaccess-file-delete sratch:$gribfile sratch:$netcdffile
+        ecaccess-file-delete sratch:$gribfile
+        ecaccess-file-delete sratch:$netcdffile
     fi
     mv $netcdffile aap.nc
     # shift time so that the 00, 06, 12 and 18 analyses are averaged
@@ -292,9 +292,9 @@ do
         oper=daymean
     fi
     cdo $cdoflags $oper noot.nc aap.nc
-    if [ 0 = 1 ]; then
-        # shift time back from 21 to 12 UTC in order not to confuse the next program
-        cdo $cdoflags shifttime,-9hour aap.nc $netcdffile
+    if [ 1 = 0 ]; then
+        # shift time back from 15 to 12 UTC in order not to confuse the next program
+        cdo $cdoflags shifttime,-3hour aap.nc $netcdffile
     else
         # somehow the time is already correct...
         mv aap.nc $netcdffile
@@ -317,9 +317,9 @@ do
             ecaccess-file-get scratch:$gribfile
             [ ! -s $gribfile ] && sleep 60
         done
-        echo ecaccess-file-delete $gribfile $gribfile
-        ecaccess-file-delete $gribfile
-        ecaccess-file-delete $gribfile
+        echo ecaccess-file-delete sratch:$gribfile sratch:$gribfile
+        ecaccess-file-delete sratch:$gribfile
+        ecaccess-file-delete sratch:$gribfile
     fi
     if [ $var = tmin -o $var = tmax ]; then
         if [ $var = tmin ]; then
@@ -346,10 +346,10 @@ do
             rm -f aap.nc noot.nc
             . ./gribcodes.sh
             ncrename -O -v var$par,$var $netcdffile aap.nc
-            ncatted -O -a long_name,$var,a,c,"$long_name" \
-                -a units,$var,a,c,"$units" \
-                -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
-                -a title,global,a,c,"operational analysis" \
+            ncatted -O -a long_name,$var,o,c,"$long_name" \
+                -a units,$var,o,c,"$units" \
+                -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
+                -a title,global,o,c,"operational analysis" \
                 aap.nc $netcdffile
             if [ $var = tmin -o $var = tmax ]; then
                 cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc

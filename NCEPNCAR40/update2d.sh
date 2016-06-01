@@ -35,7 +35,13 @@ do
 done
 
 ./make_curl_windstress.sh
-$HOME/NINO/copyfiles.sh  ncurl.???
+
+cdo -r -f nc4 -z zip add shtfl.sfc.mon.mean.nc lhtfl.sfc.mon.mean.nc aap.nc
+cdo -r -f nc4 -z zip add nswrs.sfc.mon.mean.nc nlwrs.sfc.mon.mean.nc noot.nc
+cdo -r -f nc4 -z zip add aap.nc noot.nc netflx.sfc.mon.mean.nc
+rm aap.nc noot.nc
+
+$HOME/NINO/copyfiles.sh netflfx.mon.mean.nc ncurl.???
 
 ###./make_windspeed.sh
 ###$HOME/NINO/copyfiles.sh  nwindspeed.???

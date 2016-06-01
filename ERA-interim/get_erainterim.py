@@ -339,9 +339,22 @@ for var in vars:
                 print command
                 os.system(command)
 
-    if var == "evap":
-        command = cdo + " sub erai_tp.nc erai_evap.nc erai_pme.nc"
-        print command
-        os.system(command)
-
 # end of var loop
+
+command = cdo + " sub erai_tp.nc erai_evap.nc erai_pme.nc"
+print command
+os.system(command)
+
+command = cdo + " add erai_shtfl.nc erai_lhtfl.nc aap.nc"
+print command
+os.system(command)
+command = cdo + " add erai_ssr.nc erai_str.nc noot.nc"
+print command
+os.system(command)
+command = cdo + " add aap.nc noot.nc erai_snetflx.nc"
+print command
+os.system(command)
+command = "ncrename -v shtfl,netflx erai_snetflx.nc"
+print command
+os.system(command)
+

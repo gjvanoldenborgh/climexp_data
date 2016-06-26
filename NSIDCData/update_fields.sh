@@ -101,12 +101,6 @@ do
   wget -N $base/$subdir/$region/\*.bin
 done
 
-subdir=nsidc0081_nrt_nasateam_seaice/F18_uncalibrated/
-for region in north south
-do
-  wget -N $base/$subdir/$region/\*.bin
-done
-
 make day2mon
 ./day2mon
 make polar2grads

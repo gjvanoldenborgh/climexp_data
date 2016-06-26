@@ -1,4 +1,9 @@
 #!/bin/sh
+# detrended values, NCEP method (30-yr climatology updated every 5 years)
+# see  http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml
+###wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt
+
+
 for file in ersst4.nino.mth.81-10.ascii sstoi.indices
 do
     cp $file $file.old

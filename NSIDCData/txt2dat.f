@@ -48,7 +48,7 @@
                 read(1,'(a)') string
  100            continue
                 read(1,'(a)',end=200) string
-                if ( string.eq.' ' ) goto 200
+                if ( string(2:).eq.' ' ) goto 200
                 read(string,'(i4,i3)') yr,i
                 if ( i.ne.mo ) then
                     write(0,*) 'error: i!=mo: ',i,mo

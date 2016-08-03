@@ -1,11 +1,12 @@
 #!/bin/sh
 [ -z "$version" ] && echo "$0: error: please define version" && exit -1
+set -x
 cversion=3.23
 for var in tg tx tn rr
 do
     file=${var}_0.50deg_reg_${version}u.nc
-    monfile=${var}_0.50deg_reg_${version}u_mon.nc
-    outfile=${var}_0.50deg_reg_${version}u_extended.nc
+    monfile=${var}_0.50deg_reg_v${version}u_mon.nc
+    outfile=${var}_0.50deg_reg_v${version}u_extended.nc
     case $var in
         tg) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.tmp.dat.nc | head -1`;;
         tx) ccfile=`ls -t ../CRUData/cru_ts$cversion.1901.2???.tmx.dat.nc | head -1`;;

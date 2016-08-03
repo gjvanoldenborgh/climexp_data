@@ -29,7 +29,7 @@ if [ ! -s lsmask.nc ]; then
     done
 fi
 
-for var in z t u v t2m u10 v10 ts slp lhtfl shtfl taux tauy wspd evap tp ci 
+for var in z t u v t2m u10 v10 ts slp lhtfl shtfl taux tauy wspd evap tp ci ssr
 do
     case $var in
         slp) eosvar=SLP;type=2D;levtype=pres;;
@@ -50,6 +50,7 @@ do
         wspd) eosvar=SPEED;type=2D;levtype=flux;;
         ci) eosvar=FRSEAICE;type=2D;levtype=flux;;
         tp) eosvar=PRECTOT;type=2D;levtype=flux;;
+        ssr) eosvar=SWGNT;type=2D;levtype=rad;;
         *) echo "$0: error: cannot handle var $var yet"; exit -1;;
     esac
     
@@ -83,6 +84,9 @@ do
             elif [ $levtype = flux ]; then
                 base=http://goldsmr4.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
                 path=M2TMNXFLX.5.12.4/$yr/MERRA2_$number.tavgM_2d_flx_Nx.$yr$mo.nc4
+            elif [ $levtype = rad ]; then
+                base=http://goldsmr4.sci.gsfc.nasa.gov/data/s4pa/MERRA2_MONTHLY
+                path=M2TMNXRAD.5.12.4/$yr/MERRA2_$number.tavgM_2d_rad_Nx.$yr$mo.nc4
             elif [ $levtype = pres ]; then
                 base=http://goldsmr5.sci.gsfc.nasa.gov:80/opendap/MERRA2_MONTHLY
                 path=M2IMNPASM.5.12.4/$yr/MERRA2_$number.instM_3d_asm_Np.$yr$mo.nc4

@@ -279,9 +279,9 @@ do
             ecaccess-file-get scratch:$netcdffile
             [ ! -s $netcdffile ] && sleep 60
         done
-        echo ecaccess-file-delete sratch:$gribfile sratch:$netcdffile
-        ecaccess-file-delete sratch:$gribfile
-        ecaccess-file-delete sratch:$netcdffile
+        echo ecaccess-file-delete scratch:$gribfile scratch:$netcdffile
+        ecaccess-file-delete scratch:$gribfile
+        ecaccess-file-delete scratch:$netcdffile
     fi
     mv $netcdffile aap.nc
     # shift time so that the 00, 06, 12 and 18 analyses are averaged
@@ -317,9 +317,9 @@ do
             ecaccess-file-get scratch:$gribfile
             [ ! -s $gribfile ] && sleep 60
         done
-        echo ecaccess-file-delete sratch:$gribfile sratch:$gribfile
-        ecaccess-file-delete sratch:$gribfile
-        ecaccess-file-delete sratch:$gribfile
+        echo ecaccess-file-delete scratch:$gribfile scratch:$gribfile
+        ecaccess-file-delete scratch:$gribfile
+        ecaccess-file-delete scratch:$gribfile
     fi
     if [ $var = tmin -o $var = tmax ]; then
         if [ $var = tmin ]; then

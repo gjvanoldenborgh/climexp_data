@@ -5,7 +5,7 @@ force=false # true
 update=true # false
 
 # adjust with each version
-version=v13.0
+version=v13.1
 enddate="" # keep empty when shortening is not needed "2013-12-31"
 nextdate="" # "2015-07-01" # keep empty when previous year is not needed "2014-01-01"
 

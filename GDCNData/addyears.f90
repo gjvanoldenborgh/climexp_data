@@ -1,15 +1,15 @@
       program addyears
-*
-*     add number of years, first year and last year of data to 
-*     GDCN_V1_0.inv
-*
+!
+!     add number of years, first year and last year of data to 
+!     GDCN_V1_0.inv
+!
       implicit none
-      integer i,j,idates(18),ires,yr,mo,val(31),yrold(6),nrec
-     +     ,failed(26)
-      character station*11,station1*11,elevflag,datasource,name*30,id1*8
-     +     ,id2*8,element*4,filename*21,flag1(31)*1,flag2(31)*1,
-     +     flag3(31)*1,wmo*5,dummy1*1,dummy2*1,errstation*11,line*300,
-     +     country*2,state*2,source(2)*3,cfailed(26)*60
+      integer i,j,idates(18),ires,yr,mo,val(31),yrold(6),nrec &
+     &     ,failed(26)
+      character station*11,station1*11,elevflag,datasource,name*30,id1*8 &
+     &     ,id2*8,element*4,filename*21,flag1(31)*1,flag2(31)*1, &
+     &     flag3(31)*1,wmo*5,dummy1*1,dummy2*1,errstation*11,line*300, &
+     &     country*2,state*2,source(2)*3,cfailed(26)*60
       real rlat,rlon,relev
       logical lwrite,lonlygts,lvalid
       integer system
@@ -21,36 +21,21 @@
       errstation=' '
       failed = 0
       cfailed = 'UNKNOWN'
-      cfailed(1+ichar('A')-ichar('A')) =
-     +     'failed accumulation total check'
-      cfailed(1+ichar('C')-ichar('A')) =
-     +     'failed intraday consistency check'
-      cfailed(1+ichar('D')-ichar('A')) =
-     +       'failed duplicate check'
-      cfailed(1+ichar('F')-ichar('A')) =
-     +     'failed value-measurement flagged consistency check'
-      cfailed(1+ichar('G')-ichar('A')) =
-     +     'failed gap check'
-      cfailed(1+ichar('I')-ichar('A')) =
-     +     'failed internal consistency check'
-      cfailed(1+ichar('K')-ichar('A')) =
-     +     'failed streak/frequent-value check'
-      cfailed(1+ichar('M')-ichar('A')) =
-     +     'failed megaconsistency check'
-      cfailed(1+ichar('N')-ichar('A')) =
-     +     'failed naught check'
-      cfailed(1+ichar('O')-ichar('A')) =
-     +     'failed climatological outlier check'
-      cfailed(1+ichar('R')-ichar('A')) =
-     +     'failed lagged range check'
-      cfailed(1+ichar('S')-ichar('A')) =
-     +     'failed spatial consistency check'
-      cfailed(1+ichar('T')-ichar('A')) =
-     +     'failed temporal consistency check'
-      cfailed(1+ichar('W')-ichar('A')) =
-     +     'temperature too warm for snow'
-      cfailed(1+ichar('X')-ichar('A')) =
-     +     'failed bounds check'
+      cfailed(1+ichar('A')-ichar('A')) = 'failed accumulation total check'
+      cfailed(1+ichar('C')-ichar('A')) = 'failed intraday consistency check'
+      cfailed(1+ichar('D')-ichar('A')) = 'failed duplicate check'
+      cfailed(1+ichar('F')-ichar('A')) = 'failed value-measurement flagged consistency check'
+      cfailed(1+ichar('G')-ichar('A')) = 'failed gap check'
+      cfailed(1+ichar('I')-ichar('A')) = 'failed internal consistency check'
+      cfailed(1+ichar('K')-ichar('A')) = 'failed streak/frequent-value check'
+      cfailed(1+ichar('M')-ichar('A')) = 'failed megaconsistency check'
+      cfailed(1+ichar('N')-ichar('A')) = 'failed naught check'
+      cfailed(1+ichar('O')-ichar('A')) = 'failed climatological outlier check'
+      cfailed(1+ichar('R')-ichar('A')) = 'failed lagged range check'
+      cfailed(1+ichar('S')-ichar('A')) = 'failed spatial consistency check'
+      cfailed(1+ichar('T')-ichar('A')) = 'failed temporal consistency check'
+      cfailed(1+ichar('W')-ichar('A')) = 'temperature too warm for snow'
+      cfailed(1+ichar('X')-ichar('A')) = 'failed bounds check'
 !     no longer used, but still in my .withyears file
 !     because I am too lazy to adapt the other programs
       elevflag = ' '
@@ -59,17 +44,14 @@
       dummy2 = ' '
       id1 = ' '
       id2 = ' '
-*
-      open(unit=1,file='ghcnd-stations.txt',
-     +     status='old')
-      open(unit=2,file='ghcnd2.inv.withyears',
-     +     status='unknown')
-*
+!
+      open(unit=1,file='ghcnd-stations.txt',status='old')
+      open(unit=2,file='ghcnd2.inv.withyears',status='unknown')
+!
       nrec = 0
  100  continue
       nrec = nrec + 1
-      read(1,1000,end=900) station,rlat,rlon,relev,state,name
-     +     ,source,wmo
+      read(1,1000,end=900) station,rlat,rlon,relev,state,name,source,wmo
  1000 format(a11,f9.4,f10.4,f7.1,1x,a2,1x,a30,1x,a3,1x,a3,1x,a5)
       country = station(1:2)
       if ( lwrite ) print *,station
@@ -83,8 +65,8 @@
           yrold(i) = -9999
       enddo
  200  continue
-      read(3,1001,end=800) station1,yr,mo,element,
-     +     (val(i),flag1(i),flag2(i),flag3(i),i=1,31)
+      read(3,1001,end=800) station1,yr,mo,element, &
+     &     (val(i),flag1(i),flag2(i),flag3(i),i=1,31)
  1001 format(a11,i4,i2,a4,31(i5,3a1))
       if ( lwrite ) print *,element,yr,mo
       if ( station.ne.station1 ) then
@@ -113,7 +95,7 @@
           endif
       enddo
       if ( .not.lvalid ) goto 200
-*     at least some valid data
+!     at least some valid data
  210  continue
       if ( element.eq.'TMIN' ) then
           i = 1
@@ -137,13 +119,12 @@
           idates(11) = min(yr,idates(11))
           idates(12) = max(yr,idates(12))
       endif
-*     this assumes the years are ordered
+!     this assumes the years are ordered
       if ( yrold(i).eq.-9999 ) then
           idates(3*i-2) = 1
           yrold(i) = yr
       endif
-      if ( element.eq.'PRCP' .and. .not.lonlygts .and. 
-     +     yrold(4).eq.-9999) then
+      if ( element.eq.'PRCP' .and. .not.lonlygts .and. yrold(4).eq.-9999) then
           idates(10) = 1
           yrold(4) = yr
       endif
@@ -151,8 +132,7 @@
           yrold(i) = yr
           idates(3*i-2) = idates(3*i-2) + 1
       endif
-      if ( element.eq.'PRCP' .and. .not.lonlygts .and.
-     +     yr.gt.yrold(4) ) then
+      if ( element.eq.'PRCP' .and. .not.lonlygts .and. yr.gt.yrold(4) ) then
               yrold(4) = yr
               idates(10) = idates(10) + 1
       endif
@@ -162,7 +142,7 @@
               errstation = station
           endif
       endif
-***      if ( lwrite ) print *,idates(3*i-2),idates(3*i-1),idates(3*i)
+!!!      if ( lwrite ) print *,idates(3*i-2),idates(3*i-1),idates(3*i)
       goto 200
  800  continue
       if ( lwrite ) print *,'EOF, next station'
@@ -179,8 +159,8 @@
           name(i+1:) = ', '//state
       endif
  1002 format(a11,f7.2,f8.2,i5,4a1,a30,a5,2a8,18i5)
-      write(2,1002) station,rlat,rlon,nint(relev),elevflag,dummy1
-     +     ,datasource,dummy2,name,wmo,id1,id2,(idates(i),i=1,18)
+      write(2,1002) station,rlat,rlon,nint(relev),elevflag,dummy1 &
+     &     ,datasource,dummy2,name,wmo,id1,id2,(idates(i),i=1,18)
       print '(a,18i5)',station,(idates(i),i=1,18)
       goto 100
  900  continue

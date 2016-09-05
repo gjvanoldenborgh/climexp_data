@@ -48,7 +48,7 @@ mv ghcnd_all ghcnd
 # update metadata
 echo "update metadata"
 make addyears
-./addyears
+./addyears > /dev/null
 
 # copy to climexp
 echo "copy to climexp"

@@ -83,6 +83,10 @@ do
 					    [ -s $file -a -s $file.correct ] && cp $file.correct $file
 					fi
 				fi
+				if [ $model = BNU-ESM -a $exp = historicalGHG ]; then
+					echo "Skipping BNU-ESM histrocalGHG- too few years"| tee -a skipping_$var.log
+					donotdoit=true
+				fi
 				if [ $model = CMCC-CM -a $exp = piControl ]; then
 					echo "Skipping CMCC-CM piControl - unknown problems"| tee -a skipping_$var.log
 					donotdoit=true

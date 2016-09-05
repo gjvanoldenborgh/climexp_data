@@ -354,7 +354,7 @@ os.system(command)
 command = cdo + " add aap.nc noot.nc erai_snetflx.nc"
 print command
 os.system(command)
-command = "ncrename -v shtfl,netflx erai_snetflx.nc"
+command = "ncrename -v shtfl,snetflx erai_snetflx.nc"
 print command
 os.system(command)
 

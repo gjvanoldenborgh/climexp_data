@@ -1,6 +1,9 @@
 #!/bin/sh
-
-# CRU TS
+# get CRU TS
+force=false
+if [ "$1" = force ]; then
+    force=true
+fi
 
 vars="tmp tmn tmx dtr pre vap cld"
 
@@ -11,9 +14,9 @@ quit
 EOF
 
 cp version.txt version.txt.old
-fgrep cru_ts_ ftp.log | awk '{print $9}' | sort | tail -1 > version.txt
+fgrep cru_ts_ ftp.log | awk '{print $9}' | fgrep -v '_clim' | sort | tail -1 > version.txt
 diff version.txt.old version.txt
-if [ $? != 0 ]; then
+if [ $? != 0 -o $force = true ]; then
     version=`cat version.txt`
     vers=`echo $version | sed -e 's/ts_/ts/'`
     cat <<EOF > commands.ftp
@@ -28,33 +31,37 @@ EOF
         esac
         [ ! -d $var ] && mkdir $var
         f=`echo $vers.1901.2*.$var.dat.nc`
-        if [ ! -s $f ]; then
+        if [ ! -s $f -o $force = true ]; then
             cat <<EOF >> commands.ftp
 mget $var/$vers.1901.2*.$var.dat.nc.gz
+cd ../station
 mget $var/$vers.1901.2*.$altvar.st0.nc.gz
 mget $var/$vers.1901.2*.$altvar.stn.nc.gz
+cd ../data
 EOF
         fi
     done
     echo 'quit' >> commands.ftp
     echo "downloading data ..."
-    ftp ftp1.ceda.ac.uk < commands.ftp > ftp.lo1
+    ###ftp ftp1.ceda.ac.uk < commands.ftp > ftp.lo1
 
     for var in $vars
     do
-        f=`echo $vers.1901.2*.$var.dat.nc`
-        if [ ! -s $f ]; then
-            zfile=$var/$vers.1901.2*.$var.dat.nc.gz
-            echo "uncompressing $zfile"
-            file=${zfile%.gz}
-            [ -f $file ] && rm $file
-            gunzip -f $zfile
+        for kind in dat stn st0; do
+            f=`echo $vers.1901.2*.$var.$kind.nc`
+            if [ ! -s $f ]; then
+                zfile=$var/$vers.1901.2*.$var.$kind.nc.gz
+                echo "uncompressing $zfile"
+                file=${zfile%.gz}
+                [ -f $file ] && rm $file
+                gunzip -f $zfile
 
-            echo "recompressing $file"
-            f=`basename $file`
-            cdo -r -f nc4 -z zip copy $file $f
-            rm $file
-        fi
+                echo "recompressing $file"
+                f=`basename $file`
+                cdo -r -f nc4 -z zip copy $file $f
+                rm $file
+            fi
+        done
     done
     mail -s "new version CRU TS!" oldenborgh@knmi.nl <<EOF
 New version $version of CRU TS has been downloaded, please adjust queryfield.cgi and selectfield_obs.html

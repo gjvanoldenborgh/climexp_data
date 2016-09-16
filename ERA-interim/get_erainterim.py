@@ -345,13 +345,16 @@ command = cdo + " sub erai_tp.nc erai_evap.nc erai_pme.nc"
 print command
 os.system(command)
 
-command = cdo + " add erai_shtfl.nc erai_lhtfl.nc aap.nc"
+command = cdo + " add erai_shtfl.nc erai_lhtfl.nc erai_trbflx.nc"
 print command
 os.system(command)
 command = cdo + " add erai_ssr.nc erai_str.nc noot.nc"
 print command
 os.system(command)
-command = cdo + " add aap.nc noot.nc erai_snetflx.nc"
+command = cdo + " add erai_trbflx.nc noot.nc erai_snetflx.nc"
+print command
+os.system(command)
+command = "ncrename -v shtfl,trbflx erai_trbflx.nc"
 print command
 os.system(command)
 command = "ncrename -v shtfl,snetflx erai_snetflx.nc"

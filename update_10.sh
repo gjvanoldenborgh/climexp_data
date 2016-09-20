@@ -139,6 +139,9 @@ echo @@@ SSMI
 echo @@@ NCEP daily SST
 (ssh zuidzee "cd NINO/NCEPData; ./update_sstoiv2_daily.sh |& tee update_update_sstoiv2_daily.log")
 
+echo @@@ PRISM
+(ssh zuidzee "cd NINO/PRISMData; ./update.sh |& tee update.log")
+
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)
 

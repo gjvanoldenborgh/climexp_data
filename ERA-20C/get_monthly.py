@@ -11,16 +11,16 @@ def get_from_ecmwf(date,var,type,ncfile):
     
     if not os.path.isfile(ncfile) or os.stat(ncfile).st_size == 0:
         print "Retrieving " + ncfile + " " + date
-        dataset = "era20cm"
-        stream = "edmo"
+        dataset = "era20c"
+        stream = "moda"
+        eclass = "e2"
         dict = {'dataset' : dataset,
                 'stream'  : stream,
                 'expver'  : '1',
                 'date'    : date,
-                'number'  : "0/1/2/3/4/5/6/7/8/9",
                 'levtype' : "sfc",
                 'type'    : "fc", # curiously all variables seem to have this
-                'class'   : "em",
+                'class'   : eclass,
                 'param'   : code,
                 'format'  : 'netcdf',
                 'target'  : ncfile  }
@@ -54,23 +54,11 @@ def get_from_ecmwf(date,var,type,ncfile):
                     os.system(command)
                     os.rename("aap.nc",ncfile)
 
-    for iens in range(10):
-        ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
-        if not os.path.isfile(ensfile) or os.stat(ensfile).st_size == 0:
-            command = "ncks -d number,%i "%iens + ncfile + " " + ensfile
-            print command
-            os.system(command)
-            command = "ncatted -a axis,number,d,c,'' " + ensfile
-            print command
-            os.system(command)
-
     return True
 
 
 server = ECMWFDataServer()
 
-currentyear = datetime.now().year
-currentmonth = datetime.now().month
 cdo = "cdo -r -R -b 32 -f nc4 -z zip "
 
 # get land/sea mask
@@ -97,9 +85,8 @@ exit
 vars = [ "t2m", "ts", "msl", "u10", "v10",  "ci", "snd", "sst", 
          "tp", "evap", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
          "z", "t", "u", "v", "w", "q" ]
-vars = [ "tp", "t2m", "msl", "ssr", "evap" ]
 for var in vars:
-    ncfiles = [ "" ]*10
+    ncfile = ""
     concatenate = False
     datavar = var
     levtype = ""
@@ -249,104 +236,59 @@ for var in vars:
         raise SystemExit("unknown var: " + var)
 
     firstyear = 1900
-    lastyear = 2011
-    for year in range(firstyear, lastyear):
+    lastyear = 2010
+    ncfiles = ""
+    for year in range(firstyear, lastyear + 1 ):
+        ncfile = var + str(year) + '_mo.nc'
+        date = str(year) + '0101/' + str(year) + '0201/' + \
+               str(year) + '0301/' + str(year) + '0401/' + \
+               str(year) + '0501/' + str(year) + '0601/' + \
+               str(year) + '0701/' + str(year) + '0801/' + \
+               str(year) + '0901/' + str(year) + '1001/' + \
+               str(year) + '1101/' + str(year) + '1201'
+        c = get_from_ecmwf(date,var,type,ncfile)
+        if c:
+            concatenate = True
 
-        if year == currentyear or ( year == currentyear-1 and currentmonth < 4):
-            if year == currentyear-1:
-                maxmonth = 1 + 12
-            else:
-                maxmonth = 1 + currentmonth - 1
-            for month in range(1, maxmonth):
-                if month < 10:
-                    cmonth = '0' + str(month)
-                else:
-                    cmonth = str(month)
-                ncfile = var + str(year) + cmonth + '_mo.nc'
-                date = str(year) + cmonth + '01'
-                try:
-                    c = get_from_ecmwf(date,var,type,ncfile)
-                    if c:
-                        concatenate = True
-                        for iens in range(10):
-                            ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
-                            ncfiles[iens] = ncfiles[iens] + " " + ensfile
-
-                except RuntimeError:
-                    print "OK, dat was het"
-                    break
-
-            # end of months loop
-        else:
-            ncfile = var + str(year) + '_mo.nc'
-            date = str(year) + '0101/' + str(year) + '0201/' + \
-                   str(year) + '0301/' + str(year) + '0401/' + \
-                   str(year) + '0501/' + str(year) + '0601/' + \
-                   str(year) + '0701/' + str(year) + '0801/' + \
-                   str(year) + '0901/' + str(year) + '1001/' + \
-                   str(year) + '1101/' + str(year) + '1201'
-            c = get_from_ecmwf(date,var,type,ncfile)
-            if c:
-                concatenate = True
-            for iens in range(10):
-                ensfile = os.path.splitext(ncfile)[0] + "_" + "%02i"%iens + ".nc"
-                ncfiles[iens] = ncfiles[iens] + " " + ensfile
-
-            # clean up the old monthly files if they exist
-            for month in range(1,13):
-                if month < 10:
-                    cmonth = '0' + str(month)
-                else:
-                    cmonth = str(month)
-                file = datavar + str(year) + cmonth + '_mo.nc3'
-                if os.path.exists(file):
-                    os.remove(file)
-                file = datavar + str(year) + cmonth + '_mo.nc'
-                if os.path.exists(file):
-                    os.remove(file)
-    
-        ###print "concatenate = " + str(concatenate)    
+        ncfiles = ncfiles + " " + ncfile
     # end of years loop
 
     outfile = "era20c_" + var + ".nc"
     if concatenate or os.path.isfile(outfile) == False:
-        for iens in range(10):
-            ens = "%02i"%iens
-            ensoutfile = os.path.splitext(outfile)[0] + "_" + ens + ".nc"
-            command = cdo + " copy " + ncfiles[iens] + " " + ensoutfile
+        command = cdo + " copy " + ncfiles + " " + outfile
+        print command
+        os.system(command)
+
+        command = "ncatted -a title,global,a,c,\"ERA-20C reanalysis from http://apps.ecmwf.int/datasets/\" " + outfile
+        print command
+        os.system(command)
+
+        if units == 'mm/dy' or units == 'W/m2':
+            command = "ncatted -a units," + var + ",m,c,mm/dy " + outfile
             print command
             os.system(command)
 
-            command = "ncatted -a title,global,a,c,\"ERA-20C reanalysis from http://apps.ecmwf.int/datasets/\" " + ensoutfile
+        if factor != 1:
+            command = cdo + " mulc," + str(factor) + " " + outfile + " noot.nc; mv noot.nc " + outfile
             print command
             os.system(command)
 
-            if units == 'mm/dy' or units == 'W/m2':
-                command = "ncatted -a units," + var + ",m,c,mm/dy " + ensoutfile
+        if levtype == 'pl':
+            levellist = [ 850, 700, 500, 300, 200 ]
+            for level in levellist:
+                levelfile = "era20c_" + var + str(level) + ".nc"
+                command = "cdo sellevel," + str(level) + "00. " + outfile + " " + levelfile
+                print command
+                os.system(command)
+            if var == "t" or var == "u":
+                zonfile = "era20c_" + var + "zon.nc"
+                command = "cdo zonmean " + outfile + " " + zonfile
                 print command
                 os.system(command)
 
-            if factor != 1:
-                command = cdo + " mulc," + str(factor) + " " + ensoutfile + " noot.nc; mv noot.nc " + ensoutfile
-                print command
-                os.system(command)
-
-            if levtype == 'pl':
-                levellist = [ 850, 700, 500, 300, 200 ]
-                for level in levellist:
-                    levelfile = "era20c_" + var + str(level) + ".nc"
-                    command = "cdo sellevel," + str(level) + "00. " + outfile + " " + levelfile
-                    print command
-                    os.system(command)
-                if var == "t" or var == "u":
-                    zonfile = "era20c_" + var + "zon.nc"
-                    command = "cdo zonmean " + outfile + " " + zonfile
-                    print command
-                    os.system(command)
-
-            if var == "evap":
-                command = cdo + " sub era20c_tp_{ens}.nc era20c_evap_{ens}.nc era20c_pme_{ens}.nc".format(ens=ens)
-                print command
-                os.system(command)
+        if var == "evap":
+            command = cdo + " sub era20c_tp.nc era20c_evap.nc era20c_pme.nc"
+            print command
+            os.system(command)
 
 # end of var loop

@@ -1,6 +1,6 @@
 #!/bin/sh
-wget -N ftp://ftp.pmodwrc.ch/pub/data/irradiance/composite/DataPlots/composite_42_64_*.dat
-file=`ls -t composite_*.dat | head -1`
+wget -N ftp://ftp.pmodwrc.ch/pub/data/irradiance/composite/DataPlots/ext_composite_42_65_*.dat
+file=`ls -t ext_composite_*.dat | head -1`
 cat > tsi_daily.dat <<EOF
 # Observed solar constant reconstructed from satellite observations.
 # Please cite C.Fr\"ohlich, 2000, "Observations of Irradiance Variations, Space Science Rev., 94, pp. 15-24.

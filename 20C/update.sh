@@ -1,5 +1,27 @@
 #!/bin/sh
 
+base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Dailies
+yrbegin=1851
+yrend=2014
+
+for var in tmax.2m tmin.2m air.2m prate prmsl
+do
+    case $var in
+        air.2m|tmin.2m|tmax.2m|prate) dir=gaussian/monolevel;;
+        prmsl) dir=monolevel;;
+        *) echo "$0: error: unknown var $var";exit -1;;
+    esac
+    yr=$yrbegin
+    while [ $yr -le $yrend ]; do
+        file=$var.$yr.nc
+        wget -N $base/$dir/$file
+        ((yr++))
+    done
+    cdo -b 32 -r -f nc4 -z zip copy $var.????.nc ${var}_daily.nc
+    describefield ${var}_daily.nc
+    rsync -e ssh -avt ${var}_daily.nc bhlclim:climexp/20C/
+done
+
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Monthlies/
 
 wget -N ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/time_invariant/land.nc
@@ -47,7 +69,7 @@ done
 cdo -b 32 -f nc4 -z zip divc,2260000 lhtfl.mon.mean.nc evap.mon.mean.nc
 ncrename -v lhtfl,evap -d x,nbnds evap.mon.mean.nc
 ncatted -a units,evap,m,c,"kg m-2 s-1" evap.mon.mean.nc
-cdo -b -f nc4 -z zip 32 sub prate.mon.mean.nc evap.mon.mean.nc pme.mon.mean.nc
+cdo -b 32 -f nc4 -z zip sub prate.mon.mean.nc evap.mon.mean.nc pme.mon.mean.nc
 ncrename -v prate,pme -d x,nbnds pme.mon.mean.nc
 rsync -e ssh -avt evap.mon.mean.nc pme.mon.mean.nc bhlclim:climexp/20C/
 rsync -e ssh -avt evap.mon.mean.nc pme.mon.mean.nc gj@gatotkaca.duckdns.org:climexp/20C/

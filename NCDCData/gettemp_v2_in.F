@@ -258,7 +258,6 @@ c       other documentation
         endif
 *       note that some names are lowercase !
         call toupper(name(i))
-        if ( lwrite ) print *,'processing station ',name(i)
 *
 *       check that we have enough years of data
         if ( lmin ) then
@@ -279,20 +278,30 @@ c       other documentation
         endif
 *       
         okstation = .false.
-        if ( istation.eq.0 ) then
+        if ( nlist.gt.0 ) then
+            do j=1,nlist
+                if ( iwmo(i).eq.list(1,j) .and.
+     +               imod(i).eq.list(2,j) ) then
+                    call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax
+     +                    ,rlon(i),rlat(i))
+                    okstation = .true.
+                    exit
+                endif
+            enddo
+        else if ( istation.eq.0 ) then
 *           put everything in list, sort later
             dlon = min(abs(rlon(i)-slon),
      +            abs(rlon(i)-slon-360),
      +            abs(rlon(i)-slon+360))
             dist(i) = (rlat(i)-slat)**2 + (dlon*cos(slat/180*pi))**2
             okstation = .true.
-        elseif ( istation.gt.0 ) then
+        else if ( istation.gt.0 ) then
             if ( iwmo(i).eq.istation .and. 
      +           imod(i).eq.isub ) then
                 i = i + 1
                 goto 200
             endif
-        elseif ( sname.ne.' ' ) then
+        else if ( sname.ne.' ' ) then
 *           look for a station with sname as substring
             if ( index(name(i),sname(1:llen(sname))).ne.0 ) then
                 okstation = .true.
@@ -306,7 +315,7 @@ c       other documentation
                     okstation = .true.
                 end if
             end if
-        elseif ( slat1.lt.1e33 ) then
+        else if ( slat1.lt.1e33 ) then
             if ( (slon1.gt.slon .and. 
      +            rlon(i).gt.slon .and. rlon(i).lt.slon1
      +            .or.
@@ -320,15 +329,6 @@ c       other documentation
                 n = i
                 okstation = .true.
                 endif
-        elseif ( nlist.gt.0 ) then
-            do j=1,nlist
-                if ( 100000*ic(i) + iwmo(i).eq.list(1,j) .and.
-     +               imod(i).eq.list(2,j) ) then
-                    call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax
-     +                    ,rlon(i),rlat(i))
-                    okstation = .true.
-                endif
-            enddo
         else
             print *,'internal error 31459263'
             call abort
@@ -366,42 +366,30 @@ c       other documentation
   200   continue
         i = i - 1
 
-        if ( istation.eq.0 .or. slat1.lt.1e33 ) then
-            call sortdist(i,n,dist,rlon,rlat,ind,rmin)
-        else
+        if ( nlist > 1 .or. istation /= 0 .or. 
+     +       sname /= ' ' .or. slat1.lt.1e33 ) then
             n = i
+        else
+            call sortdist(i,n,dist,rlon,rlat,ind,rmin)
+            if ( i < n ) n = i
         endif
 *
 *       output
-        if ( istation.le.0 ) print '(a,i5,a)','Found ',n-1
+        if ( istation.le.0 ) print '(a,i5,a)','Found ',n
      +      ,' stations'
         if ( nlist.gt.0 ) then
             call printbox(rlonmin,rlonmax,rlatmin,rlatmax)
         endif
         nok = 0
         do j=1,nn
-            if ( istation.eq.0 .or. slat1.lt.1e33 ) then
+            if ( nlist > 1 .or. istation /= 0 .or. 
+     +           sname /= ' ' .or. slat1.lt.1e33 ) then
+                jj = j
+            else
                 jj = ind(j)
                 if ( jj.eq.0 ) goto 700
                 if ( dist(jj).gt.1e33 ) goto 700
-            else
-                jj = j
             endif
-            if ( nlist.gt.0 ) then
-                do i=1,nlist
-!!!                    print *,'comparing ',100000*ic(jj) + iwmo(jj)
-!!!     +                   ,imod(jj),' with ',list(1,i),list(2,i)
-                    if ( 100000*ic(jj) + iwmo(jj) .eq. list(1,i) .and.
-     +                   imod(jj).eq.list(2,i) ) then
-!!!                        print *,'OK'
-                        goto 201
-                    end if
-                end do
-!               not in list
-!!!                print *,'not in list',100000*ic(jj) + iwmo(jj),imod(jj)
-                goto 700
-            end if
- 201        continue
             nok = nok + 1
             if ( nok.gt.n ) goto 800
             if ( istation.le.0 ) print '(a)'

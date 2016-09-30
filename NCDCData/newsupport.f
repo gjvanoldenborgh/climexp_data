@@ -62,7 +62,8 @@
    10       continue
             read(1,'(a)',end=20,err=20) string
             if ( string.eq.' ' ) goto 10
-            if ( index(string(1:2),'#').ne.0 ) then
+            if ( index(string(1:2),'#').ne.0 .or. 
+     +           index(string(1:2),'?').ne.0 ) then
                 read(string(3:),*,err=18) slon,slon1,slat,slat1
                 print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,a)'
      +                    ,'Searching for stations in ',slat,'N:',
@@ -206,8 +207,9 @@
             i = i+2
             goto 100
         endif
-        if ( n.gt.1 ) print '(a,i4,a)','Looking up ',n,' stations'
-        if ( n.gt.1 .or. slat1.lt.1e33 ) then
+        if ( n.gt.1 .and. nlist == 0 ) print '(a,i4,a)','Looking up ',n,
+     +       ' stations'
+        if ( (n.gt.1 .or. slat1.lt.1e33) .and. nlist == 0 ) then
             if ( slat1.gt.1e33 ) then
                 print '(a,f6.2,a,f7.2,a)'
      +               ,'Searching for stations near ',slat,'N, ',slon,'E'
@@ -914,15 +916,21 @@ C  (C) Copr. 1986-92 Numerical Recipes Software +.-).
       implicit none
       character*(*) string
       integer istation,isub
-      integer i,j
+      integer i,j,k
       j=1
    10 continue
       if ( string(j:j).eq.' ' ) then
           j = j + 1
           goto 10
       endif
-      if ( index(string(j:),'.').eq.0 ) then
-          read(string(j:),*) istation
+      k=j+1
+ 20   continue
+      if ( string(k:k).ne.' ' ) then
+          k = k + 1
+          goto 20
+      end if
+      if ( index(string(j:k),'.').eq.0 ) then
+          read(string(j:k),*) istation
           isub = 0
       else
           i = j + index(string(j:),'.')

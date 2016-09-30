@@ -28,8 +28,9 @@ do
 	*) echo error ncdwjloky47e;exit -1;;
     esac
 
-    wget -q -N $base/$mon/N_${mo}_area.txt
-    wget -q -N $base/$mon/S_${mo}_area.txt
+    echo -n "$mon "
+    wget -q -N $base/$mon/N_${mo}_area_v2.txt
+    wget -q -N $base/$mon/S_${mo}_area_v2.txt
 done
 
 make txt2dat

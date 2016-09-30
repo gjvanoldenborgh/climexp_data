@@ -17,13 +17,13 @@
             open(2,file=NS(ins)//'_ice_extent.dat')
             write(2,'(3a)') '# ',NS(ins),'H ice extent from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index</a>'
+     +           'NSIDC Sea Ice Index v2</a>'
             write(2,'(a)') '# ice_extent [million km^2] area covered '//
      +           ' with at least 15% ice'
             open(3,file=NS(ins)//'_ice_area.dat')
             write(3,'(3a)') '# ',NS(ins),'H ice area from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index</a>'
+     +           'NSIDC Sea Ice Index v2</a>'
             hole_conc = 1
             if ( NS(ins).eq.'N' ) then
                 write(3,'(a)') '# ice_area [million km^2] integrated '//
@@ -43,7 +43,7 @@
             area = 3e33
             extent = 3e33
             do mo=1,12
-                write(file,'(2a,i2.2,a)') NS(ins),'_',mo,'_area.txt'
+                write(file,'(2a,i2.2,a)') NS(ins),'_',mo,'_area_v2.txt'
                 open(1,file=trim(file),status='old')
                 read(1,'(a)') string
  100            continue
@@ -62,11 +62,13 @@
 
                 if ( a.gt.0 ) then
                     if ( NS(ins).eq.'N' ) then
-                        if ( yr.lt.1986 .or. yr.eq.1987.and.mo.lt.7 )
+                        if ( yr.lt.1987 .or. yr.eq.1987.and.mo.le.7 )
      +                       then
                             a = a + 1.19
-                        else
+                        else if ( yr.lt.2008 ) then
                             a = a + 0.31*hole_conc(mo,yr)
+                        else
+                            a = a + 0.029
                         end if
                     end if
                 else
@@ -78,8 +80,6 @@
 
                 goto 100
  200            continue
-                print *,'string = ',trim(string)
-                print *,'finished with ',trim(file)
                 close(1)
             end do
             call printdatfile(2,extent,12,12,yrbeg,yrend)

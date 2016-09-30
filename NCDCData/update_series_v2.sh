@@ -2,6 +2,9 @@
 yr=`date +%Y`
 mo=`date +%m`
 force=false
+if [ "$1" = force ]; then
+    force=true
+fi
 if [ -f downloaded_v2_$yr$mo -a "$force" != true ]; then
   echo "Already downloaded GHCN-M this month"
   exit

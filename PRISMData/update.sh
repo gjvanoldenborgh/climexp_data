@@ -6,7 +6,7 @@ if [ "$1" != force -a -f downloaded_$yr$mo ]; then
   exit
 fi
 
-vars="ppt tmax tmin" # tdmean vpdmin vpdmax tmean vpr 
+vars="ppt tmax tmin tmean tdmean" #  vpdmin vpdmax tmean vpr 
 for var in $vars; do
     yrnow=`date +%Y`
     yr=1895 # 2014
@@ -19,6 +19,8 @@ for var in $vars; do
             ppt) units="mm/month";varname="prcp";long_name="precipitation";;
             tmax) units="Celsius";long_name="monthly mean of daily maximum temperature";;
             tmin) units="Celsius";long_name="monthly mean of daily minimum temperature";;
+            tmean) units="Celsius";long_name="monthly mean temperature";;
+            tdmean) units="Celsius";long_name="monthly mean of dew point temperature";;
             *) echo "$0: error: know nothing about $var yet"; exit -1;;
         esac
         if [ ! -s ${var}_prismM?_$yr.nc -o $yr = $yrnow -o $yr = $((yrnow-1)) ]; then
@@ -71,7 +73,7 @@ for var in $vars; do
                 averagefieldspace $f 6 6 $f25
             fi
             files="$files $f"
-            files25="$files $f25"
+            files25="$files25 $f25"
         fi
         yr=$((yr+1))
     done # yr

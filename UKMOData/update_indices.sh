@@ -31,7 +31,7 @@ base=http://www.metoffice.gov.uk/hadobs/crutem4/data/diagnostics/global/nh+sh/
 area="n+s"
 safearea=ns
 name="NH+SH"
-version=4.4.0.0
+version=4.5.0.0
 file=CRUTEM.${version}.global_${area}_monthly
 cp $file $file.old
 wget -q -N $base/$file

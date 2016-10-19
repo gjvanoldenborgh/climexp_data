@@ -18,40 +18,59 @@ do
     files=""
     ffiles=""
     doit=false
+    stillok=true
     echo "Updating the $res monitoring analysis"
     while [ $yr -le $thisyr ]; do
         for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
             file=monitoring_v5_${res}_${yr}_$mo.nc
-    	    if [ $debug = false ]; then
-    	        wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz
+    	    if [ $debug = false -a stillok = true ]; then
+    	        if [ ! -s $file.gz ]; then
+    	            ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz"
+        	        wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz
+        	        if [ -s $file.gz ]; then
+        	            echo "Downloaded $file.gz"
+        	        else
+        	            echo "Cannot find $file.gz"
+        	            stillok=false
+        	        fi
+        	    fi
     	    fi
     	    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
     	        gunzip -c $file.gz > $file
     	    fi
     	    if [ -s $file ]; then
     	        files="$files $file"
-        	    if [ ! -s $file -o $file -nt gpcc_${res}_mon_all.nc ]; then
+        	    if [ $file -nt gpcc_${res}_mon_all.nc ]; then
         	        doit=true
     	        fi
     	    fi
     	done
     	yr=$((yr+1))
 	done
+	stillok=true
 	if [ $res = 10 ]; then
         echo "Updating the $res first guess analysis"
 	    for yr in $lastyr $thisyr; do
             for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
 	            if [ ! -s monitoring_v5_${res}_${yr}_$mo.nc ]; then
 	                file=first_guess_monthly_${yr}_$mo.nc
-            	    if [ $debug = false ]; then
-                		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz                
+            	    if [ $debug = false -a $stillok = true ]; then
+            	        if [ ! -s $file.gz 
+            	        ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz"
+                		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz
+                		if [ -s $file.gz ]; then
+                		    echo "Downloaded $file.gz"
+                		else
+                		    echo "Cannot find $file.gz"
+                		    stillok=false
+                		fi
         		    fi
         		    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
     			        gunzip -c $file.gz > $file
     			    fi
     			    if [ -s $file ]; then
     			        ffiles="$ffiles $file"
-                	    if [ ! -s $file -o $file -nt gpcc_${res}_mon_all.nc ]; then
+                	    if [ $file -nt gpcc_${res}_mon_all.nc ]; then
             	            doit=true
     	                fi
     			    fi
@@ -181,3 +200,6 @@ if [ $doit = true ]; then
     ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
 fi
 $HOME/NINO/copyfiles.sh gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc
+
+make merge_telecon
+. ./merge_telecon.sh gpcc

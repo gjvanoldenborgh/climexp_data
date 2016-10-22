@@ -1,0 +1,1 @@
+../GPCCData/corr_prcp_nino34.nc

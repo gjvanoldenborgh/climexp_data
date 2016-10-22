@@ -7,8 +7,8 @@ if [ -z "$dataset" ]; then
 fi
 dir=$HOME/climexp
 case $dataset in
-    gpcc) file=$dir/GPCCData/gpcc_10_mon.nc;;
-    cmorph) file=$dir/NCEPData/cmorph_monthly_1.nc;;
+    gpcc) file=$dir/GPCCData/gpcc_10_combined.nc;;
+    cmorph) file=$dir/NCEPData/cmorph_monthly.nc;;
     erai) file=$dir/ERA-interim/erai_tp_daily_extended_mo.nc;;
     *) echo "$0: unknown dataset $dataset"; exit -1;;
 esac
@@ -24,8 +24,16 @@ while [ $month -lt 12 ]; do
     patternfield $file corr_prcp_nino34.nc regr $month > $outfile
     files="$files $outfile"
 done
-./merge_telecon $files > telecon_nino34_$dataset.dat
+outfile=telecon_nino34_$dataset.dat
+./merge_telecon $files > $outfile
 rm $files
+mv $outfile aap.dat
+cat > $outfile <<EOF
+# Nino34 index based on GPCC station-based land prdcipitation projected on ENSO teleconnections
+# using resgression patterns
+# nino34_prcp [1] Nino index from land precipitation
+EOF
+normdiff aap.dat null monthly monthly | fgrep -v '#' >> $outfile
 month=0
 files=""
 while [ $month -lt 12 ]; do
@@ -34,6 +42,14 @@ while [ $month -lt 12 ]; do
     patternfield $file corr_prcp_nino34.nc corr $month > $outfile
     files="$files $outfile"
 done
-./merge_telecon $files > telecon_corr_nino34_$dataset.dat
+outfile=telecon_corr_nino34_$dataset.dat
+./merge_telecon $files > $outfile
 rm $files
+mv $outfile aap.dat
+cat > $outfile <<EOF
+# Nino34 index based on GPCC station-based land prdcipitation projected on ENSO teleconnections
+# using correlation patterns
+# nino34_prcp [1] Nino index from land precipitation
+EOF
+normdiff aap.dat null monthly monthly | fgrep -v '#' >> $outfile
 $HOME/NINO/copyfilesall.sh telecon_nino34_$dataset.dat telecon_corr_nino34_$dataset.dat

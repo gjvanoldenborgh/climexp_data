@@ -34,7 +34,7 @@
 *
         call getarg(1,string)
         minnum = ''
-        if ( iargc().eq.3 ) call getarg(2,minnum)
+        if ( mod(iargc(),2) == 1 ) call getarg(2,minnum)
         if ( iargc().eq.1 .or. minnum(1:3).eq.'min' .or.
      +       minnum(1:4).eq.'elev' ) then
             if ( iargc().eq.1 .and. 

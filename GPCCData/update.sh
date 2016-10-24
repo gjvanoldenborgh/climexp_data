@@ -55,14 +55,15 @@ do
 	            if [ ! -s monitoring_v5_${res}_${yr}_$mo.nc ]; then
 	                file=first_guess_monthly_${yr}_$mo.nc
             	    if [ $debug = false -a $stillok = true ]; then
-            	        if [ ! -s $file.gz 
-            	        ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz"
-                		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz
-                		if [ -s $file.gz ]; then
-                		    echo "Downloaded $file.gz"
-                		else
-                		    echo "Cannot find $file.gz"
-                		    stillok=false
+            	        if [ ! -s $file.gz ]; then
+                	        ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz"
+                    		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz
+                    		if [ -s $file.gz ]; then
+                    		    echo "Downloaded $file.gz"
+                    		else
+                	    	    echo "Cannot find $file.gz"
+                		        stillok=false
+                		    fi
                 		fi
         		    fi
         		    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then

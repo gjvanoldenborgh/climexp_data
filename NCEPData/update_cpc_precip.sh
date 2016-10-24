@@ -5,7 +5,7 @@ wget="wget -q -N"
 
 # daily CPC precipitation data
 
-for region in CONUS GLB; do
+for region in GLB CONUS; do
 
 mkdir -p prcp
 cd prcp
@@ -45,6 +45,7 @@ while [ $yr -le $yrnow ]; do
                 dir=RT
             fi
             echo "downloading $region $yr $dir..."
+            echo "$wget $base/$dir/$yr/PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*.gz"
             $wget $base/$dir/$yr/PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*.gz
             firstfile=`ls PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*.gz | head -1 2> /dev/null`
             if [ -s "$firstfile" ]; then
@@ -61,6 +62,7 @@ while [ $yr -le $yrnow ]; do
                 done
             else
                 echo "No gzipped data, try uncompressed"
+                echo "$wget $base/$dir/$yr/PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*RT"
                 $wget $base/$dir/$yr/PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*RT
                 for file in PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}*RT; do
                     cp $file ${file%.RT}

@@ -4,23 +4,44 @@ base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Dailies
 yrbegin=1851
 yrend=2014
 
-for var in tmax.2m tmin.2m air.2m prate prmsl
+for var in tmax.2m tmin.2m air.2m prate prmsl air
 do
-    case $var in
-        air.2m|tmin.2m|tmax.2m|prate) dir=gaussian/monolevel;;
-        prmsl) dir=monolevel;;
-        *) echo "$0: error: unknown var $var";exit -1;;
-    esac
-    yr=$yrbegin
-    while [ $yr -le $yrend ]; do
-        file=$var.$yr.nc
-        wget -N $base/$dir/$file
-        ((yr++))
-    done
-    cdo -b 32 -r -f nc4 -z zip copy $var.????.nc ${var}_daily.nc
-    describefield ${var}_daily.nc
-    rsync -e ssh -avt ${var}_daily.nc bhlclim:climexp/20C/
+    if [ ! -s ${var}_daily.nc -a ! -s ${var}850_daily.nc ]; then
+        case $var in
+            air.2m|tmin.2m|tmax.2m|prate) dir=gaussian/monolevel;;
+            prmsl) dir=monolevel;;
+            air) dir=pressure;;
+            *) echo "$0: error: unknown var $var";exit -1;;
+        esac
+        yr=$yrbegin
+        while [ $yr -le $yrend ]; do
+            file=$var.$yr.nc
+            echo "updating $dir/$file"
+            wget -q -N $base/$dir/$file
+            if [ $dir = pressure ]; then
+                for lev in 850; do
+                    if [ ! -s ${var}${lev}.$yr.nc ]; then
+                        cdo sellevel,$lev ${var}.$yr.nc ${var}${lev}.$yr.nc
+                    fi
+                done
+            fi
+            ((yr++))
+        done
+        if [ $dir = pressure ]; then
+            for lev in 850; do
+                cdo -b 32 -r -f nc4 -z zip copy $var$lev.????.nc ${var}${lev}_daily.nc
+                describefield ${var}${lev}_daily.nc
+                rsync -e ssh -avt ${var}${lev}_daily.nc bhlclim:climexp/20C/
+            done
+        else
+            cdo -b 32 -r -f nc4 -z zip copy $var.????.nc ${var}_daily.nc
+            describefield ${var}_daily.nc
+            rsync -e ssh -avt ${var}_daily.nc bhlclim:climexp/20C/
+        fi
+    fi
 done
+
+exit
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Monthlies/
 

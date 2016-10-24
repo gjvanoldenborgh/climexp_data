@@ -109,3 +109,4 @@ $HOME/NINO/copyfiles.sh cpc_eq_heat300.dat
 
 ./update_annular.sh
 ./update_daily.sh
+./merge_telecon.sh cmorph

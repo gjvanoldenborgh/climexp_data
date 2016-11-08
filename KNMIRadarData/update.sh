@@ -147,6 +147,7 @@ while [ $lastok = true ]; do
         fi
     fi
 done
-$cdo copy radar_max_20??_latlon.nc radar_max.nc
-ncatted -a title,global,a,c,"KNMI calibrated radar data" radar_max.nc
+$cdo copy radar_max_20??_latlon.nc aap.nc
+$cdo divc,24 aap.nc radar_max.nc
+ncatted -a title,global,a,c,"KNMI calibrated radar data" -a units,pr,m,c,"mm/hr" -a long_name,pr,m,c,"daily maximum of hourly precipitation" radar_max.nc
 $HOME/NINO/copyfiles.sh radar_max.nc

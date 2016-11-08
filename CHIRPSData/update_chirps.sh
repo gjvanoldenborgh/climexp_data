@@ -1,8 +1,8 @@
 #!/bin/sh
 
+cdo="cdo -r -f nc4 -z zip"
 for res in 25 # 05
 do
-
     yrnow=`date +%Y`
     yr=1981 
     ## files are v2p0chirps19810101.tar.gz
@@ -10,7 +10,7 @@ do
         # -q: quiet
         # -N: only when newer
         # -r : recursive
-        # -nH: leave out the sanem of the server
+        # -nH: leave out the name of the server
         # --cut-dirs: start at CHIRPS-2.0
 
         if [ ! -s v2p0chirps_${yr}_${res}.nc -o $yr -ge $((yrnow-1)) ]; then
@@ -34,19 +34,23 @@ do
                 if [ ! -s ${filename}.nc -o ${filename}.nc -ot ${filename}.bil ]; then
                     gdal_translate -of NetCDF ${filename}.bil aap.nc >> gdal.log
                     ncrename -v Band1,pr aap.nc >> gdal.log
-                    cdo -r -f nc4 -z zip settaxis,${year}-${month}-${day},12:00,1day aap.nc ${filename}.nc >> gdal.log 2>&1
+                    $cdo settaxis,${year}-${month}-${day},12:00,1day aap.nc ${filename}.nc >> gdal.log 2>&1
                     ncatted -a _FillValue,pr,m,d,-9999 -a units,pr,a,c,"mm/dy" \
                         -a long_name,pr,m,c,"precipitaton" -a axis,time,a,c,"T" \
-                        -a title,global,'CHIRPS-2.0 merged satellite / rain gauge precipitation estimate' \
+                        -a title,global,a,c,'CHIRPS-2.0 merged satellite / rain gauge precipitation estimate' \
                         -a source,global,a,c,'ftp://chg-ftpout.geog.ucsb.edu/pub/org/chg/products/CHIRPS-2.0' ${filename}.nc
                 fi
             done
-            cdo -r -f nc4 -z zip copy v2p0chirps${yr}????.nc v2p0chirps_${yr}_${res}.nc
+            $cdo copy v2p0chirps${yr}????.nc v2p0chirps_${yr}_${res}.nc
+            if [ $yr -ge 2015 ]; then
+                $cdo invertlat v2p0chirps_${yr}_${res}.nc aap.nc
+                mv aap.nc v2p0chirps_${yr}_${res}.nc
+            fi
             rm v2p0chirps${yr}????.bil v2p0chirps${yr}????.hdr v2p0chirps${yr}????.nc
         fi # generate again?
         ((yr++))
     done # yr
 	
-	cdo -r -f nc4 -z zip copy v2p0chirps_????_${res}.nc v2p0chirps_$res.nc
+	$cdo copy v2p0chirps_????_${res}.nc v2p0chirps_$res.nc
     $HOME/NINO/copyfiles.sh v2p0chirps_$res.nc
 done # res(olution)

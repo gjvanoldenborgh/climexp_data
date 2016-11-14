@@ -42,7 +42,7 @@ do
                 fi
             done
             $cdo copy v2p0chirps${yr}????.nc v2p0chirps_${yr}_${res}.nc
-            if [ $yr -ge 2015 ]; then
+            if [ $HOST = bvlclim.knmi.nl -a $yr -ge 2015 ]; then
                 $cdo invertlat v2p0chirps_${yr}_${res}.nc aap.nc
                 mv aap.nc v2p0chirps_${yr}_${res}.nc
             fi

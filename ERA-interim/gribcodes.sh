@@ -9,6 +9,8 @@ case $var in
     sp)   par=134; long_name="surface pressure"; units="Pa";;
     msl)  par=151; long_name="mean sea-level pressure"; units="Pa";;
     z500) par=129; long_name="500hPa geopotential"; units="m2 s-2";;
+    t500) par=130; long_name="500hPa temperature"; units="K";;
+    q500) par=133; long_name="500hPa temperature"; units="kg/kg";;
     u10)  par=165; long_name="10m zonal wind"; units="m/s";;
     v10)  par=166; long_name="10m meridional wind"; units="m/s";;
     wspd) par=207; long_name="wind speed"; units="m/s";;

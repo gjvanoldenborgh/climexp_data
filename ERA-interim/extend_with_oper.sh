@@ -21,7 +21,7 @@ fi
 cdoflags="-r -R -f nc4 -z zip"
 
 # construct the list of months
-var=tp # let's assume all went well and the other variables were downloaded as well...
+var=t500 # let's assume all went well and the other variables were downloaded as well...
 m=0
 curyr=`date "+%Y"`
 begyr=$((curyr-1))
@@ -43,10 +43,10 @@ do
     else
         mo=$m
     fi
-    echo "Getting \*$yr$mo.grib from bvlclim"
-    rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr$mo.grib . > /dev/null 2>&1
-    echo "Getting \*$yr.grib from bvlclim"
-    rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr.grib . > /dev/null 2>&1
+    ###echo "Getting \*$yr$mo.grib from bvlclim"
+    ###rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr$mo.grib . > /dev/null 2>&1
+    ###echo "Getting \*$yr.grib from bvlclim"
+    ###rsync -e ssh -at bvlclim:climexp/ERA-interim/\*$yr.grib . > /dev/null 2>&1
     if [ -s $var$yr$mo.grib -o -s $var$yr.grib ]; then
         # clean up the operational analyses if the ERA-interim exists
         [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
@@ -267,108 +267,110 @@ if [ "$forecast" != false ]; then
         c=`ecaccess-job-list|egrep -c 'INIT|WAIT|EXEC'`
     done
     sleep 15 # to give ECMWF time to finish copying the files
-fi
 
-for var in $ivars
-do
-    gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
-    netcdffile=${gribfile%.grb}.nc
-    if [ ! -f $netcdffile ]; then
-        echo ecaccess-file-get scratch:$netcdffile
-        while [ ! -s $netcdffile ]; do
-            ecaccess-file-get scratch:$netcdffile
-            [ ! -s $netcdffile ] && sleep 60
-        done
-        echo ecaccess-file-delete scratch:$gribfile scratch:$netcdffile
-        ecaccess-file-delete scratch:$gribfile
-        ecaccess-file-delete scratch:$netcdffile
-    fi
-    mv $netcdffile aap.nc
-    # shift time so that the 00, 06, 12 and 18 analyses are averaged
-    cdo $cdoflags shifttime,3hour aap.nc noot.nc
-    if [ $var = tdew ]; then
-        oper=daymax
-    else
-        oper=daymean
-    fi
-    cdo $cdoflags $oper noot.nc aap.nc
-    if [ 1 = 0 ]; then
-        # shift time back from 15 to 12 UTC in order not to confuse the next program
-        cdo $cdoflags shifttime,-3hour aap.nc $netcdffile
-    else
-        # somehow the time is already correct...
-        mv aap.nc $netcdffile
-    fi
-    rm -f aap.nc noot.nc
-    if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
-        cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
-        mv aap.nc $netcdffile
-    fi
-    [ -f aap.nc ] && rm aap.nc
-done 
-
-for var in $cvars
-do
-    gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
-    netcdffile=${gribfile%.grb}.nc
-    if [ ! -f $gribfile ]; then
-        echo ecaccess-file-get scratch:$gribfile
-        while [ ! -s $gribfile ]; do
-            ecaccess-file-get scratch:$gribfile
-            [ ! -s $gribfile ] && sleep 60
-        done
-        echo ecaccess-file-delete scratch:$gribfile scratch:$gribfile
-        ecaccess-file-delete scratch:$gribfile
-        ecaccess-file-delete scratch:$gribfile
-    fi
-    if [ $var = tmin -o $var = tmax ]; then
-        if [ $var = tmin ]; then
-            oper=daymin
-        elif [ $var = tmax ]; then
+    ifvars=`fgrep "for var in t2m" marsforecast.sh | sed -e "s/for var in //"`
+    for var in $ifvars
+    do
+        gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
+        netcdffile=${gribfile%.grb}.nc
+        if [ ! -f $netcdffile ]; then
+            echo ecaccess-file-get scratch:$netcdffile
+            while [ ! -s $netcdffile ]; do
+                ecaccess-file-get scratch:$netcdffile
+                [ ! -s $netcdffile ] && sleep 60
+            done
+            echo ecaccess-file-delete scratch:$gribfile scratch:$netcdffile
+            ecaccess-file-delete scratch:$gribfile
+            ecaccess-file-delete scratch:$netcdffile
+        fi
+        mv $netcdffile aap.nc
+        # shift time so that the 00, 06, 12 and 18 analyses are averaged
+        cdo $cdoflags shifttime,3hour aap.nc noot.nc
+        if [ $var = tdew ]; then
             oper=daymax
         else
-            echo "$0: error: unknown var $var"
-            exit -1
+            oper=daymean
         fi
-        if [ force=true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
-            echo "converting $gribfile to netcdf"
-            cdo $cdoflags copy $gribfile aap.nc
-            # shift time so that the 06, 12, 18 and 24 values are averaged
-            cdo $cdoflags shifttime,-3hour aap.nc noot.nc
-            cdo $cdoflags $oper noot.nc aap.nc
-            if [ 0 = 1 ]; then
-                # shift time back from 21 to 12 UTC in order not to confuse the next program
-                cdo $cdoflags shifttime,-9hour aap.nc $netcdffile
-            else
-                # the time is already at 12:00...
-                mv aap.nc $netcdffile
-            fi
-            rm -f aap.nc noot.nc
-            . ./gribcodes.sh
-            ncrename -O -v var$par,$var $netcdffile aap.nc
-            ncatted -O -a long_name,$var,o,c,"$long_name" \
-                -a units,$var,o,c,"$units" \
-                -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
-                -a title,global,o,c,"operational analysis" \
-                aap.nc $netcdffile
-            if [ $var = tmin -o $var = tmax ]; then
-                cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
-                mv aap.nc $netcdffile
-            fi
-            rm aap.nc
+        cdo $cdoflags $oper noot.nc aap.nc
+        if [ 1 = 0 ]; then
+            # shift time back from 15 to 12 UTC in order not to confuse the next program
+            cdo $cdoflags shifttime,-3hour aap.nc $netcdffile
+        else
+            # somehow the time is already correct...
+            mv aap.nc $netcdffile
         fi
-    elif [ $var = "tp" ]; then
-        if [ force = true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
-            echo "Warning: $var forecasts not yet ready"
+        rm -f aap.nc noot.nc
+        if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
+            cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
+            mv aap.nc $netcdffile
         fi
         [ -f aap.nc ] && rm aap.nc
-        [ -f noot.nc ] && rm noot.nc
-    fi
-done
-wetbulb_field forecast_tmax${curyr}-${curmo}-${curdy}.nc \
-    forecast_tdew${curyr}-${curmo}-${curdy}.nc \
-    forecast_sp${curyr}-${curmo}-${curdy}.nc \
-    forecast_twetbulb${curyr}-${curmo}-${curdy}.nc
+    done 
+
+    cfvars=`fgrep "for var in tp" marsforecast.sh | sed -e "s/for var in //"`
+    for var in $cfvars
+    do
+        gribfile=forecast_${var}${curyr}-${curmo}-${curdy}.grb
+        netcdffile=${gribfile%.grb}.nc
+        if [ ! -f $gribfile ]; then
+            echo ecaccess-file-get scratch:$gribfile
+            while [ ! -s $gribfile ]; do
+                ecaccess-file-get scratch:$gribfile
+                [ ! -s $gribfile ] && sleep 60
+            done
+            echo ecaccess-file-delete scratch:$gribfile scratch:$gribfile
+            ecaccess-file-delete scratch:$gribfile
+            ecaccess-file-delete scratch:$gribfile
+        fi
+        if [ $var = tmin -o $var = tmax ]; then
+            if [ $var = tmin ]; then
+                oper=daymin
+            elif [ $var = tmax ]; then
+                oper=daymax
+            else
+                echo "$0: error: unknown var $var"
+                exit -1
+            fi
+            if [ force=true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
+                echo "converting $gribfile to netcdf"
+                cdo $cdoflags copy $gribfile aap.nc
+                # shift time so that the 06, 12, 18 and 24 values are averaged
+                cdo $cdoflags shifttime,-3hour aap.nc noot.nc
+                cdo $cdoflags $oper noot.nc aap.nc
+                if [ 0 = 1 ]; then
+                    # shift time back from 21 to 12 UTC in order not to confuse the next program
+                    cdo $cdoflags shifttime,-9hour aap.nc $netcdffile
+                else
+                    # the time is already at 12:00...
+                    mv aap.nc $netcdffile
+                fi
+                rm -f aap.nc noot.nc
+                . ./gribcodes.sh
+                ncrename -O -v var$par,$var $netcdffile aap.nc
+                ncatted -O -a long_name,$var,o,c,"$long_name" \
+                    -a units,$var,o,c,"$units" \
+                    -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
+                    -a title,global,o,c,"operational analysis" \
+                    aap.nc $netcdffile
+                if [ $var = tmin -o $var = tmax ]; then
+                    cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
+                    mv aap.nc $netcdffile
+                fi
+                rm aap.nc
+            fi
+        elif [ $var = "tp" ]; then
+            if [ force = true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
+                echo "Warning: $var forecasts not yet ready"
+            fi
+            [ -f aap.nc ] && rm aap.nc
+            [ -f noot.nc ] && rm noot.nc
+        fi
+    done
+    wetbulb_field forecast_tmax${curyr}-${curmo}-${curdy}.nc \
+        forecast_tdew${curyr}-${curmo}-${curdy}.nc \
+        forecast_sp${curyr}-${curmo}-${curdy}.nc \
+        forecast_twetbulb${curyr}-${curmo}-${curdy}.nc
+fi # forecast = true|false
 
 for var in $ivars $cvars twetbulb
 do
@@ -381,8 +383,8 @@ do
     if [ -s $file ]; then
         files="$files $file"
     fi
-    echo "Getting erai_${var}_daily.nc from bvlclim"
-    rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
+    ###echo "Getting erai_${var}_daily.nc from bvlclim"
+    ###rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
     echo "cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc"
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     echo "copying to bhlclim..."

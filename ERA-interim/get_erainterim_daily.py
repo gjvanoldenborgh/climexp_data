@@ -1,4 +1,5 @@
-#!/home/oldenbor/bin/python
+#!/bin/python
+# run on zuidzee
 import os
 from datetime import datetime
 from ecmwfapi import ECMWFDataServer
@@ -89,7 +90,7 @@ server = ECMWFDataServer()
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
-vars = [ "t2m", "tmin", "tmax", "tdew", "msl", "sp", "z500", "tp", "evap" ]
+vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "msl", "sp", "z500", "t500", "q500" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -124,6 +125,18 @@ for var in vars:
         code = "129.128"
         type = "an"
         units = "m2 s-2"
+        levelist = "500"
+        levtype = "pl"
+    elif var == "t500":
+        code = "130.128"
+        type = "an"
+        units = "K"
+        levelist = "500"
+        levtype = "pl"
+    elif var == "q500":
+        code = "133.128"
+        type = "an"
+        units = "kg/kg"
         levelist = "500"
         levtype = "pl"
     elif var == "tp":
@@ -196,12 +209,15 @@ for var in vars:
     # end of years loop
 
     outfile = "erai_" + var + "_daily.nc"
-    if concatenate or os.path.isfile(file) == False:
+    if concatenate or os.path.isfile(outfile) == False:
         command = cdo + " copy " + ncfiles + " " + outfile
         print command
         os.system(command)
 
         command = "ncatted -a units," + var + ",a,c," + units + " " + outfile
+        print command
+        os.system(command)
+        command = "ncatted -a units," + var + ",m,c," + units + " " + outfile
         print command
         os.system(command)
 

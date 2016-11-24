@@ -18,7 +18,7 @@ echo @@@ "NCEP (for weekly & daily data)"
 (cd NCEPData; ./update_indices.sh  | 2>&1 tee update_indices.log)
 echo @@@ CRU
 (cd CRUData; ./update_indices.sh  | 2>&1 tee update_indices.log)
-(cd CRUData; ./update_fields.sh   | 2>&1 tee update_fields.log)
+###(cd CRUData; ./update_fields.sh   | 2>&1 tee update_fields.log)
 echo @@@ UKMO
 (cd UKMOData; ./update_indices.sh | 2>&1 tee update_indices.log)
 (cd UKMOData; ./update_fields.sh  | 2>&1 tee update_fields.log)

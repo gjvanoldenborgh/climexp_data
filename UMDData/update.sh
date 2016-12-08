@@ -6,11 +6,11 @@ yr=`date -d "a month ago" +%Y`
 mo=`date -d "a month ago" +%m`
 if [ ! -s olr-monthly_${version}-1_197901_$yr$mo.nc ]; then
     wget -q -N http://olr.umd.edu/CDR/Monthly/$version/olr-monthly_${version}_197901_$yr$mo.nc
-    if [ -s olr-monthly_${version}-1_197901_$yr$mo.nc ]; then
-        cp olr-monthly_${version}-1_197901_$yr$mo.nc umd_olr_mo.nc
-        mv olr-monthly_${version}-1_197901_$yr$mo.nc aap.nc
-        rm olr-monthly_${version}-1_197901_??????.nc
-        mv aap.nc olr-monthly_${version}-1_197901_$yr$mo.nc
+    if [ -s olr-monthly_${version}_197901_$yr$mo.nc ]; then
+        cp olr-monthly_${version}_197901_$yr$mo.nc umd_olr_mo.nc
+        mv olr-monthly_${version}_197901_$yr$mo.nc aap.nc
+        rm -f olr-monthly_${version}_197901_??????.nc
+        mv aap.nc olr-monthly_${version}_197901_$yr$mo.nc
     fi
 fi
 

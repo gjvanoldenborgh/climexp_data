@@ -210,14 +210,18 @@ for var in vars:
 
     outfile = "erai_" + var + "_daily.nc"
     if concatenate or os.path.isfile(outfile) == False:
-        command = cdo + " copy " + ncfiles + " " + outfile
+        command = cdo + " copy " + ncfiles + " " + "/tmp/" + outfile
         print command
         os.system(command)
 
-        command = "ncatted -a units," + var + ",a,c," + units + " " + outfile
+        command = "ncatted -a units," + var + ",a,c," + units + " /tmp/" + outfile
         print command
         os.system(command)
-        command = "ncatted -a units," + var + ",m,c," + units + " " + outfile
+        command = "ncatted -a units," + var + ",m,c," + units + " /tmp/" + outfile
+        print command
+        os.system(command)
+
+        command = "mv /tmp/" + outfile + " " + outfile
         print command
         os.system(command)
 

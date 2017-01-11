@@ -46,4 +46,5 @@ $HOME/NINO/copyfiles.sh CRU_blendnewjul08_q_7303cf.nc
 wget -N http://www.metoffice.gov.uk/hadobs/hadcruh/data/CRU_blendnewjul08_RH_7303cf.nc
 $HOME/NINO/copyfiles.sh CRU_blendnewjul08_RH_7303cf.nc
 
+exit
 . ./update_cru_ts.sh

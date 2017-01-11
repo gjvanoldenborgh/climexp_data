@@ -1,6 +1,10 @@
 #!/bin/sh
 set -x
-cleanup=true
+if [ $HOST = bvlclim.knmi.nl ]; then
+    cleanup=true
+else
+    cleanup=false
+fi
 force=false # true
 update=true # false
 
@@ -83,6 +87,7 @@ do
             rm aap.nc
             $HOME/NINO/copyfiles.sh ${var}_${res}deg_reg_${version}u_mo.nc
             if [ $cleanup = true ]; then
+                rsync ${var}_${res}deg_reg_${version}u.nc zuidzee:NINO/ENSEMBLES/
                 /bin/rm ${var}_${res}deg_reg_${version}u.nc
                 touch ${var}_${res}deg_reg_${version}u.nc
             fi

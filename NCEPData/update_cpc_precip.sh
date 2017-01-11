@@ -1,4 +1,5 @@
 #!/bin/sh
+export PATH=/usr/local/free/bin/:$PATH
 ###echo DEBUG
 ###wget="echo not getting"
 wget="wget -q -N"
@@ -6,6 +7,15 @@ wget="wget -q -N"
 # daily CPC precipitation data
 
 for region in GLB CONUS; do
+
+# this assumes we run the script at least once a year, or start from scratch
+yr=`date -d "3 days ago" +%Y`
+((yr1=yr-1))
+if [ ! -s prcp_${region}_${yr1}.complete ]; then
+    rm -f prcp_${region}_${yr1}.nc nprcp_${region}_${yr1}.nc
+    # I am sure everything will go well...
+    date > prcp_${region}_${yr1}.complete
+fi
 
 mkdir -p prcp
 cd prcp

@@ -13,7 +13,7 @@ if [ $force != true -a -f downloaded_$yr$mo ]; then
 fi
 if [ 1 = 1 ]; then
 ./get_erainterim.py
-./get_erainterim_daily.py
+ssh zuidzee "cd NINO/ERA-interim; ./get_erainterim_daily.py; rsync -at erai_*_daily.nc bhlclim:climexp/ERA-interim/"
 ./update_tglobal.sh
 ./update_twetbulb.sh
 $HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
@@ -31,9 +31,9 @@ do
         *) echo "$0: unknown var $var"; exit -1;;
     esac
     echo "Computing $var on zuidzee"
-    rsync erai_${basevar}_daily.nc zuidzee:NINO/ERA-interim/
+    ###rsync erai_${basevar}_daily.nc zuidzee:NINO/ERA-interim/
     ssh zuidzee "cd NINO/ERA-interim; daily2longerfield erai_${basevar}_daily.nc 1 $oper minfac 75 erai_$var.nc"
-    rsync zuidzee:NINO/ERA-interim/erai_$var.nc .
+    rsync -at zuidzee:NINO/ERA-interim/erai_$var.nc .
     $HOME/NINO/copyfiles.sh erai_$var.nc
 done
 

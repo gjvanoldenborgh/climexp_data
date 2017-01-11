@@ -15,7 +15,7 @@ cdoflags="-r -f nc4 -z zip"
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis.dailyavgs/
 
-for dirvar in surface_gauss/prate.sfc.gauss surface_gauss/air.2m.gauss pressure/hgt
+for dirvar in surface_gauss/prate.sfc.gauss surface_gauss/air.2m.gauss surface/slp pressure/hgt
 do
 	dir=`dirname $dirvar`
 	var=`basename $dirvar`

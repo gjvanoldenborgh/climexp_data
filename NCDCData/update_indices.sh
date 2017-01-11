@@ -2,7 +2,7 @@
 # http://www.ncdc.noaa.gov/cag/time-series/global/globe/land_ocean/p12/12/1880-2014.csv
 # http://www.ncdc.noaa.gov/cag/time-series/global/globe/land/p12/12/1880-2014.csv
 # http://www.ncdc.noaa.gov/cag/time-series/global/globe/ocean/p12/12/1880-2014.csv
-base=http://www.ncdc.noaa.gov/cag/time-series/global
+base=https://www.ncdc.noaa.gov/cag/time-series/global
 yrnow=`date -d "1 month ago" "+%Y"`
 
 files=""
@@ -17,8 +17,8 @@ do
     do
         file=1880-$yrnow.csv
         [ -f $file ] && rm $file # they all have the same name...
-        echo wget $base/$dir/$area/p12/12/$file
-        wget $base/$dir/$area/p12/12/$file
+        echo wget --no-check-certificate $base/$dir/$area/p12/12/$file
+        wget --no-check-certificate $base/$dir/$area/p12/12/$file
         c=`cat $file | wc -l`
         if [ $c -lt 100 ]; then
             echo "$0: error: incomplete file $file from $base/$dir/$area/p12/12/$file"

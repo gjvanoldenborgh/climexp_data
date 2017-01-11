@@ -11,7 +11,7 @@ if [ -f downloaded_$yr$mo -a "$force" != true ]; then
 fi
 [ ! -d ghcnm ] && mkdir ghcnm
 
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3
+base=ftp://ftp.ncei.noaa.gov/pub/data/ghcn/v3
 wget -q -N $base/country-codes
 
 somethingnew=false

@@ -29,7 +29,7 @@ if [ ! -s lsmask.nc ]; then
     done
 fi
 
-for var in z t u v t2m u10 v10 ts slp lhtfl shtfl taux tauy wspd evap tp ci ssr
+for var in z t u v t2m u10 v10 ts slp lhtfl shtfl taux tauy wspd evap tp ci ssr str
 do
     case $var in
         slp) eosvar=SLP;type=2D;levtype=pres;;
@@ -51,6 +51,7 @@ do
         ci) eosvar=FRSEAICE;type=2D;levtype=flux;;
         tp) eosvar=PRECTOT;type=2D;levtype=flux;;
         ssr) eosvar=SWGNT;type=2D;levtype=rad;;
+        str) eosvar=LWGNT;type=2D;levtype=rad;;
         *) echo "$0: error: cannot handle var $var yet"; exit -1;;
     esac
     
@@ -109,20 +110,23 @@ do
                     base=ftp://goldsmr4.sci.gsfc.nasa.gov/data/s4pa/MERRA2_MONTHLY
                 fi
                 (cd MERRA2_MONTHLY/`dirname $path`; wget -q -N $base/$path)
-                cdo -f nc4 -z zip selvar,$eosvar MERRA2_MONTHLY/$path $file
-                if [ $var = v ]; then
-                    rm MERRA2_MONTHLY/$path
+                if [ -s MERRA2_MONTHLY/$path ]; then
+                    cdo -f nc4 -z zip selvar,$eosvar MERRA2_MONTHLY/$path $file
+                    if [ $var = v ]; then
+                        rm MERRA2_MONTHLY/$path
+                    fi
                 fi
             fi
-            c=`file $file | egrep -c 'Hierarchical|NetCDF'`
-            if [ $c = 0 ]; then
-                echo "$0: error retrieving $file"
-                exit -1
+            if [ -s $file ]; then
+                c=`file $file | egrep -c 'Hierarchical|NetCDF'`
+                if [ $c = 0 ]; then
+                    echo "$0: error retrieving $file"
+                    exit -1
+                fi
+                ncrename -v $eosvar,$var $file
+                [ $type = 3D ] && ncrename \
+                        -d Height,lev -v Height,lev $file
             fi
-            ncrename -v $eosvar,$var $file
-            [ $type = 3D ] && ncrename \
-                    -d Height,lev -v Height,lev $file
-                    
         fi
         m=$((m+1))
         if [ $m -gt 12 ]; then

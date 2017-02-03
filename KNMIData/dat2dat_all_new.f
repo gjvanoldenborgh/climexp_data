@@ -98,9 +98,9 @@
         do ivar=1,nvars
             open(10+ivar,file='list_'//vars(ivar)//'.txt')
             write(10+ivar,'(a)')
-     +           ,'located stations in 50.0N:54.0N, 3.0E:8.0E'
+     +           'located stations in 50.0N:54.0N, 3.0E:8.0E'
             write(10+ivar,'(a)')
-     +           ,'=============================================='
+     +           '=============================================='
         end do
         if ( lwrite ) print *,'opening stationslijst.html'
         open(1,file='stationslijst.html',status='old')

@@ -1,6 +1,10 @@
 #!/bin/sh
 set -x
-cleanup=true
+if [ $HOST = bvlclim.knmi.nl ]; then
+    cleanup=true
+else
+    cleanup=false
+fi
 force=false # true
 update=true # false
 
@@ -44,7 +48,12 @@ do
             else
                 cdo $cdoflags copy ${var}_${res}deg_reg_$yr.nc aap.nc
             fi
-            mv aap.nc ${var}_${res}deg_reg_$yr.nc
+            # truncate the part of the file without data
+            get_index aap.nc 5 5 52 52 | tail -1 > aap.lastline
+            yr=`cat aap.lastline | cut -b 1-4`
+            mm=`cat aap.lastline | cut -b 6-7`
+            dd=`cat aap.lastline | cut -b 9-10`
+            cdo $cdoflags seldate,${yr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
 
             rm -f ${var}_${res}deg_reg_${version}u.nc
             use_python=false
@@ -83,6 +92,7 @@ do
             rm aap.nc
             $HOME/NINO/copyfiles.sh ${var}_${res}deg_reg_${version}u_mo.nc
             if [ $cleanup = true ]; then
+                rsync ${var}_${res}deg_reg_${version}u.nc zuidzee:NINO/ENSEMBLES/
                 /bin/rm ${var}_${res}deg_reg_${version}u.nc
                 touch ${var}_${res}deg_reg_${version}u.nc
             fi

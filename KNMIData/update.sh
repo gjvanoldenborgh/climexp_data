@@ -1,5 +1,6 @@
 #!/bin/sh
 export PATH=$PATH:$HOME/climexp/bin/
+sudo mount /data/web/www2
 ###dat2dat etmgeg_260_2001.dat
 ###for file in datafiles2/???/*.zip
 ###do
@@ -7,7 +8,7 @@ export PATH=$PATH:$HOME/climexp/bin/
 ###done
 # should get the list from a datafile - later
 varlist="dd fg fh fn fx t1 sq qq dr pg px pn vn vx ng ug ux un ev dx dy tg tx tn rh"
-stationlist="210 235 240 242 249 251 257 260 265 267 269 270 273 275 277 278 279 280 283 286 290 310 319 323 330 340 344 348 350 356 370 375 377 380 391"
+stationlist="210 215 235 240 242 249 251 257 260 265 267 269 270 273 275 277 278 279 280 283 286 290 310 319 323 330 340 344 348 350 356 370 375 377 380 391"
 for station in $stationlist
 do
 ###    for var in DDVEC FG FHX FHN FXX TG TN TX T10N SQ SP Q DR RH PG PX PN VVN VVX NG UG UX UN EV24
@@ -41,9 +42,9 @@ for var in $varlist; do
         fi
     done
 done
-./merge_hom tx DeBiltTx.v2.txt
-./merge_hom tg DeBiltTg.v2.txt
-./merge_hom tn DeBiltTn.v2.txt
+###./merge_hom tx DeBiltTx.v2.txt
+###./merge_hom tg DeBiltTg.v2.txt
+###./merge_hom tn DeBiltTn.v2.txt
 ./update_hourly.sh
 for station in $stationlist
 do

@@ -152,4 +152,6 @@ do
     ###rm merra_${var}.nc
 done
 
+yr=`date +%Y`
+mo=`date +%m`
 date > downloaded_$yr$mo

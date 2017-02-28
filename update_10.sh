@@ -12,8 +12,8 @@ else
 fi
 
 echo @@@ GISS
-(cd NASAData; ./update.sh | 2>&1 tee update.log)
-(cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
+(ssh zuidzee "cd NASAData; ./update.sh |& tee update.log")
+(ssh zuidzee "cd NASAData; ./update_fields.sh |& tee update_fields.log")
 
 echo "@@@ University of Colorado (sealevel)"
 (cd CUData; ./update_indices.sh | 2>&1 tee update.log)
@@ -131,7 +131,7 @@ echo @@@ NCEP/NCAR daily
 (cd NCEPNCAR40; ./update_daily.sh | 2>&1 tee update_daily.log)
 
 echo @@@ ERA-interim
-(cd ERA-interim; ./update.sh | 2>&1 tee update.log)
+(ssh zuidzee "cd ERA-interim; ./update.sh |& tee update.log")
 
 echo @@@ GHCN-D
 (cd GDCNData; ./update.sh  | 2>&1 tee update.log )

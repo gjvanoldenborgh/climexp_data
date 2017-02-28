@@ -3,7 +3,7 @@ export LANG=C
 
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
-[ -z "$version" ] && echo "$0: error: please define version" && exit -1
+[ -z "$version" ] && echo "$0: error: please define version $version" && exit -1
 [ ! -s HadSST.${version}.median.nc ] && echo "$0: error: cannot find HadSST.${version}.median.nc" && exit -1
 get_index HadSST.${version}.median.nc -75 -7 25 60 > hadsst_natl.dat
 correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.txt

@@ -36,6 +36,11 @@ done
 
 ./make_curl_windstress.sh
 
+# convert from W/m2 to kg/m2/s, simple constant.
+cdo divc,2500000. lhtfl.sfc.mon.mean.nc evap.mon.mean.nc
+cdo sub prate.sfc.mon.mean.nc evap.mon.mean.nc pme.mon.mean.nc
+$HOME/NINO/copyfiles.sh evap.mon.mean.nc pme.mon.mean.nc
+
 cdo -r -f nc4 -z zip add shtfl.sfc.mon.mean.nc lhtfl.sfc.mon.mean.nc aap.nc
 cdo -r -f nc4 -z zip add nswrs.sfc.mon.mean.nc nlwrs.sfc.mon.mean.nc noot.nc
 cdo -r -f nc4 -z zip add aap.nc noot.nc netflx.sfc.mon.mean.nc
@@ -44,7 +49,7 @@ ncatted -a long+_name,netflux,m,c,"Monhly mean of Total Net Heat Flux at Surface
  -a var_desc,netflux,m,c,"Net Heat Flux" netflx.sfc.mon.mean.nc
 rm aap.nc noot.nc
 
-$HOME/NINO/copyfiles.sh netflfx.mon.mean.nc ncurl.???
+$HOME/NINO/copyfiles.sh netflx.mon.mean.nc ncurl.???
 
 ###./make_windspeed.sh
 ###$HOME/NINO/copyfiles.sh  nwindspeed.???

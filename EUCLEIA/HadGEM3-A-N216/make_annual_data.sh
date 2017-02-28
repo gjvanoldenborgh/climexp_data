@@ -17,13 +17,13 @@ for var in $vars; do
         r=0
         while [ $r -lt 15 ]; do
             r=$((r+1))
-            indir=$invar/
+            indir=$invar
             outdir=$var
             mkdir -p $outdir
-            infiles=$indir/${invar}_day_HadGEM3-A-N216_${scen}_r${r}i1p1_*.nc
+            infiles=$indir/${invar}_day_HadGEM3-A-N216_${scen}_r${r}i1p1_????????-????????.nc
             infile=`ls $infiles|head -1`
             if [ ! -s "$infile" ]; then
-                infiles=$indir/${invar}_day_HadGEM3-A-N216_${scen}_r1i1p${r}_*.nc
+                infiles=$indir/${invar}_day_HadGEM3-A-N216_${scen}_r1i1p${r}_????????-????????.nc
             fi
             outfiles=""
             varfile=${var}_yr_HadGEM3-A-N216_${scen}_r${r}i1p1_196001-201312.nc

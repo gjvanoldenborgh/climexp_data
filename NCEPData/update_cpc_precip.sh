@@ -1,5 +1,5 @@
 #!/bin/sh
-export PATH=/usr/local/free/bin/:$PATH
+export PATH=/usr/local/free/bin/:$HOME/climexp/bin:$PATH
 ###echo DEBUG
 ###wget="echo not getting"
 wget="wget -q -N"

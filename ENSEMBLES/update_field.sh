@@ -13,7 +13,7 @@ version=v14.0
 # end date of official file if in the same year as teh year of last month
 enddate="2016-08-31" # keep empty when shortening is not needed "2013-12-31"
 # begin date of annual additions when in the previous year
-nextdate="" # "2015-07-01" # keep empty when previous year is not needed "2014-01-01"
+nextdate="2016-09-01" # "2015-07-01" # keep empty when previous year is not needed "2014-01-01"
 
 cdoflags="-r -f nc4 -z zip"
 
@@ -46,14 +46,15 @@ do
                 endmo=${endmo#0}
                 cdo $cdoflags seldate,${endyr}-$((endmo+1))-01,${yr}-12-31 ${var}_${res}deg_reg_$yr.nc aap.nc
             else
+                endyr=$yr
                 cdo $cdoflags copy ${var}_${res}deg_reg_$yr.nc aap.nc
             fi
             # truncate the part of the file without data
             get_index aap.nc 5 5 52 52 | tail -1 > aap.lastline
             yr=`cat aap.lastline | cut -b 1-4`
-            mm=`cat aap.lastline | cut -b 6-7`
-            dd=`cat aap.lastline | cut -b 9-10`
-            cdo $cdoflags seldate,${yr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
+            mm=`cat aap.lastline | cut -b 6-7 | tr ' ' '0'`
+            dd=`cat aap.lastline | cut -b 9-10 | tr ' ' '0'`
+            cdo $cdoflags seldate,${endyr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
 
             rm -f ${var}_${res}deg_reg_${version}u.nc
             use_python=false

@@ -7,15 +7,15 @@ else
 fi
 ###getit="wget -q -N"
 # GISS requires HTTP/1.1, which wget does not have at the server but curl does...
-getit="curl -O -z"
+getit="wget --no-check-certificate -N -q "
 
 base=ftp://data.giss.nasa.gov/pub/gistemp/download_v3/
 base=http://data.giss.nasa.gov/gistemp/sbbx/
-base=http://data.giss.nasa.gov/pub/gistemp/
+base=https://data.giss.nasa.gov/pub/gistemp/
 for file in SBBX.ERSST SBBX1880.Ts.GHCN.CL.PA.1200 SBBX1880.Ts.GHCN.CL.PA.250 # SBBX.Tsurf1200 SBBX.ERSST # SBBX.SSTHadR2
 do
   cp $file $file.old
-  $getit $file $base/$file.gz
+  $getit $base/$file.gz
   if [ -s $file.gz ]; then
     gunzip -c $file.gz > $file
     touch -r $file.gz $file
@@ -51,7 +51,9 @@ do
 		./sbbx2nc 2
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_both_$decor.nc
 		rm gistemp.nc
-		$HOME/NINO/copyfiles.sh giss_temp_land_$decor.nc giss_temp_both_$decor.nc
+		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc bhlclim:climexp/NASAData/
+		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc gj@gatotkaca.duckdns.org:climexp/NASAData/
+		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc gj@ganesha.xs4all.nl:climexp/NASAData/
 	fi
 done
 
@@ -76,13 +78,13 @@ while [ $yr -le $now ]; do
   file=$y$m.tau.ascii.gz
   if [ ! -s $file ]; then
 	[ -f $file ] && rm $file
-	$getit $file $base/$file
+	$getit $base/$file
   fi
 
   file=$y$m.a.ascii.gz
   if [ ! -s $file ]; then
 	[ -f $file ] && rm $file
-	$getit $file $base/$file
+	$getit $base/$file
   fi
 
   mo=$((mo + 1))

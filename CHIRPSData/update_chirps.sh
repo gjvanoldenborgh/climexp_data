@@ -20,25 +20,27 @@ do
             date > gdal.log
             echo $yr >> gdal.log
             for file in CHIRPS-2.0/africa_daily/bils/p${res}/${yr}/*.tar.gz; do
-                filename=`basename $file .tar.gz`
-                if [ ! -s $filename.hdr -o ! -s $filename.hdr ]; then
-                    tar -xzf $file
-                fi
-                year=$(echo $filename | cut -c11-14)
-                if [ $yr != $year ]; then
-                    echo "$0: error: wrong year: $yr != $year"
-                    exit -1
-                fi
-                month=$(echo $filename | cut -c15-16)
-                day=$(echo $filename | cut -c17-18)
-                if [ ! -s ${filename}.nc -o ${filename}.nc -ot ${filename}.bil ]; then
-                    gdal_translate -of NetCDF ${filename}.bil aap.nc >> gdal.log
-                    ncrename -v Band1,pr aap.nc >> gdal.log
-                    $cdo settaxis,${year}-${month}-${day},12:00,1day aap.nc ${filename}.nc >> gdal.log 2>&1
-                    ncatted -a _FillValue,pr,m,d,-9999 -a units,pr,a,c,"mm/dy" \
-                        -a long_name,pr,m,c,"precipitaton" -a axis,time,a,c,"T" \
-                        -a title,global,a,c,'CHIRPS-2.0 merged satellite / rain gauge precipitation estimate' \
-                        -a source,global,a,c,'ftp://chg-ftpout.geog.ucsb.edu/pub/org/chg/products/CHIRPS-2.0' ${filename}.nc
+                if [ -s $file ]; then # maybe there are none yet...
+                    filename=`basename $file .tar.gz`
+                    if [ ! -s $filename.hdr -o ! -s $filename.hdr ]; then
+                        tar -xzf $file
+                    fi
+                    year=$(echo $filename | cut -c11-14)
+                    if [ $yr != $year ]; then
+                        echo "$0: error: wrong year: $yr != $year"
+                        exit -1
+                    fi
+                    month=$(echo $filename | cut -c15-16)
+                    day=$(echo $filename | cut -c17-18)
+                    if [ ! -s ${filename}.nc -o ${filename}.nc -ot ${filename}.bil ]; then
+                        gdal_translate -of NetCDF ${filename}.bil aap.nc >> gdal.log
+                        ncrename -v Band1,pr aap.nc >> gdal.log
+                        $cdo settaxis,${year}-${month}-${day},12:00,1day aap.nc ${filename}.nc >> gdal.log 2>&1
+                        ncatted -a _FillValue,pr,m,d,-9999 -a units,pr,a,c,"mm/dy" \
+                            -a long_name,pr,m,c,"precipitaton" -a axis,time,a,c,"T" \
+                            -a title,global,a,c,'CHIRPS-2.0 merged satellite / rain gauge precipitation estimate' \
+                            -a source,global,a,c,'ftp://chg-ftpout.geog.ucsb.edu/pub/org/chg/products/CHIRPS-2.0' ${filename}.nc
+                    fi
                 fi
             done
             $cdo copy v2p0chirps${yr}????.nc v2p0chirps_${yr}_${res}.nc
@@ -54,3 +56,14 @@ do
 	$cdo copy v2p0chirps_????_${res}.nc v2p0chirps_$res.nc
     $HOME/NINO/copyfiles.sh v2p0chirps_$res.nc
 done # res(olution)
+
+# prepend centrends for long dataset in Horn
+
+res=25
+cenfile=$HOME/climexp/UCSBData/CenTrends_v1_monthly_ce.nc
+$cdo monsum v2p0chirps_$res.nc v2p0chirps_mo_$res.nc
+ncatted -a units,pr,m,c,"mm/month" v2p0chirps_mo_$res.nc
+$cdo sellonlatbox,28,54,-15,18 v2p0chirps_mo_$res.nc chirps_horn.nc
+$cdo remapcon,chirps_horn.nc $cenfile centrends_$res.nc
+patchfield centrends_$res.nc chirps_horn.nc none centrends_chirps.nc
+$HOME/NINO/copyfiles.sh centrends_chirps.nc

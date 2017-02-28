@@ -1,6 +1,9 @@
 #!/bin/sh
+echo "$0: no longer used!"
+exit
 for scen in historical historicalNat; do
-    for var in pr tasmin tasmax; do
+    for var in pr # pasl tas tasmin tasmax
+    do
         i=1 # start at 2, the first one is OK
         while [ $i -lt 1000 ]; do
             i=$((i+1))

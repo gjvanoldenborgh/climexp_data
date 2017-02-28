@@ -2,8 +2,8 @@
 set -x
 # download the EN4 objective ocean analysis
 
-base=http://www.metoffice.gov.uk/hadobs/en4/data/en4-1-1/
-version=EN.4.1.1
+base=http://www.metoffice.gov.uk/hadobs/en4/data/en4-2-0/
+version=EN.4.2.0
 mem=500
 
 yr=1899

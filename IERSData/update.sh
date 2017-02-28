@@ -1,7 +1,7 @@
 #!/bin/sh
 mv iers.data iers.data.old
 url=http://datacenter.iers.org/eop/-/somos/5Rgv/latest/213
-wget -N $url
+wget -N --no-check-certificate $url
 cp `basename $url` iers.data
 cat > lod.dat << EOF
 # LOD [s] lenth of day

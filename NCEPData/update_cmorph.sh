@@ -165,3 +165,4 @@ cdo monmean cmorph_daily.nc aap.nc # too big to use daily2longerfield
 cdo settaxis,1998-01-15,00:00,1mon aap.nc cmorph_monthly.nc # cdo puts the date at the end of the month :-(
 rm aap.nc
 $HOME/NINO/copyfiles.sh cmorph_monthly.nc
+rsync -avt cmorph_monthly.nc bvlclim:climexp/NCEPData/

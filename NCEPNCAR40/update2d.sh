@@ -38,7 +38,11 @@ done
 
 # convert from W/m2 to kg/m2/s, simple constant.
 cdo divc,2500000. lhtfl.sfc.mon.mean.nc evap.mon.mean.nc
+ncrename -v lhtfl,evap evap.mon.mean.nc
+ncatted -a units,evap,m,c,"kg/m2/s" -a long_name,evap,m,c,"monthly mean of evaporation (from latent heat flux)" evap.mon.mean.nc
 cdo sub prate.sfc.mon.mean.nc evap.mon.mean.nc pme.mon.mean.nc
+ncrename -v prate,pme pme.mon.mean.nc
+ncatted -a long_name,pme,m,c,"monthly mean of precipitation minus evaporation" pme.mon.mean.nc
 $HOME/NINO/copyfiles.sh evap.mon.mean.nc pme.mon.mean.nc
 
 cdo -r -f nc4 -z zip add shtfl.sfc.mon.mean.nc lhtfl.sfc.mon.mean.nc aap.nc

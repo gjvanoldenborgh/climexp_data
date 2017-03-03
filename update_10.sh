@@ -12,8 +12,8 @@ else
 fi
 
 echo @@@ GISS
-(ssh zuidzee "cd NASAData; ./update.sh |& tee update.log")
-(ssh zuidzee "cd NASAData; ./update_fields.sh |& tee update_fields.log")
+(ssh zuidzee "cd NINO/NASAData; ./update.sh |& tee update.log")
+(ssh zuidzee "cd NINO/NASAData; ./update_fields.sh |& tee update_fields.log")
 
 echo "@@@ University of Colorado (sealevel)"
 (cd CUData; ./update_indices.sh | 2>&1 tee update.log)

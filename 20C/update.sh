@@ -1,5 +1,38 @@
 #!/bin/sh
 
+# wind speed is a chore - compuyte from 3-hourly U and V winds
+
+base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/monolevel/
+
+yrbegin=1851
+yrend=2014
+
+for var in wspd
+do
+    yr=$yrbegin
+    while [ $yr -le $yrend ]; do
+        file=$var.10m.$yr
+        echo "updating $file"
+        wget -q -N $base/$file.nc
+        if [ ! -s ${file}.mon.nc ]; then
+            cdo -r -f nc4 -z zip monmean $file.nc ${file}.mon.nc
+        fi
+        if [ ! -s $file.max.nx ]; then
+            cdo -r -f nc4 -z zip daymax $file.nc ${file}.max.nc
+        fi
+        ((yr++))
+    done # yr
+    cdo -r -f nc4 -z zip copy $var.10m.????.mon.nc $var.10m.mon.mean.nc
+    rsync -e ssh -avt $var.10m.mon.mean.nc bhlclim:climexp/20C/
+    cdo -r -f nc4 -z zip copy $var.10m.????.max.nc $var.10m.max.mean.nc
+    rsync -e ssh -avt $var.10m.max.mean.nc bhlclim:climexp/20C/
+done # var
+
+echo TEMPORARY EXIT
+exit
+
+# daily mean data
+
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Dailies
 yrbegin=1851
 yrend=2014

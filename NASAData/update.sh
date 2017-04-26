@@ -29,7 +29,7 @@ file=giss_al_gl_m.dat
 echo "filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat"
 filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
 daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%m.dat}a_4yrlo.dat
-rsync -avt giss*.dat bhlclim:climexp/NASAdata/
+rsync -avt giss*.dat bhlclim:climexp/NASAData/
 rsync -avt giss*.dat gj@gatotkaca.duckdns.org:climexp/NASAData/
 rsync -avt giss*.dat gj@ganesha.xs4all.nl:climexp/NASAData/
 

@@ -17,13 +17,13 @@
             open(2,file=NS(ins)//'_ice_extent.dat')
             write(2,'(3a)') '# ',NS(ins),'H ice extent from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index v2</a>'
+     +           'NSIDC Sea Ice Index v2.1</a>'
             write(2,'(a)') '# ice_extent [million km^2] area covered '//
      +           ' with at least 15% ice'
             open(3,file=NS(ins)//'_ice_area.dat')
             write(3,'(3a)') '# ',NS(ins),'H ice area from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index v2</a>'
+     +           'NSIDC Sea Ice Index v2.1</a>'
             hole_conc = 1
             if ( NS(ins).eq.'N' ) then
                 write(3,'(a)') '# ice_area [million km^2] integrated '//
@@ -43,23 +43,23 @@
             area = 3e33
             extent = 3e33
             do mo=1,12
-                write(file,'(2a,i2.2,a)') NS(ins),'_',mo,'_area_v2.txt'
+                write(file,'(2a,i2.2,a)') NS(ins),'_',mo,
+     +               '_extent_v2.1.csv'
                 open(1,file=trim(file),status='old')
                 read(1,'(a)') string
  100            continue
                 read(1,'(a)',end=200) string
                 if ( string(2:).eq.' ' ) goto 200
-                read(string,'(i4,i3)') yr,i
+                read(string,*) yr,i
                 if ( i.ne.mo ) then
                     write(0,*) 'error: i!=mo: ',i,mo
                     call abort
                 end if
-                if ( string(27:27).ne.NS(ins) ) then
+                if ( string(30:30).ne.NS(ins) ) then
                     write(0,*) 'error: NS!=NS: ',string(27:27),NS(ins)
                     call abort
                 end if
-                read(string(28:),*) e,a
-
+                read(string(32:),*) e,a
                 if ( a.gt.0 ) then
                     if ( NS(ins).eq.'N' ) then
                         if ( yr.lt.1987 .or. yr.eq.1987.and.mo.le.7 )

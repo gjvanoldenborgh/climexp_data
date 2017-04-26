@@ -140,13 +140,10 @@ prcp   1   99 daily precipitation [mm/dy]
 ENDVARS
 EOF
         echo "grads2nc CMORPH/cmorph_$yyyy$mm.ctl CMORPH/cmorph_$yyyy$mm.nc"
-        grads2nc CMORPH/cmorph_$yyyy$mm.ctl aap.nc
-        # save lots of disk space
-        cdo -r -f nc4 -z zip copy aap.nc CMORPH/cmorph_${yyyy}${mm}.nc
+        grads2nc CMORPH/cmorph_$yyyy$mm.ctl CMORPH/cmorph_${yyyy}${mm}.nc
         ###ls -l aap.nc CMORPH/cmorph_${yyyy}${mm}.nc
-        rm CMORPH/cmorph_$yyyy$mm.ctl CMORPH/cmorph_$yyyy$mm.grd aap.nc
-        averagefieldspace CMORPH/cmorph_$yyyy$mm.nc 2 2 aap.nc
-        cdo -r -f nc4 -z zip copy aap.nc CMORPH/cmorph_$yyyy${mm}_05.nc
+        rm CMORPH/cmorph_$yyyy$mm.ctl CMORPH/cmorph_$yyyy$mm.grd
+        averagefieldspace CMORPH/cmorph_$yyyy$mm.nc 2 2 CMORPH/cmorph_$yyyy${mm}_05.nc
     fi
     m=$((m+1))
     if [ $m = 13 ]; then

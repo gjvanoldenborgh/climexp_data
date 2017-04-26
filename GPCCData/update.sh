@@ -20,12 +20,12 @@ do
     doit=false
     stillok=true
     echo "Updating the $res monitoring analysis"
-    while [ $yr -le $thisyr ]; do
+    while [ $yr -le $lastyr ]; do
         for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
             file=monitoring_v5_${res}_${yr}_$mo.nc
-    	    if [ $debug = false -a stillok = true ]; then
+    	    if [ $debug = false -o stillok = true ]; then
     	        if [ ! -s $file.gz ]; then
-    	            ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz"
+    	            echo "wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz"
         	        wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz
         	        if [ -s $file.gz ]; then
         	            echo "Downloaded $file.gz"

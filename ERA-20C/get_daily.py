@@ -11,7 +11,10 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
     if not os.path.isfile(file) or os.stat(file).st_size == 0:
         time = "06"
         if type == "an":
-            step = "0/6/12/18"
+            if var == 'u10' or var == 'v10':
+                step = "0/3/6/9/12/15/18/21"
+            else:
+                step = "0/6/12/18"
         elif type == "fc" and var == 'tmin' or var == 'tmax':
             time = "00:00:00/12:00:00"
             step = "6/12"

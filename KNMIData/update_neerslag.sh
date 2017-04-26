@@ -1,33 +1,44 @@
 #!/bin/sh
 # update the 8-8 precipitation data from the volunteer stations
 [ ! -d tmp ] && mkdir tmp
-if [ ! -s rr550.dat -o reeksen/neerslaggeg_DE-BILT_550.zip -nt rr550.dat ]; then
+[ ! -d webreeksen ] && mkdir webreeksen
+wget -q -N http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/neerslaggeg_DE-BILT_550.zip
+cmp neerslaggeg_DE-BILT_550.zip webreeksen/neerslaggeg_DE-BILT_550.zip
+if [ $? != 0 ]; then
     echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
     echo '==============================================' >> list_rr.txt
-    for file in reeksen/neerslaggeg_*.zip
-    do
-        echo "updating from $file"
-        txtfile=tmp/`basename $file .zip`.txt
-        unzip -p $file > $txtfile
-        ./neerslag2dat $txtfile >> list_rr.txt
+    files=`curl http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
+    for file in $files; do
+        wget -q http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
+        mv $file webreeksen/
+        if [ -s "webreeksen/$file" ]; then
+            echo "updating from $file"
+            txtfile=tmp/`basename $file .zip`.txt
+            unzip -p webreeksen/$file > $txtfile
+            ./neerslag2dat $txtfile >> list_rr.txt
+        else
+            echo "$0: error: cannot find $file"
+        fi
     done
     # (at least) one missing station...
-    if [ ! -s rr433.dat ]; then
-        cat <<EOF > rr433.dat
+    cat <<EOF > rr433.dat
 # THESE DATA CAN BE USED FREELY PROVIDED THAT THE FOLLOWING SOURCE IS ACKNOWLEDGED: ROYAL NETHERLANDS METEOROLOGICAL INSTITUTE
 # 43 Amsterdam KNMI-filiaal (  -999.9N,    999.9E)
 # precip [mm/dy] precipitation (8-8), added by hand to database
 # time refers to the day it is observed, 8UTC
 EOF
-        fgrep 433, AmsFil.txt | sed -e 's/433,//' -e 's/,   0[0-9]//' -e 's/,//' >> rr433.dat
-        cat <<EOF >> list_rr.txt
+    fgrep 433, AmsFil.txt | sed -e 's/433,//' -e 's/,   0[0-9]//' -e 's/,//' >> rr433.dat
+    cat <<EOF >> list_rr.txt
 Amsterdam Filiaal                       (Netherlands)
 coordinates:   -999.90N,   -999.90E
 station code: 433 Amsterdam Filiaal
 Found   11 years with data in 1951-1961
 ==============================================
 EOF
-    fi
+
+    # first-order fix for the problems with the manual gauges
+    ./fix_manual_gauges
+
     for file in rr???.dat
     do
         zfile=${file%.dat}.gz

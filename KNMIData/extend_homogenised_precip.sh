@@ -11,12 +11,14 @@ do
     if [ -s $oper ]; then
         newfile=${file%-2009.dat.gz}.dat
         newfile=`echo $newfile | tr -d '_'`
-        if [ $newfile -ot $oper ]; then
-            echo "# extended with operational data from KNMI 2010-now" > $newfile
+        if [ ! -s $newfile.gz -o $newfile.gz -ot $oper ]; then
+            echo "# extended with operational data from KNMI 2010-now, with first order correction for problems 2012-2017" > $newfile
             zcat $file >> $newfile
             zcat $oper | egrep '^20[1234]' >> $newfile
+            station=`fgrep ' ( ' $newfile | sed -e 's/^# //' -e 's/ [(].*$//'`
+            dat2nc $newfile p "$station" ${newfile%.dat}.nc
             gzip -f $newfile
         fi
     fi
 done
-rsync precip???hom19??.dat.gz bhlclim:climexp/KNMIData/
+rsync precip???hom19??.dat.gz precip???hom19??.nc bhlclim:climexp/KNMIData/

@@ -85,4 +85,6 @@ EOF
     average_ensemble rrr_%%%.nc num > rrr_num.dat
     $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
     rsync -avt rr_???.nc bhlclim:climexp/KNMIData/
+    
+    ./make_p13.sh
 fi

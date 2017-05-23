@@ -7,8 +7,8 @@ if [ -z "$dataset" ]; then
 fi
 dir=$HOME/climexp
 case $dataset in
-    gpcc) file=$dir/GPCCData/gpcc_10_combined.nc;;
-    cmorph) file=$dir/NCEPData/cmorph_monthly.nc;;
+    gpcc) file=$dir/GPCCData/gpcc_10_combined.nc;description="GPCC station-based land precipitation";;
+    cmorph) file=$dir/NCEPData/cmorph_monthly.nc;description="CMORPH satellite-based precipitation";;
     erai) file=$dir/ERA-interim/erai_tp_daily_extended_mo.nc;;
     *) echo "$0: unknown dataset $dataset"; exit -1;;
 esac
@@ -29,8 +29,8 @@ outfile=telecon_nino34_$dataset.dat
 rm $files
 mv $outfile aap.dat
 cat > $outfile <<EOF
-# Nino34 index based on GPCC station-based land prdcipitation projected on ENSO teleconnections
-# using resgression patterns
+# Nino34 index based on $description projected on ENSO teleconnections
+# using regression patterns
 # nino34_prcp [1] Nino index from land precipitation
 EOF
 normdiff aap.dat null monthly monthly | fgrep -v '#' >> $outfile
@@ -47,7 +47,7 @@ outfile=telecon_corr_nino34_$dataset.dat
 rm $files
 mv $outfile aap.dat
 cat > $outfile <<EOF
-# Nino34 index based on GPCC station-based land prdcipitation projected on ENSO teleconnections
+# Nino34 index based on $description projected on ENSO teleconnections
 # using correlation patterns
 # nino34_prcp [1] Nino index from land precipitation
 EOF

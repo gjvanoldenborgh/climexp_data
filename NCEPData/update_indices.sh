@@ -1,8 +1,4 @@
 #!/bin/sh
-# detrended values, NCEP method (30-yr climatology updated every 5 years)
-# see  http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml
-###wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt
-
 
 for file in ersst4.nino.mth.81-10.ascii sstoi.indices
 do
@@ -25,6 +21,12 @@ do
     mv aap.dat nino$i.dat
 done
 $HOME/NINO/copyfilesall.sh *nino?.dat sstoi.indices
+
+# NCEP detrended
+wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt
+echo "# dNINO34 [K] NCEP detrended Nino3.4 index" > nino34_detrended_ncep.dat
+echo "# <a href=http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml>using running 30-yr base periods</a>" >> nino34_detrended_ncep.dat
+fgrep -v YR detrend.nino34.ascii.txt | cut -b 1-8,25-  >> nino34_detrended_ncep.dat
 
 cp wksst8110.for wksst8110.for.old
 wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for

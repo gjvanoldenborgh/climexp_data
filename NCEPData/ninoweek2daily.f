@@ -43,7 +43,7 @@
                 alpha = j/real(jul2-jul1)
                 call caldat(jul1+j,mo,dy,yr)
                 do i=2,5
-                    write(10+i,'(i4,2i3,f9.2)') yr,mo,dy,
+                    write(10+i,'(i4,2i2.2,f9.2)') yr,mo,dy,
      +                    (1-alpha)*nino(i,1) + alpha*nino(i,2)
                 enddo
             enddo

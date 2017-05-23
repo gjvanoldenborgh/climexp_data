@@ -11,7 +11,7 @@ tool=cdo
 i=1981
 file=$0
 file=sst.day.anom.$i.v2.nc
-wget -q -N $base/$file
+[ $i -ge $((yr-1)) ] && wget -q -N $base/$file
 while [ -s $file ]; do
     if [ ! -s sst.month.anom.$i.nc -o sst.month.anom.$i.nc -ot sst.day.anom.$i.v2.nc ]; then
         if [ $tool = cdo ]; then
@@ -46,7 +46,7 @@ while [ -s $file ]; do
     fi
     i=$((i+1))
     file=sst.day.anom.$i.v2.nc
-    wget -q -N $base/$file
+    [ $i -ge $((yr-1)) ] && wget -q -N $base/$file
 done
 cdo -r -f nc4 -z zip copy sst.month.anom.*.nc oisst_v2_monthly.nc
 cdo -r -f nc4 -z zip copy sst.day.anom.*.05.nc oisst_v2_daily.nc

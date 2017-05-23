@@ -36,20 +36,9 @@ if [ $new = true ]; then
   $HOME/NINO/copyfilesall.sh amo_ersst.dat amo_ersst_ts.dat
 fi
 
-# ERSST v3b
-wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/ascii/ersst.[12]*.asc
-new=true
-if [ $new = true ]; then
-  rm ersstv3b.???
-  ./ersstv3b2dat
-  $HOME/NINO/copyfiles.sh ersstv3b.???
-fi
-
 ###force=true
 # GHCN-M v3 temperature
 base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
-version=3.2.1
-file=grid-mntp-1880-current-v$version
 file=grid-mntp-1880-current-v\?.\?.\?
 wget -q -N $base/$file.dat.gz
 # get the highest version number

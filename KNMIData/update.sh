@@ -42,9 +42,7 @@ for var in $varlist; do
         fi
     done
 done
-###./merge_hom tx DeBiltTx.v2.txt
-###./merge_hom tg DeBiltTg.v2.txt
-###./merge_hom tn DeBiltTn.v2.txt
+
 ./update_hourly.sh
 for station in $stationlist
 do

@@ -8,29 +8,13 @@ while [ $m -lt 12 ]
 do
     m=$((m+1))
     if [ $m -lt 10 ]; then
-	mo=0$m
+	    mo=0$m
     else
-	mo=$m
+	    mo=$m
     fi
-    case $mo in
-	01) mon=Jan;;
-	02) mon=Feb;;
-	03) mon=Mar;;
-	04) mon=Apr;;
-	05) mon=May;;
-	06) mon=Jun;;
-	07) mon=Jul;;
-	08) mon=Aug;;
-	09) mon=Sep;;
-	10) mon=Oct;;
-	11) mon=Nov;;
-	12) mon=Dec;;
-	*) echo error ncdwjloky47e;exit -1;;
-    esac
 
-    echo -n "$mon "
-    wget -q -N $base/$mon/N_${mo}_area_v2.txt
-    wget -q -N $base/$mon/S_${mo}_area_v2.txt
+    wget -q -N $base/north/monthly/data/N_${mo}_extent_v2.1.csv
+    wget -q -N $base/south/monthly/data/S_${mo}_extent_v2.1.csv
 done
 
 make txt2dat

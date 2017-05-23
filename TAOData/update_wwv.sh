@@ -1,5 +1,5 @@
 #!/bin/sh
-wget -N http://www.pmel.noaa.gov/tao/elnino/wwv/data/wwv.dat
+wget -N https://www.pmel.noaa.gov/tao/wwv/data/wwv.dat
 
 egrep -v '^[12 ]' wwv.dat | sed -e 's/^/# /' > tao_wwv.dat
 echo '# <a href="http://www.pmel.noaa.gov/tao/elnino/wwv/data/wwv.dat">source</a>' >> tao_wwv.dat

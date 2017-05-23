@@ -39,8 +39,6 @@ fi
 ###force=true
 # GHCN-M v3 temperature
 base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
-version=3.2.1
-file=grid-mntp-1880-current-v$version
 file=grid-mntp-1880-current-v\?.\?.\?
 wget -q -N $base/$file.dat.gz
 # get the highest version number

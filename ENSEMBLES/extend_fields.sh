@@ -1,5 +1,5 @@
 #!/bin/sh
-export PATH=/usr/local/free/bin:$PATH
+export PATH=/usr/local/free/bin:$HOME/climexp/bin:$PATH
 firstfile=`ls -t ??_0.25deg_reg_v*u.nc | head -1`
 version=${firstfile#*_reg_}
 version=${version%u.nc}

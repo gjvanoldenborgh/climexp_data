@@ -40,7 +40,7 @@ do
             # this gets the whole of the year but I am too lazy to fix it now
             gunzip -c ${var}_${res}deg_reg_$yr.nc.gz > ${var}_${res}deg_reg_$yr.nc
             # convert to netcdf4
-            if [ -n "$enddate" ]; then
+            if [ -n "$enddate" -a -z "$nextdate" ]; then
                 endyr=`echo $enddate | cut -d '-' -f 1`
                 endmo=`echo $enddate | cut -d '-' -f 2`
                 endmo=${endmo#0}
@@ -52,8 +52,8 @@ do
             # truncate the part of the file without data
             get_index aap.nc 5 5 52 52 | tail -1 > aap.lastline
             yr=`cat aap.lastline | cut -b 1-4`
-            mm=`cat aap.lastline | cut -b 6-7 | tr ' ' '0'`
-            dd=`cat aap.lastline | cut -b 9-10 | tr ' ' '0'`
+            mm=`cat aap.lastline | cut -b 5-6`
+            dd=`cat aap.lastline | cut -b 7-8`
             cdo $cdoflags seldate,${endyr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
 
             rm -f ${var}_${res}deg_reg_${version}u.nc

@@ -22,7 +22,7 @@ program fix_manual_gauges
     integer :: i,ii,j,jj,k,id,nids,ids(nidsmax),iwo,nwo,wodates(nidsmax),woids(nidsmax), &
         yr,mo,dy,nperyear,iret
     real :: fac,data(npermax,yrbeg:yrend)
-    logical adjusted(nidsmax),lstandardunits,lwrite
+    logical adjusted(nidsmax),lstandardunits,lwrite,ldebilt
     character :: line*80,names(nidsmax)*50,wonames(nidsmax)*50,file*254
     character :: var*80,units*40
 !   
@@ -34,6 +34,7 @@ program fix_manual_gauges
     woids = -999
     names = ' '
     adjusted = .false.
+    ldebilt = .false.
 !
     nids = 0
     open(1,file='list_rr.txt',status='old')
@@ -254,6 +255,17 @@ program fix_manual_gauges
                 end if
                 j = jj+k
                 call normon(j,yr,ii,nperyear)
+                if ( ids(id) == 550 ) then
+                    ! special case De Bilt: a good one was installed on 5 sep 2014
+                    call getdymo(dy,mo,j,nperyear)
+                    if ( 10000*ii + 100*mo + dy >= 20140905 ) then
+                        if ( .not.ldebilt ) then
+                            ldebilt = .true.
+                            print *,'setting fac to 1 for De Bilt for dates starting',10000*ii+100*mo+dy
+                        end if
+                        fac = 1
+                    end if
+                end if
                 if ( ii <= yrend ) then
                     if ( data(j,ii) < 1e33 ) then
                         data(j,ii) = fac*data(j,ii)
@@ -264,6 +276,9 @@ program fix_manual_gauges
             call copyheader(trim(file)//'.unadjusted',1)
             write(1,'(2a,i8,a)') '# with a correction factor compensating leakage decreasing ', &
                 'linearly from one on date ',wodates(iwo),' to 0.94 over 1.5 years'
+            if ( ids(id) == 550 ) then
+                write(1,'(a)') '# and no correction again from 20140905'
+            end if
             call printdatfile(1,data,npermax,nperyear,yrbeg,yrend)
             close(1)
         end if

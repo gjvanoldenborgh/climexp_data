@@ -24,7 +24,7 @@ if [ $new = true ]; then
   done
   cdo -r -f nc4 -z zip copy $filelist ersstv4_all.nc
   cdo selvar,sst ersstv4_all.nc ersstv4.nc
-  cdo selvar,anom ersstv4_all.nc ersstv4a.nc
+  cdo selvar,ssta ersstv4_all.nc ersstv4a.nc
   $HOME/NINO/copyfilesall.sh ersstv4.nc ersstv4a.nc
   ./makenino.sh
   $HOME/NINO/copyfilesall.sh ersst_nino*.dat

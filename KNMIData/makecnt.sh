@@ -32,6 +32,8 @@ do
     fi
     cp $homfile.dat.org $homfile.dat
     egrep '^ *(2009|20[1-9].)' $monfile >> $homfile.dat
+    [ -L temp$station.dat ] && rm temp$station.dat
+    ln -s $homfile.dat temp$station.dat # for getdutchtemp
 done
 ./maketxt_hom.sh
 
@@ -40,4 +42,7 @@ mv cnt.dat cnt.dat.old
 ./makecnt > cnt.dat
 mv cnt_v11.dat cnt_v11.dat.old
 ./makecnt 1.1 > cnt_v11.dat
-$HOME/NINO/copyfiles.sh cnt*.dat temp_*.dat list_temp_hom.txt
+averageseries const temp_De_Bilt_hom.dat temp_Winterswijk_Hupsel_hom.dat \
+                    temp_Oudenbosch_Gilze-Rijen_hom.dat temp_Gemert_Volkel_hom.dat > cnt4.dat
+
+$HOME/NINO/copyfiles.sh cnt*.dat temp*.dat list_temp_hom.txt

@@ -42,6 +42,7 @@ for var in $varlist; do
         fi
     done
 done
+./fix_manual_gauges
 
 ./update_hourly.sh
 for station in $stationlist
@@ -68,6 +69,5 @@ $HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
 ./update_neerslag.sh
 ./labrijn2dat > labrijn.dat
 ./makecnt.sh
-
-$HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat cnt.dat tg260_mean12.dat
+$HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat tg260_mean12.dat
 ./extend_homogenised_precip.sh

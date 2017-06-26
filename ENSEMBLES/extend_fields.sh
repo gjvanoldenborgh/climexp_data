@@ -21,8 +21,8 @@ do
             get_index $file 5 5 52 52 | tail -1 > $file.lastline
         fi
         yr=`cat $file.lastline | cut -b 1-4`
-        mm=`cat $file.lastline | cut -b 6-7 | tr ' ' '0'`
-        dd=`cat $file.lastline | cut -b 9-10 | tr ' ' '0'`
+        mm=`cat $file.lastline | cut -b 5-6 | tr ' ' '0'`
+        dd=`cat $file.lastline | cut -b 7-8 | tr ' ' '0'`
 
         files=$file
         datenow=`date -d 'yesterday' +%Y%m%d`

@@ -39,8 +39,8 @@ echo @@@ NOC
 echo @@@ NCAR
 (cd NCARData; ./update_indices.sh | 2>&1 tee update.log)
 
-echo @@@ BAS
-(cd BASData; ./update_indices.sh | 2>&1 tee update.log)
+###echo @@@ BAS
+###(cd BASData; ./update_indices.sh | 2>&1 tee update.log)
 
 echo @@@ PMOD
 (cd PMODData; ./update_indices.sh | 2>&1 tee update.log)
@@ -54,6 +54,9 @@ echo @@@ UW
 
 echo @@@ GRACE
 (cd GRACEData; ./update.sh | 2>&1 tee update.log)
+
+echo @@@ MeteoSwiss
+(cd MeteoSwissData; ./update.sh  | 2>&1 tee update.log )
 
 echo @@@ GPCC
 (cd GPCCData; ./update.sh | 2>&1 tee update.log)

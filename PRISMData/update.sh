@@ -6,7 +6,7 @@ if [ "$1" != force -a -f downloaded_$yr$mo ]; then
   exit
 fi
 
-vars="ppt tmax tmin tmean tdmean" #  vpdmin vpdmax tmean vpr 
+vars="ppt tmax tmin tmean tdmean vpdmax" #  vpdmin vpr 
 for var in $vars; do
     yrnow=`date +%Y`
     yr=1895 # 2014
@@ -21,6 +21,7 @@ for var in $vars; do
             tmin) units="Celsius";long_name="monthly mean of daily minimum temperature";;
             tmean) units="Celsius";long_name="monthly mean temperature";;
             tdmean) units="Celsius";long_name="monthly mean of dew point temperature";;
+            vpdmax) units="hPa";long_name="monthly mean of daily maximum vapor pressure deficit";;
             *) echo "$0: error: know nothing about $var yet"; exit -1;;
         esac
         if [ ! -s ${var}_prismM?_$yr.nc -o $yr = $yrnow -o $yr = $((yrnow-1)) ]; then

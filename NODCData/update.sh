@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ "$1" = force ]; then
-  force=true
+    force=true
 fi
 for var in MT HC
 do
@@ -12,6 +12,7 @@ do
 
     for depth in 100 700 2000
     do
+        if [ 0 = 0 ]; then
         for b in a i p w # basins
         do
             for season in 1-3 4-6 7-9 10-12
@@ -31,20 +32,31 @@ do
 
         ./dat2dat $depth $var
         $HOME/NINO/copyfilesall.sh heat${depth}_*.dat temp${depth}_*.dat
+        else
+            echo "Skipping time series DEBUG"
+        fi
 
         if [ $var = HC -a $depth = 100 ]; then
             echo "100m heat content not available"
         else
-            cp ${var}_0-${depth}-3month.tar.gz ${var}_0-${depth}-3month.tar.gz.old
-            wget -q -N ftp://ftp.nodc.noaa.gov/pub/data.nodc/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/${altvar}_3month/${var}_0-${depth}-3month.tar.gz
-            cmp ${var}_0-${depth}-3month.tar.gz ${var}_0-${depth}-3month.tar.gz.old
-            if [ "$force" = true -o $? != 0 ]; then
-              tar zxf ${var}_0-${depth}-3month.tar.gz
-              make dat2grads
-              ./dat2grads $depth $var
-              $HOME/NINO/copyfiles.sh heat${depth}.???
-              $HOME/NINO/copyfiles.sh temp${depth}.???
+            yrnow=`date "+%Y"`
+            ((yrnow=yrnow-1900))
+            if [ $depth -lt 1000 ]; then
+                yr=54
+            else
+                yr=104
             fi
+            while [ $yr -lt $yrnow ]; do
+                ((yr++))
+                yy=`echo $yr | sed -e 's/^10/A/' -e 's/^11/B/' -e 's/^12/C/' -e 's/^13/D/'`
+                for season in 01-03 04-06 07-09 10-12; do
+                    wget -q -N --no-check-certificate http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/${altvar}_3month/${var}_0-${depth}_${yy}${yy}${season}.dat
+                done
+            done
+            make dat2grads
+            ./dat2grads $depth $var
+            $HOME/NINO/copyfiles.sh heat${depth}.???
+            $HOME/NINO/copyfiles.sh temp${depth}.???
         fi
     done
 done

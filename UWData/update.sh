@@ -30,10 +30,13 @@ patternfield hadsst3-tglobal.ctl eof1.ctl eof1 1 > aap.dat
 scaleseries 3 aap.dat > pdo_hadsst3.dat
 $HOME/NINO/copyfilesall.sh pdo_hadsst3.dat
 
+FORM_field=ersstv5a
+. $HOME/climexp/queryfield.cgi
 extend_series ~/NINO/NCDCData/ncdc_gl.dat > ncdc_gl1.dat
-echo y | subfieldseries ~/NINO/NCDCData/ersstv4a.nc ncdc_gl1.dat ./ersst-tglobal.ctl
+echo y | subfieldseries ~/NINO/$file ncdc_gl1.dat ./ersst-tglobal.ctl
 rm eof1.???
-eof ./ersst-tglobal.ctl 1 normalize varspace mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 eof1.ctl
+eof ./ersst-tglobal.ctl 1 normalize varspace anom mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 eof1.ctl
 patternfield ersst-tglobal.ctl eof1.ctl eof1 1 > aap.dat
-scaleseries -3.5 aap.dat > pdo_ersst.dat
+plotdat anom aap.dat > noot.dat
+scaleseries -3.5 noot.dat > pdo_ersst.dat
 $HOME/NINO/copyfilesall.sh pdo_ersst.dat

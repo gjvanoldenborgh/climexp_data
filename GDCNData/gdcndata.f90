@@ -15,7 +15,7 @@ program gdcndata
  &       ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)
     real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon      &
  &        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin             &
- &        ,rlatmax,val,elev(nn)
+ &        ,rlatmax,val,elev(nn),distj
     character name(nn)*30,stations(nn)*11,elevflag(nn)*1,           &
  &       datasource*1,qcflag*1
     character station*11,id*11,list(nn)*11,id1*8,id2*8,wmo*5
@@ -231,13 +231,22 @@ program gdcndata
  &            rlat(i) > min(slat,slat1) .and.         &
  &            rlat(i) < max(slat,slat1) )             &
  &            ) then
-            dist(i) = i
-            n = i
-            i = i + 1
-            if ( i > nn ) then
-                print *,'Maximum ',nn,' stations'
-                stop
-            endif
+            dist(i) = 3e33
+            do j=1,i-1
+                dlon = min(abs(rlon(i)-rlon(j)),  &
+ &                abs(rlon(i)-rlon(j)-360),   &
+ &                abs(rlon(i)-rlon(j)+360))
+                distj = (rlat(i)-rlat(j))**2 + (dlon*cos(rlat(i)/180*pi))**2
+                dist(i) = min(dist(i),distj)
+            end do
+            if ( rmin > 1e33 .or. dist(i) >= rmin ) then
+                n = i
+                i = i + 1
+                if ( i > nn ) then
+                    print *,'Maximum ',nn,' stations'
+                    stop
+                endif
+            end if
         endif
     elseif ( station == '-1' .and. sname == ' ' ) then
 !       search closest

@@ -7,7 +7,7 @@ version=EN.4.2.0
 mem=500
 
 yr=1899
-yrnow=`date -d "1 year ago" "+%Y"`
+yrnow=`date "+%Y"`
 while [ $yr -lt $yrnow ]; do
     echo $((++yr))
     file=${version}.analyses.g10.$yr.zip

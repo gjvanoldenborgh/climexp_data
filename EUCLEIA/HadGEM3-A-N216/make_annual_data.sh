@@ -1,12 +1,13 @@
 #!/bin/sh
 # make annual derived data such as RXnday from the EC-Earth daily data
-vars="rx1day rx3day rx5day txx txn tnx tnn"
+vars="rx1day rx3day rx5day txx tx3x txn tnx tnn"
 for var in $vars; do
     case $var in
         rx1day) invar=pr;args="max";;
         rx3day) invar=pr;args="max sum 3";;
         rx5day) invar=pr;args="max sum 5";;
         txx) invar=tasmax;args="max";;
+        tx3x) invar=tasmax;args="max ave 3";;
         txn) invar=tasmax;args="min";;
         tnx) invar=tasmin;args="max";;
         tnn) invar=tasmin;args="min";;
@@ -45,6 +46,41 @@ for var in $vars; do
                 cdo -r -f nc4 -z zip copy $outfiles $varfile
                 rm $outfiles
             fi
+        done
+        
+#       short runs
+
+        r=0
+        while [ $r -lt 15 ]; do
+            r=$((r+1))
+            p=0
+            while [ $p -lt 7 ]; do
+                ((p++))
+                indir=${invar}_short
+                outdir=${var}_short
+                mkdir -p $outdir
+                infiles=$indir/${invar}_day_HadGEM3-A-N216_${scen}Short_r${r}i1p${p}_????????-????????.nc
+                outfiles=""
+                varfile=${var}_yr_HadGEM3-A-N216_${scen}_r${r}i1p1_201401-201512.nc
+                varfile=$outdir/$varfile
+                if [ ! -s $varfile ]; then
+                    for infile in $infiles; do
+                        outfile=/tmp/${var}_`basename $infile`
+                        outfiles="$outfiles $outfile"
+                        if [ ! -s $outfile -o $outfile -ot $infile ]; then
+                            echo "daily2longerfield $infile 1 $args $outfile"
+                            daily2longerfield $infile 1 $args $outfile
+                            if [ $? != 0 -o ! -s $outfile ]; then
+                                echo "something went wrong"
+                                exit -1
+                            fi
+                        fi
+                    done
+                    echo "cdo -r -f nc4 -z zip copy $outfiles $varfile" 
+                    cdo -r -f nc4 -z zip copy $outfiles $varfile
+                    rm $outfiles
+                fi
+            done
         done
     done # scen
 done # var

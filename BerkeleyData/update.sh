@@ -51,15 +51,9 @@ do
 
     file=Complete_${var}_LatLong1.nc
 	wget -N $base/$file
-	case $var in
-		TAVG) start="1750-01-01";;
-		TMAX) start="1850-01-01";;
-		TMIN) start="1850-01-01";;
-		*) echo "$0: error: unknow var $var"; exit -1;;
-	esac
 	ncfile=${var}_LatLong1.nc
 	if [ ! -s $newfile -o $newfile -ot $file ]; then
-	    cdo -r -f nc4 -z zip settaxis,${start},0:0:0,1mon Complete_${var}_LatLong1.nc aap.nc
+	    ncatted units,time,m,c,"years since 0000-01-01 00:00" aap.nc
 	    cdo -r -f nc4 -z zip selvar,temperature aap.nc $ncfile
 	    rm aap.nc
     	$HOME/NINO/copyfiles.sh ${var}_LatLong1.nc

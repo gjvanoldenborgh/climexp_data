@@ -1,40 +1,35 @@
 #!/bin/sh
 
-# ERSST v4
-wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/v4/netcdf/ersst.v4.[12]*.nc
-new=true
-if [ $new = true ]; then
-  rm ersstv4_all.nc
-  filelist=""
-  for file in ersst.v4.[12]*.nc
-  do
-    date=${file#ersst.v4.}
-    date=${date%.nc}
-    if [ 0 = 1 -a $date -ge 200801 ]; then
-        newfile=${file%.nc}_patched.nc
-            if [ ! -s $newfile -o $newfile -ot $file ]; then
-            yyyy=${date%??}
-            mm=${date#????}
-            cdo settaxis,${yyyy}-${mm}-15,12:00,1mon $file $newfile
+# ERSST v4,5
+for version in v5 v4
+do
+    wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/$version/netcdf/ersst.$version.[12]*.nc
+    new=true
+    if [ $new = true ]; then
+        rm ersst${version}_all.nc
+        filelist=""
+        for file in ersst.$version.[12]*.nc
+        do
+            date=${file#ersst.$version.}
+            date=${date%.nc}
+            filelist="$filelist $file"
+        done
+        cdo -r -f nc4 -z zip copy $filelist ersst${version}_all.nc
+        cdo selvar,sst ersst${version}_all.nc ersst${version}.nc
+        cdo selvar,ssta ersst${version}_all.nc ersst${version}a.nc
+        $HOME/NINO/copyfilesall.sh ersst${version}.nc ersst${version}a.nc
+        if [ $version = v5 ]; then
+            ./makenino.sh
+            $HOME/NINO/copyfilesall.sh ersst_nino*.dat
+            ./makeiozm.sh
+            $HOME/NINO/copyfilesall.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
+            ./makesiod.sh
+            $HOME/NINO/copyfilesall.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
+            ./update_amo.sh
+            $HOME/NINO/copyfilesall.sh amo_ersst.dat amo_ersst_ts.dat
         fi
-        filelist="$filelist $newfile"
-    else
-        filelist="$filelist $file"
     fi
-  done
-  cdo -r -f nc4 -z zip copy $filelist ersstv4_all.nc
-  cdo selvar,sst ersstv4_all.nc ersstv4.nc
-  cdo selvar,ssta ersstv4_all.nc ersstv4a.nc
-  $HOME/NINO/copyfilesall.sh ersstv4.nc ersstv4a.nc
-  ./makenino.sh
-  $HOME/NINO/copyfilesall.sh ersst_nino*.dat
-  ./makeiozm.sh
-  $HOME/NINO/copyfilesall.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
-  ./makesiod.sh
-  $HOME/NINO/copyfilesall.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
-  ./update_amo.sh
-  $HOME/NINO/copyfilesall.sh amo_ersst.dat amo_ersst_ts.dat
-fi
+done
 
 ###force=true
 # GHCN-M v3 temperature

@@ -1,12 +1,13 @@
 #!/bin/sh
 # make annual derived data such as RXnday from the EC-Earth daily data
-vars="rx1day rx3day rx5day txx txn tnx tnn"
+vars="rx1day rx3day rx5day txx tx3x txn tnx tnn"
 for var in $vars; do
 case $var in
     rx1day) invar=pr;args="max";;
     rx3day) invar=pr;args="max sum 3";;
     rx5day) invar=pr;args="max sum 5";;
     txx) invar=tasmax;args="max";;
+    tx3x) invar=tasmax;args="max ave 3 ";;
     txn) invar=tasmax;args="min";;
     tnx) invar=tasmin;args="max";;
     tnn) invar=tasmin;args="min";;

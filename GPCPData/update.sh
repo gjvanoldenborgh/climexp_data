@@ -1,7 +1,8 @@
 #!/bin/sh
 wget -r -l1 -nd -A.nc -N -q http://eagle1.umd.edu/GPCP_CDR/Monthly_Data
 name=`ls -t gpcp_cdr_v*.nc | head -1 | cut -b 1-16`
-cdo -r -f nc4 -z zip copy ${name}*.nc gpcp_all.nc
+files=`ls ${name}*.nc | fgrep -v y0000`
+cdo -r -f nc4 -z zip copy $files gpcp_all.nc
 cdo selvar,precip gpcp_all.nc gpcp.nc
 ncatted -a units,precip,m,c,"mm/dy" gpcp.nc
 describefield gpcp.nc

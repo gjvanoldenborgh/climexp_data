@@ -44,10 +44,11 @@ $HOME/NINO/copyfilesall.sh maunaloa_ch4.dat
 
 wget -q -N http://cdiac.ess-dive.lbl.gov/ftp/ndp030/global.1751_2014.ems
 head -5 global.1751_2014.ems | tail -n 4 | sed -e 's/\*\*\*/#/' -e 's/\*\*\*//' > global_co2_emissions.dat
-echo '# from <a href="http://cdiac.ess-dive.lbl.gov/trends/emis/meth_reg.html">CDIAC</a>' >> global_co2_emissions.dat
+echo '# from <a href="http://cdiac.ess-dive.lbl.gov/trends/emis/meth%5Freg.html">CDIAC</a>' >> global_co2_emissions.dat
 echo '# CO2 [MtC/yr] global CO2 emissions' >> global_co2_emissions.dat
 tail -n +36 global.1751_2014.ems | cut -b 1-15 >> global_co2_emissions.dat
 
 cumul global_co2_emissions.dat > aap.dat
-sed -e 's/# CO2/# cumCO2/' -e 's@/yr@@' -e 's/global/cumulative global/' aap.dat > cum_global_co2_emissions.dat
+scaleseries 0.001 aap.dat > noot.dat
+sed -e 's/# CO2/# cumCO2/' -e 's@MtC/yr@GtC@' -e 's/global/cumulative global/' noot.dat > cum_global_co2_emissions.dat
 $HOME/NINO/copyfilesall.sh *emissions.dat

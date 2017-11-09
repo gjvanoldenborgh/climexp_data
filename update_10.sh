@@ -18,6 +18,13 @@ echo @@@ GISS
 echo "@@@ University of Colorado (sealevel)"
 (cd CUData; ./update_indices.sh | 2>&1 tee update.log)
 
+echo "@@@ AVISO"
+(cd AVISOData; ./update_indices.sh | 2>&1 tee update.log)
+
+echo "@@@ other sea level indices"
+(cd SiegenData; ./update.sh | 2>&1 tee update.log)
+(cd CSIROData; ./update.sh | 2>&1 tee update.log)
+
 echo @@@ LOD
 (cd IERSData; ./update.sh | 2>&1 tee update.log)
 
@@ -100,7 +107,6 @@ echo @@@ BMRC
 echo @@@ NCDC
 (cd NCDCData; ./update_indices.sh | 2>&1 tee update_indices.log)
 (cd NCDCData; ./update_fields.sh | 2>&1 tee update_fields.log)
-(cd NCDCData; ./update_amo.sh | 2>&1 tee update_amo.log)
 
 echo @@@ UCAR
 (cd UCARData; ./update.sh | 2>&1 tee update.log)

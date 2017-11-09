@@ -248,9 +248,12 @@ program fix_manual_gauges
             dy = mod(wodates(iwo),100)
             call invgetdymo(dy,mo,jj,nperyear)
             do k=1,10*366
-                if ( k < nleak ) then
+                if ( yr > 2017 .or. yr == 2017 .and. mo > 6 ) then ! they were fixed at the end of June
+                    fac = 1
+                else if ( k < nleak ) then
+                    !a linearly increasing leakage from 0% to 6% over nleak days
                     fac = 0.94 + 0.06*real(nleak-k)/nleak
-                else
+                else ! between end of linear increase and fix
                     fac = 0.94
                 end if
                 j = jj+k

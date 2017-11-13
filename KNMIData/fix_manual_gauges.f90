@@ -248,9 +248,7 @@ program fix_manual_gauges
             dy = mod(wodates(iwo),100)
             call invgetdymo(dy,mo,jj,nperyear)
             do k=1,10*366
-                if ( yr > 2017 .or. yr == 2017 .and. mo > 6 ) then ! they were fixed at the end of June
-                    fac = 1
-                else if ( k < nleak ) then
+                if ( k < nleak ) then
                     !a linearly increasing leakage from 0% to 6% over nleak days
                     fac = 0.94 + 0.06*real(nleak-k)/nleak
                 else ! between end of linear increase and fix
@@ -258,9 +256,12 @@ program fix_manual_gauges
                 end if
                 j = jj+k
                 call normon(j,yr,ii,nperyear)
+                call getdymo(dy,mo,j,nperyear)
+                if ( 10000*ii + 100*mo + dy >= 20170701 ) then
+                    fac = 1
+                end if
                 if ( ids(id) == 550 ) then
-                    ! special case De Bilt: a good one was installed on 5 sep 2014
-                    call getdymo(dy,mo,j,nperyear)
+                    ! special case De Bilt: a good one was installed already on 5 sep 2014
                     if ( 10000*ii + 100*mo + dy >= 20140905 ) then
                         if ( .not.ldebilt ) then
                             ldebilt = .true.
@@ -278,7 +279,7 @@ program fix_manual_gauges
             open(1,file=trim(file),status='new')
             call copyheader(trim(file)//'.unadjusted',1)
             write(1,'(2a,i8,a)') '# with a correction factor compensating leakage decreasing ', &
-                'linearly from one on date ',wodates(iwo),' to 0.94 over 1.5 years'
+                'linearly from one on date ',wodates(iwo),' to 0.94 over 1.5 years up to 2017-07-01'
             if ( ids(id) == 550 ) then
                 write(1,'(a)') '# and no correction again from 20140905'
             end if

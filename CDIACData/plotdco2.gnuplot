@@ -2,7 +2,7 @@ set colors classic
 set size 0.745,0.5
 set xrange [1995:2020]
 set yrange [0:4]
-set title '3-yr derivative of CO2 concentration [ppm/yr]'
+set title 'year-on-year change of CO2 concentration [ppm/yr]'
 set key left
 plot 'diff_co2_annual.dat' title 'obs (global marine)' w l lt 5 lw 5, \
      'dtar-isam.txt' u 1:4 title 'A1FI' w l lt 1, \

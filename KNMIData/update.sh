@@ -42,7 +42,6 @@ for var in $varlist; do
         fi
     done
 done
-./fix_manual_gauges
 
 ./update_hourly.sh
 for station in $stationlist

@@ -24,7 +24,7 @@ normdiff $file null none none > aap.dat
 cat > amo_ersst.dat <<EOF
 # AMO index SST 25-60N, 7-75W minus regression on global mean temperature
 # as in <a haref="http://www.ocean-sci.net/5/293/2009/os-5-293-2009.html">van Oldenborgh et al 2009</a>
-# based on ERSST v3b from NCDC
+# based on ERSST $version from NCDC
 # AMO [C] SST
 EOF
 fgrep -v '#' aap.dat >> amo_ersst.dat
@@ -39,7 +39,7 @@ get_index ersst${version}.nc 0 360 -60 60 > ersst_60S-60N.dat
 cat > amo_ersst_ts.dat <<EOF
 # AMO index SST EQ-60N, 0-80W minus SST 60S-60N
 # as in <a href="http://www.agu.org/pubs/crossref/2006/2006GL026894.shtml">Trenberth and Shea 2006</a>
-# based on ERSST v3b from NCDC
+# based on ERSST $version from NCDC
 # AMO [C] SST
 EOF
 normdiff ersst_0-60N_0-80W.dat ersst_60S-60N.dat none none | egrep -v '^#' >> amo_ersst_ts.dat
@@ -50,7 +50,7 @@ $HOME/NINO/copyfiles.sh amo_ersst_ts.dat
 get_index ersst${version}.nc -80 0 30 60 > ersst_30-60N_0-80W.dat
 cat > amo30_ersst_ts.dat <<EOF
 # AMO index SST 30-60N, 0-80W minus SST 60S-60N
-# based on ERSST v3b from NCDC
+# based on ERSST $version from NCDC
 # AMO30 [C] SST
 EOF
 normdiff ersst_30-60N_0-80W.dat ersst_60S-60N.dat none none | egrep -v '^#' >> amo30_ersst_ts.dat

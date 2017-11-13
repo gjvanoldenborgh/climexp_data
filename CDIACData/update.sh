@@ -27,7 +27,9 @@ else
 fi
 cp co2_annual.in co2_annual.dat
 yearly2shorter co2_annual.dat 12 month 1 ave 12 > aap.dat
-patchseries aap.dat co2.dat > co2_monthly.dat
+patchseries co2.dat aap.dat bias > noot.dat
+patchseries noot.dat maunaloa.dat bias > co2_monthly.dat 
+cp co2_monthly.dat co2_reallymonthly.dat
 daily2longer co2_monthly.dat 1 mean > co2_annual.dat
 yearly2shorter co2_annual.dat 12 > co2_monthly.dat
 operate log co2_monthly.dat > aap.dat

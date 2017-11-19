@@ -10,20 +10,21 @@
         integer yr,mo,i,ins
         real a,e,extent(12,yrbeg:yrend),area(12,yrbeg:yrend),val
      +       ,hole_conc(12,yrbeg:yrend)
-        character file*20,string*80,mon*3,NS(2)
+        character file*20,string*80,mon*3,NS(2),version*4
         data NS /'N','S'/
 
+        call getarg(1,version)
         do ins=1,2
             open(2,file=NS(ins)//'_ice_extent.dat')
-            write(2,'(3a)') '# ',NS(ins),'H ice extent from '//
+            write(2,'(5a)') '# ',NS(ins),'H ice extent from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index v2.1</a>'
+     +           'NSIDC Sea Ice Index ',version,'</a>'
             write(2,'(a)') '# ice_extent [million km^2] area covered '//
      +           ' with at least 15% ice'
             open(3,file=NS(ins)//'_ice_area.dat')
-            write(3,'(3a)') '# ',NS(ins),'H ice area from '//
+            write(3,'(5a)') '# ',NS(ins),'H ice area from '//
      +           '<a href="http://nsidc.org/data/g02135.html">'//
-     +           'NSIDC Sea Ice Index v2.1</a>'
+     +           'NSIDC Sea Ice Index ',version,'</a>'
             hole_conc = 1
             if ( NS(ins).eq.'N' ) then
                 write(3,'(a)') '# ice_area [million km^2] integrated '//
@@ -43,8 +44,8 @@
             area = 3e33
             extent = 3e33
             do mo=1,12
-                write(file,'(2a,i2.2,a)') NS(ins),'_',mo,
-     +               '_extent_v2.1.csv'
+                write(file,'(2a,i2.2,3a)') NS(ins),'_',mo,
+     +               '_extent_',version,'.csv'
                 open(1,file=trim(file),status='old')
                 read(1,'(a)') string
  100            continue

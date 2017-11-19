@@ -6,7 +6,7 @@ trendname="co2eq"
 
 fullensemble=true
 
-for model in hadsst3 hadisst1 ersstv4
+for model in hadsst3 hadisst1 ersstv5
 do
     case $model in
         hadsst*) xave=1;yave=1;;
@@ -14,6 +14,11 @@ do
         ersst*) xave=2;yave=1;;
         *) echo "$0: error: unknown model $model"; exit -1;;
     esac
+    FORM_field=$model
+    LSMASK=""
+    . $HOME/climexp/queryfield.cgi
+    file=$HOME/climexp/$file
+    
     for ave in 1 4 9
     do
 	    echo "@@@@@ $model $ave @@@@"
@@ -27,10 +32,6 @@ do
 
 	    # get detrended fields
 
-        FORM_field=$model
-        LSMASK=""
-        . $HOME/climexp/queryfield.cgi
-        file=$HOME/climexp/$file
 	    regrfile=regr_sst_${model}_co2eq_annual_${ave}.nc
 	    subfile=${model}-co2eq_annual_${ave}.ctl
 	    if [ ! -s $regrfile ]; then
@@ -95,9 +96,9 @@ do
 	    fi
 	    if [ ${model#ersst} != $model ]; then
             cp $series $HOME/climexp/NCDCData
-            (cd $HOME/climexp/NCDCData; $HOME/NINO/copyfiles.sh $series)
+            (cd $HOME/climexp/NCDCData; $HOME/NINO/copyfilesall.sh $series)
 	    else
-            $HOME/NINO/copyfiles.sh $series
+            $HOME/NINO/copyfilesall.sh $series
 	    fi
     
 	    # plot EOF
@@ -127,4 +128,16 @@ print $regreps
 EOF
         fi # plotit?
     done
+    
+    for region in r1 r2 r3; do
+        case $region in
+            r1) lat1=25;lat2=45;lon1=140;lon2=215;;
+            r2) lat1=-10;lat2=10;lon1=170;lon2=270;;
+            r3) lat1=-50;lat2=-15;lon1=150;lon2=200;;
+        esac
+        series=tpi_${model}_${region}.dat
+        get_index $file $lon1 $lon2 $lat1 $lat2 > $series
+    done
+    averageseries const tpi_${model}_r1.dat tpi_${model}_r3.dat > tpi_${model}_r13.dat
+    normdiff tpi_${model}_r2.dat tpi_${model}_r13.dat none none > tpi_${model}.dat
 done

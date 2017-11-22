@@ -29,9 +29,12 @@ file=giss_al_gl_m.dat
 echo "filteryearseries lo running-mean 4 $file > ${file%.dat}_4yrlo.dat"
 filteryearseries lo running-mean 4 $file minfac 25 minfacsum 25 > ${file%.dat}_4yrlo.dat
 daily2longer ${file%.dat}_4yrlo.dat 1 mean minfac 25 > ${file%m.dat}a_4yrlo.dat
-rsync -avt giss*.dat bhlclim:climexp/NASAData/
-rsync -avt giss*.dat gj@gatotkaca.duckdns.org:climexp/NASAData/
-rsync -avt giss*.dat gj@ganesha.xs4all.nl:climexp/NASAData/
+echo "2040 1.17" >> ${file%m.dat}a_4yrlo.dat
+echo "2045 1.27" >> ${file%m.dat}a_4yrlo.dat
+echo "2065 1.67" >> ${file%m.dat}a_4yrlo.dat
+echo "2070 1.77" >> ${file%m.dat}a_4yrlo.dat
+echo "# the last four values represent conventions for 1.5 and 2.0 degree worlds relative to pre-industrial and 1880-1900" >> ${file%m.dat}a_4yrlo.dat
+$HOME/NINO/copyfilesall.sh giss*.dat
 
 # Volcanic AOD
 

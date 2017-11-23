@@ -33,7 +33,11 @@ echo "2040 1.17" >> ${file%m.dat}a_4yrlo.dat
 echo "2045 1.27" >> ${file%m.dat}a_4yrlo.dat
 echo "2065 1.67" >> ${file%m.dat}a_4yrlo.dat
 echo "2070 1.77" >> ${file%m.dat}a_4yrlo.dat
-echo "# the last four values represent conventions for 1.5 and 2.0 degree worlds relative to pre-industrial and 1880-1900" >> ${file%m.dat}a_4yrlo.dat
+echo "2100 2.67" >> ${file%m.dat}a_4yrlo.dat
+echo "2105 2.77" >> ${file%m.dat}a_4yrlo.dat
+echo "2150 3.67" >> ${file%m.dat}a_4yrlo.dat
+echo "2155 3.77" >> ${file%m.dat}a_4yrlo.dat
+echo "# the last eight values represent conventions for 1.5, 2.0, 3.0 and 4.0 degree worlds relative to pre-industrial and 1880-1900" >> ${file%m.dat}a_4yrlo.dat
 $HOME/NINO/copyfilesall.sh giss*.dat
 
 # Volcanic AOD

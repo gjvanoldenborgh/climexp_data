@@ -7,6 +7,8 @@ cmp neerslaggeg_DE-BILT_550.zip webreeksen/neerslaggeg_DE-BILT_550.zip
 if [ $? != 0 ]; then
     echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
     echo '==============================================' >> list_rr.txt
+    echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_sd.txt
+    echo '==============================================' >> list_sd.txt
     files=`curl http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
     for file in $files; do
         wget -q http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
@@ -15,7 +17,7 @@ if [ $? != 0 ]; then
             echo "updating from $file"
             txtfile=tmp/`basename $file .zip`.txt
             unzip -p webreeksen/$file > $txtfile
-            ./neerslag2dat $txtfile >> list_rr.txt
+            (./neerslag2dat $txtfile >> list_rr.txt) >> list_sd.txt 2>&1
         else
             echo "$0: error: cannot find $file"
         fi
@@ -39,14 +41,30 @@ EOF
     # first-order fix for the problems with the manual gauges
     ./fix_manual_gauges
 
-    for file in rr???.dat
+    for file in rr???.dat sd???.dat
     do
-        zfile=${file%.dat}.gz
-        gzip -f -c $file > $zfile
+        c=`cat $file | wc -l`
+        if [ -z "$c" ]; then
+            rm -f $file ${file%.dat}.gz ${file%.dat}.nc
+        elif [ "$c" -lt 20 ]; then
+            rm -f $file ${file%.dat}.gz ${file%.dat}.nc
+        else
+            zfile=${file%.dat}.gz
+            gzip -f -c $file > $zfile
+        fi
     done
-###fi
-###if [ 0 = 0 ]; then
-    # link farm
+
+    # make netcdf files
+    for file in sd???.dat
+    do
+        ncfile=${file%.dat}.nc
+        if [ ! -s $ncfile -o $ncfile -ot $file ]; then
+            station=`head -2 $file | tail -1 | sed -e 's/# //' -e 's/ [(].*//' -e 's/ /_/g'`
+            echo dat2nc $file p "$station" $ncfile
+            dat2nc $file i "$station" $ncfile
+        fi
+    done
+
     # make links to an ensemble
     rm -f rh242.dat rh340.dat
     rm -f rr_???.nc rrr_???.nc
@@ -84,6 +102,7 @@ EOF
     average_ensemble rr_%%%.nc num > rr_num.dat
     average_ensemble rrr_%%%.nc num > rrr_num.dat
     $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
+    $HOME/NINO/copyfiles.sh list_sd.txt sd???.??
     rsync -avt rr_???.nc bhlclim:climexp/KNMIData/
     
     ./make_p13.sh

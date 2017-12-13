@@ -18,7 +18,7 @@ for var in tg tn tx; do
 # Haparanda, Sweden, 65.83N, 24.14E, 5.0m, 1859-now
 # $var [Celsius] $lvar
 EOF
-    tail +2 Haparanda_${lvar}_corr_monthly.txt >> $file
+    tail -n +2 Haparanda_${lvar}_corr_monthly.txt >> $file
     egrep ' *201[5-9]|^ 20[2-9]' ${var}339.dat >> $file
     $HOME/NINO/copyfiles.sh $file
 done

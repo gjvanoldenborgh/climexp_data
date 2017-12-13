@@ -20,5 +20,5 @@ for var in tg tn tx; do
 EOF
     tail +2 Haparanda_${lvar}_corr_monthly.txt >> $file
     egrep ' *201[5-9]|^ 20[2-9]' ${var}339.dat >> $file
-    $HOME/copyfiles.sh $file
+    $HOME/NINO/copyfiles.sh $file
 done

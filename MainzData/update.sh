@@ -11,7 +11,7 @@ for var in tg tn tx; do
     # make monthly time series 2015-now from ECA&D data
     (cd $HOME/climexp; export DIR=$HOME/climexp; ./bin/$prog 339) > ${var}339_daily.dat
     daily2longer ${var}339_daily.dat 12 mean > ${var}339.dat
-    file=Haparanda_${lvar}_corr_monthly_extended.dat
+    file=Haparanda_${lvar}_corr_ext.dat
     cat > $file <<EOF
 # Homoegenised temperature time series from <a href="MainzData/Dienst_et_al-2017-International_Journal_of_Climatology.pdf">Dienst et al, 2017</a>
 # extended with  <a href="http://www.ecad.eu">ECAD data</a> from SMHI.
@@ -20,4 +20,5 @@ for var in tg tn tx; do
 EOF
     tail +2 Haparanda_${lvar}_corr_monthly.txt >> $file
     egrep ' *201[5-9]|^ 20[2-9]' ${var}339.dat >> $file
+    $HOME/copyfiles.sh $file
 done

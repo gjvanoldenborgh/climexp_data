@@ -19,13 +19,13 @@ do
         cdo selvar,ssta ersst${version}_all.nc ersst${version}a.nc
         $HOME/NINO/copyfilesall.sh ersst${version}.nc ersst${version}a.nc
         if [ $version = v5 ]; then
-            ./makenino.sh
+            . ./makenino.sh
             $HOME/NINO/copyfilesall.sh ersst_nino*.dat
-            ./makeiozm.sh
+            . ./makeiozm.sh
             $HOME/NINO/copyfilesall.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
-            ./makesiod.sh
+            . ./makesiod.sh
             $HOME/NINO/copyfilesall.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
-            ./update_amo.sh
+            . ./update_amo.sh
             $HOME/NINO/copyfilesall.sh amo_ersst.dat amo_ersst_ts.dat
         fi
     fi

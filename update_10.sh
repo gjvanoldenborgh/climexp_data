@@ -157,4 +157,7 @@ echo @@@ PRISM
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)
 
+echo @@@ UMainz
+(cd MainzData; ./update.sh | 2>&1 tee update.log)
+
 echo @@@ finished @@@

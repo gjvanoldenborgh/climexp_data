@@ -32,6 +32,7 @@ for var in TAVG TMIN TMAX
 do
 	decade=1880
 	new=false
+    fullnew=false
 	while [ $decade -le 2010 ]; do
 	    file=Complete_${var}_Daily_LatLong1_${decade}.nc
 	    wget -N $base/$file
@@ -42,18 +43,40 @@ do
 	        cdo -r -f nc4 -z zip selvar,temperature aap.nc $newfile
 	        rm aap.nc
 	    fi
+        climfile=${var}_Daily_LatLong1_clim.nc
+        if [ ! -s ${var}_Daily_LatLong1_clim.nc ]; then
+            cdo selvar,climatology $file aap.nc
+            ncrename -v lev,time -d lev,time aap.nc
+            cdo -r settaxis,1951-01-01,00:00,1day aap.nc $climfile
+	        rm aap.nc
+        fi
+        fullfile=${var}_Daily_LatLong1_${decade}_full.nc
+        if [ ! -d $fullfile -o $fullfile -ot $newfile ]; then
+            fullnew=true
+            echo "cdo -r -f nc4 -z zip add $newfile $climfile $fullfile"
+            cdo -r -f nc4 -z zip add $newfile $climfile $fullfile
+            ncatted -a long_name,temperature,m,c,"Air Surface Temperature" $fullfile
+        fi
 	    decade=$((decade + 10))
 	done
-	if [ $new = true ]; then
+	if [ ! -s ${var}_Daily_LatLong1.nc -o $new = true ]; then
+    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc ${var}_Daily_LatLong1.nc"
     	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc ${var}_Daily_LatLong1.nc
+    	ncrename -v temperature,$var ${var}_Daily_LatLong1.nc
 	    $HOME/NINO/copyfiles.sh ${var}_Daily_LatLong1.nc
+	fi
+	if [ ! -s ${var}_Daily_LatLong1_full.nc -o $fullnew = true ]; then
+    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc ${var}_Daily_LatLong1_full.nc"
+    	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc ${var}_Daily_LatLong1_full.nc
+	    $HOME/NINO/copyfiles.sh ${var}_Daily_LatLong1_full.nc
+    	ncrename -v temperature,$var ${var}_Daily_LatLong1_full.nc
 	fi
 
     file=Complete_${var}_LatLong1.nc
 	wget -N $base/$file
 	ncfile=${var}_LatLong1.nc
-	if [ ! -s $newfile -o $newfile -ot $file ]; then
-	    ncatted units,time,m,c,"years since 0000-01-01 00:00" aap.nc
+	if [ ! -s $ncfile -o $ncfile -ot $file ]; then
+	    ncatted -a units,time,m,c,"years since 0000-01-01 00:00" $file aap.nc
 	    cdo -r -f nc4 -z zip selvar,temperature aap.nc $ncfile
 	    rm aap.nc
     	$HOME/NINO/copyfiles.sh ${var}_LatLong1.nc

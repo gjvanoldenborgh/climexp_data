@@ -1,5 +1,5 @@
 #!/bin/sh
-for var in TAVG TMIN TAMX
+for var in TAVG TMIN TMAX
 do
     case $var in
         TAVG) eraivar=t2m;;
@@ -15,7 +15,7 @@ do
         cdo -r -f nc4 -z zip remapbil,$infile $eraifile $erairegridded
     fi
     if [ ! -s $outfile -o $outfile -ot $erairegridded ]; then
-        echo "patchfield $infile $erairegridded aap$$.nc bias"
+        echo "patchfield $infile $erairegridded bias aap$$.nc"
         patchfield $infile $erairegridded bias aap$$.nc        
         averagefieldspace aap$$.nc 2 2 $outfile
         $HOME/NINO/copyfiles.sh $outfile

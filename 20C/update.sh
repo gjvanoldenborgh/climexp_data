@@ -1,5 +1,67 @@
 #!/bin/sh
 
+# daily mean data
+
+base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Dailies
+yrbegin=1851
+yrend=2014
+
+for var in tmax.2m tmin.2m air.2m prate prmsl air hgt
+do
+    if [ ! -s ${var}_daily.nc -a ! -s ${var}850_daily.nc -a ! -s ${var}500_daily.nc ]; then
+        case $var in
+            air.2m|tmin.2m|tmax.2m|prate) dir=gaussian/monolevel;;
+            prmsl) dir=monolevel;;
+            air|hgt) dir=pressure;;
+            *) echo "$0: error: unknown var $var";exit -1;;
+        esac
+        yr=$yrbegin
+        while [ $yr -le $yrend ]; do
+            file=$var.$yr.nc
+            echo "updating $dir/$file"
+            wget -q -N $base/$dir/$file
+            if [ $dir = pressure ]; then
+                if [ $var = air ]; then
+                    for lev in 850; do
+                        if [ ! -s ${var}${lev}.$yr.nc ]; then
+                            cdo sellevel,$lev ${var}.$yr.nc ${var}${lev}.$yr.nc
+                        fi
+                    done
+                elif [ $var = hgt ]; then
+                    for lev in 500; do
+                        if [ ! -s ${var}${lev}.$yr.nc ]; then
+                            cdo sellevel,$lev ${var}.$yr.nc ${var}${lev}.$yr.nc
+                        fi
+                    done
+                fi
+            fi
+            ((yr++))
+        done
+        if [ $dir = pressure ]; then
+            if [ $var = air ]; then
+                for lev in 850; do
+                    cdo -b 32 -r -f nc4 -z zip copy $var$lev.????.nc ${var}${lev}_daily.nc
+                    describefield ${var}${lev}_daily.nc
+                    rsync -e ssh -avt ${var}${lev}_daily.nc bhlclim:climexp/20C/
+                done
+            elif [ $var = hgt ]; then
+                for lev in 500; do
+                    cdo -b 32 -r -f nc4 -z zip copy $var$lev.????.nc ${var}${lev}_daily.nc
+                    describefield ${var}${lev}_daily.nc
+                    rsync -e ssh -avt ${var}${lev}_daily.nc bhlclim:climexp/20C/
+                done
+            fi
+        else
+            cdo -b 32 -r -f nc4 -z zip copy $var.????.nc ${var}_daily.nc
+            describefield ${var}_daily.nc
+            rsync -e ssh -avt ${var}_daily.nc bhlclim:climexp/20C/
+        fi
+    fi
+done
+
+echo "TEMPORARY EXIT"
+exit
+
 # wind speed is a chore - compuyte from 3-hourly U and V winds
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/monolevel/
@@ -27,54 +89,6 @@ do
     cdo -r -f nc4 -z zip copy $var.10m.????.max.nc $var.10m.max.mean.nc
     rsync -e ssh -avt $var.10m.max.mean.nc bhlclim:climexp/20C/
 done # var
-
-echo TEMPORARY EXIT
-exit
-
-# daily mean data
-
-base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Dailies
-yrbegin=1851
-yrend=2014
-
-for var in tmax.2m tmin.2m air.2m prate prmsl air
-do
-    if [ ! -s ${var}_daily.nc -a ! -s ${var}850_daily.nc ]; then
-        case $var in
-            air.2m|tmin.2m|tmax.2m|prate) dir=gaussian/monolevel;;
-            prmsl) dir=monolevel;;
-            air) dir=pressure;;
-            *) echo "$0: error: unknown var $var";exit -1;;
-        esac
-        yr=$yrbegin
-        while [ $yr -le $yrend ]; do
-            file=$var.$yr.nc
-            echo "updating $dir/$file"
-            wget -q -N $base/$dir/$file
-            if [ $dir = pressure ]; then
-                for lev in 850; do
-                    if [ ! -s ${var}${lev}.$yr.nc ]; then
-                        cdo sellevel,$lev ${var}.$yr.nc ${var}${lev}.$yr.nc
-                    fi
-                done
-            fi
-            ((yr++))
-        done
-        if [ $dir = pressure ]; then
-            for lev in 850; do
-                cdo -b 32 -r -f nc4 -z zip copy $var$lev.????.nc ${var}${lev}_daily.nc
-                describefield ${var}${lev}_daily.nc
-                rsync -e ssh -avt ${var}${lev}_daily.nc bhlclim:climexp/20C/
-            done
-        else
-            cdo -b 32 -r -f nc4 -z zip copy $var.????.nc ${var}_daily.nc
-            describefield ${var}_daily.nc
-            rsync -e ssh -avt ${var}_daily.nc bhlclim:climexp/20C/
-        fi
-    fi
-done
-
-exit
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/Monthlies/
 

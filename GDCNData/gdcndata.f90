@@ -22,7 +22,7 @@ program gdcndata
     character flags1(31)*1,flags2(31)*1,flags3(31)*1,dummy1*1,      &
  &       dummy2*1,tminflags(31)*1,tmaxflags(31)*1
     character country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4 &
- &       ,units(9)*10,uppercountry*50
+ &       ,units(9)*10,uppercountry*50,longname(9)*60
     character string*200,line*500,sname*25
     character dir*256,command*1024
     logical lwrite
@@ -31,6 +31,11 @@ program gdcndata
  &       'SNOW','SNWD'/
     data units /'[Celsius]','[Celsius]','[Celsius]','[mm/day]',     &
  &       '[Celsius]','[Celsius]','[mm/day]','[mm/day]','[mm]'/
+    data longname /'daily minimum temperature','daily mean temperature', &
+        'daly maximum temperature','precipitation', &
+        'average of minimum and maximum temperature', &
+        'difference of maximum and minimum temperature', &
+            'precipitation','snowfall','snow depth'/
 !
 !       11 character station ID (also letters!)
 !       7 digit latitude [decimal degree]
@@ -340,10 +345,7 @@ program gdcndata
             endif
             open(2,file=string(1:llen(string)),status='old',err=940)
 !               print header
-!                print '(10a)','# ',elements(type),
-!     &               ' GHCN-D V2.0 data with QC flag at least ',qcflag,
-!     &               ' in ',units(type)
-            print '(10a)','# ',elements(type),' GHCN-D V2.0 data with QC in ',units(type)
+            print '(10a)','# ',elements(type),' ',trim(units(type)),' ',trim(longname(type))
             if ( type == 7 ) then
                 print '(a)','# excluding GTS observations'
             endif

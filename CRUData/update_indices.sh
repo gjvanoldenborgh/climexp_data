@@ -72,12 +72,15 @@ EOF
         echo "soi.dat has not changed"
         mv soi.dat.old soi.dat
     fi
-else # new verison
+else # new version
     cp soi.dat soi.dat.old
     wget -N http://crudata.uea.ac.uk/cru/data/soi/soi_3dp.dat
     cat <<EOF > soi.dat
-# SOI [1] CRU Southern Oscillation Index
 # <a href="https://crudata.uea.ac.uk/cru/data/soi/">data description</a>
+# institution :: UAE/CRU
+# link :: https://crudata.uea.ac.uk/cru/data/soi/
+# history :: retrieved from AUE/CRU on `date`
+# SOI [1] CRU Southern Oscillation Index
 EOF
     sed -e 's/-99\.990/ -999.9/g' soi_3dp.dat >> soi.dat
     diff soi.dat soi.dat.old

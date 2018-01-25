@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 # run on zuidzee
 import os
 from datetime import datetime
@@ -12,6 +12,9 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
         if type == "an":
             time = "00:00:00/06:00:00/12:00:00/18:00:00"
             step = "0"
+        elif type == "fc" and var == 'u10' or var == 'v10':
+            time = "00:00:00/06:00:00/12:00:00/18:00:00"
+            step = "0/3"
         elif type == "fc" and var == 'tmin' or var == 'tmax':
             time = "00:00:00/12:00:00"
             step = "6/12"
@@ -51,6 +54,8 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             oper = "daymin"
         elif var == "tmax" or var == "tdew":
             oper = "daymax"
+        elif var == "u10" or var == "v10":
+            oper = "daymean"
         elif type == "fc":
             oper = "daysum"
         else:
@@ -64,12 +69,24 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
                 command = cdo + " -setname," + var + " -shifttime,-3hour " + file + \
                     " aap.nc; " + cdo + " -" + oper + " aap.nc noot.nc; " + cdo + \
                     " -shifttime,-9hour noot.nc " + ncfile
+            elif var == "u10" or var == "v10":
+                # shift -1 hr to get the 00, 03, ... 21 values in the correct day
+                command = cdo + " -setname," + var + " -shifttime,1hour " + file + \
+                    " aap.nc; " + cdo + " -" + oper + " aap.nc noot.nc; " + cdo + \
+                    " -shifttime,-9hour noot.nc " + ncfile
             elif var == 'tp' or var == 'evap':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm
                 command = cdo + " -setname," \
                     + var + " -shifttime,-6hour " + file + " aap.nc; " + cdo + \
                     " -daysum -mulc,1000 aap.nc noot.nc; " + cdo + \
+                    " -shifttime,-6hour noot.nc " + ncfile
+            elif var == 'rsds' or var == 'rsns' or var == 'rlns':
+                # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
+                # dicide by 60*60*24 to get from J/day/m2 to W/m2.
+                command = cdo + " -setname," \
+                    + var + " -shifttime,-6hour " + file + " aap.nc; " + cdo + \
+                    " -daysum -divc,86400 aap.nc noot.nc; " + cdo + \
                     " -shifttime,-6hour noot.nc " + ncfile
             else:
                 print "error: cannot handle var %s" % var
@@ -90,7 +107,7 @@ server = ECMWFDataServer()
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
 
-vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "msl", "sp", "z500", "t500", "q500" ]
+vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "rsds", "rsns", "rlns", "msl", "u10", "v10", "sp", "z500", "t500", "q500" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -147,6 +164,26 @@ for var in vars:
         code = "182.128"
         type = "fc"
         units = "mm/dy"
+    elif var == "rsds":
+        code = "169.128"
+        type = "fc"
+        units = "W/m2"
+    elif var == "rsns":
+        code = "176.128"
+        type = "fc"
+        units = "W/m2"
+    elif var == "rlns":
+        code = "177.128"
+        type = "fc"
+        units = "W/m2"
+    elif var == "u10":
+        code = "165.128"
+        type = "fc"
+        units = "m/s"
+    elif var == "v10":
+        code = "166.128"
+        type = "fc"
+        units = "m/s"
     else:
         raise SystemExit("unknown var: " + var)
 

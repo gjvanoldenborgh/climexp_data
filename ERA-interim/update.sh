@@ -13,7 +13,7 @@ if [ $force != true -a -f downloaded_$yr$mo ]; then
 fi
 if [ 1 = 1 ]; then
 ./get_erainterim.py
-ssh zuidzee "cd NINO/ERA-interim; ./get_erainterim_daily.py; rsync -at erai_*_daily.nc bhlclim:climexp/ERA-interim/"
+ssh zuidzee "cd NINO/ERA-interim; ./get_erainterim_daily.py; ./make_wspd.sh; rsync -at erai_*_daily.nc bhlclim:climexp/ERA-interim/"
 ./update_tglobal.sh
 ./update_twetbulb.sh
 $HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat

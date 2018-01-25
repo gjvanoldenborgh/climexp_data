@@ -18,6 +18,7 @@ do
         echo "patchfield $infile $erairegridded bias aap$$.nc"
         patchfield $infile $erairegridded bias aap$$.nc        
         averagefieldspace aap$$.nc 2 2 $outfile
+        rm aap$$.nc
         $HOME/NINO/copyfiles.sh $outfile
     fi
 done

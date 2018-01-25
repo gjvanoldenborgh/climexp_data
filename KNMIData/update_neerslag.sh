@@ -5,11 +5,13 @@
 wget -q -N http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/neerslaggeg_DE-BILT_550.zip
 cmp neerslaggeg_DE-BILT_550.zip webreeksen/neerslaggeg_DE-BILT_550.zip
 if [ $? != 0 ]; then
-    echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
-    echo '==============================================' >> list_rr.txt
-    echo 'located stations in 50.0N:54.0N, 3.0E:8.0E' > list_sd.txt
-    echo '==============================================' >> list_sd.txt
     files=`curl http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
+    nstations=`echo $files | wc -w`
+    (nstations++)) # Amsterdam filiaal wordt met de hand toegevoegd
+    echo 'located $nstations stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
+    echo '==============================================' >> list_rr.txt
+    echo 'located $nstations stations in 50.0N:54.0N, 3.0E:8.0E' > list_sd.txt
+    echo '==============================================' >> list_sd.txt
     for file in $files; do
         wget -q http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
         mv $file webreeksen/

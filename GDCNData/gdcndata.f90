@@ -32,7 +32,7 @@ program gdcndata
     data units /'[Celsius]','[Celsius]','[Celsius]','[mm/day]',     &
  &       '[Celsius]','[Celsius]','[mm/day]','[mm/day]','[mm]'/
     data longname /'daily minimum temperature','daily mean temperature', &
-        'daly maximum temperature','precipitation', &
+        'daily maximum temperature','precipitation', &
         'average of minimum and maximum temperature', &
         'difference of maximum and minimum temperature', &
             'precipitation','snowfall','snow depth'/
@@ -321,7 +321,7 @@ program gdcndata
             print '(a,f6.2,a,f7.2,a,f8.1,8a)'                         &
  &               ,'# coordinates: ',rlat(jj),'N, ',rlon(jj),'E, '     &
  &               ,elev(jj),'m; GHCN-D station code: ',stations(jj)    &
- &               ,' ',name(jj)(1:llen(name(jj))),' ', trim(country(k))
+ &               ,' ',trim(name(jj)),' ', trim(country(k))
             if ( iwmo(jj) /= -9999 ) then
                 print '(a,i5)','# WMO station ',iwmo(jj)
             endif
@@ -331,6 +331,26 @@ program gdcndata
  &                ,' years of data in ',firstyr(jj),'-'               &
  &                ,lastyr(jj)
         else
+            ! new-style metadata
+            print '(a)','# institution :: NOAA/NCEI'
+            print '(a)','# source_url :: https://catalog.data.gov/dataset/'// &
+                'global-historical-climatology-network-daily-ghcn-daily-version-3'
+            print '(a)','# source_doi :: https:doi.org/10.7289/V5D21VHZ'
+            print '(a)','# contact_email :: ncdc.ghcnd@noaa.gov'
+            print '(a)','# reference :: Matthew J. Menne, Imke Durre, Russell S. Vose, Byron E. Gleason, '// &
+                'and Tamara G. Houston, 2012: An Overview of the Global Historical Climatology '// &
+                'Network-Daily Database. J. Atmos. Oceanic Technol., 29, 897-910. doi:10.1175/JTECH-D-11-00103.1.'
+            print '(a)','# license :: U.S. Government Work The non-U.S. data cannot be redistributed '//  &
+                'within or outside of the U.S. for any commercial activities.'
+            print '(2a)','# station_code :: ',stations(jj)
+            print '(2a)','# station_name :: ',trim(name(jj))
+            print '(2a)','# station_country :: ',trim(country(k))
+            if ( iwmo(jj) /= -9999 ) then
+                print '(a,i5)','# wmo_code :: ',iwmo(jj)
+            end if
+            print '(a,f7.2,a)','# latitude :: ',rlat(jj),' degrees_north'
+            print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
+            print '(a,f8.1,a)','# elevation :: ',elev(jj),' m'
             write(dir(ldir+1:),'(3a,i10.10,a)') '/ghcnd/',stations(jj),'.dly.gz'
             ldir = llen(dir)
             write(string,'(6a)') '/tmp/gdcn_',stations(jj),'_',qcflag,'.dat'
@@ -350,9 +370,6 @@ program gdcndata
                 print '(a)','# excluding GTS observations'
             endif
             k = getcode(stations(jj),cc)
-            print '(a)','# The non-U.S. data cannot be redistributed '//  &
- &               'within or outside of the U.S. for any commercial '      &
- &               //'activities.'
 !               read and print data
 600         continue
 1001        format(a11,i4,i2,a4,31(i5,3a1))

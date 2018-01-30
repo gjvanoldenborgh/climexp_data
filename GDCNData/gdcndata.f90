@@ -12,7 +12,8 @@ program gdcndata
  &        ,idates(18),iecd,ist,iwm,igsn
     integer iwmo(nn),firstyr(nn),lastyr(nn),nyr(nn),ind(nn)         &
  &       ,type,tmin,tmax,temp,prcp,mo,dy,ielev,vals(31)             &
- &       ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)
+ &       ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)     &
+ &       ,statbuf(13)
     real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon      &
  &        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin             &
  &        ,rlatmax,val,elev(nn),distj
@@ -23,7 +24,7 @@ program gdcndata
  &       dummy2*1,tminflags(31)*1,tmaxflags(31)*1
     character country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4 &
  &       ,units(9)*10,uppercountry*50,longname(9)*60
-    character string*200,line*500,sname*25
+    character string*200,line*500,sname*25,history*1000
     character dir*256,command*1024
     logical lwrite
     integer iargc,llen,getcode
@@ -335,12 +336,12 @@ program gdcndata
             print '(a)','# institution :: NOAA/NCEI'
             print '(a)','# source_url :: https://catalog.data.gov/dataset/'// &
                 'global-historical-climatology-network-daily-ghcn-daily-version-3'
-            print '(a)','# source_doi :: https:doi.org/10.7289/V5D21VHZ'
+            print '(a)','# source_doi :: https://doi.org/10.7289/V5D21VHZ'
             print '(a)','# contact_email :: ncdc.ghcnd@noaa.gov'
             print '(a)','# reference :: Matthew J. Menne, Imke Durre, Russell S. Vose, Byron E. Gleason, '// &
                 'and Tamara G. Houston, 2012: An Overview of the Global Historical Climatology '// &
                 'Network-Daily Database. J. Atmos. Oceanic Technol., 29, 897-910. doi:10.1175/JTECH-D-11-00103.1.'
-            print '(a)','# license :: U.S. Government Work The non-U.S. data cannot be redistributed '//  &
+            print '(a)','# license :: U.S. Government Work. The non-U.S. data cannot be redistributed '//  &
                 'within or outside of the U.S. for any commercial activities.'
             print '(2a)','# station_code :: ',stations(jj)
             print '(2a)','# station_name :: ',trim(name(jj))
@@ -353,17 +354,23 @@ program gdcndata
             print '(a,f8.1,a)','# elevation :: ',elev(jj),' m'
             write(dir(ldir+1:),'(3a,i10.10,a)') '/ghcnd/',stations(jj),'.dly.gz'
             ldir = llen(dir)
-            write(string,'(6a)') '/tmp/gdcn_',stations(jj),'_',qcflag,'.dat'
-            open(2,file=dir,status='old',err=940)
+            open(2,file=trim(dir),status='old',err=940)
             close(2)
-            command = 'gzip -d -c '//dir(1:ldir)//' > '//string(1:llen(string))
+            call mystat(trim(dir),statbuf,i)
+            call myctime(statbuf(10),string) ! last-modified time as an approximation to retrieval time
+            print '(2a)','# timestamp :: ',trim(string)
+            history = ' ' ! first program in the chain
+            call extend_history(history)
+            print '(2a)','# history :: ',trim(history)
+            write(string,'(6a)') '/tmp/gdcn_',stations(jj),'_',qcflag,'.dat'
+            command = 'gzip -d -c '//trim(dir)//' > '//trim(string)
             if ( lwrite ) print *,trim(command)
             call mysystem(trim(command),i)
             if ( i /= 0 ) then
                 write(0,*) 'gunzipping failed, error code =',i
                 write(0,*) trim(command)
             endif
-            open(2,file=string(1:llen(string)),status='old',err=940)
+            open(2,file=trim(string),status='old',err=940)
 !               print header
             print '(10a)','# ',elements(type),' ',trim(units(type)),' ',trim(longname(type))
             if ( type == 7 ) then

@@ -12,7 +12,7 @@ program dat2dat
     real :: s,lat,lon,elev
     character :: infile*19,outfile*19,vars(nvars)*2,units(nvars)*10, &
         line*256,stationname*40,altname*40,dum*1,metadatafile*80, &
-        lvars(nvars)*256,station_name*40,invars(nvars)*5,var*5
+        lvars(nvars)*256,station_name*40,invars(nvars)*5,var*5,history*1000
     logical :: lwrite
     data vars /'dd','fg','fh','fn','fx','tg','tn','tx','t1','sq', &
         'sp','qq','dr','rh','pg','px','pn','vn','vx','ng', &
@@ -217,6 +217,9 @@ program dat2dat
         write(j,'(a)') '# license :: These data can be used freely provided'// &
             ' that the following source is acknowledged: '// &
             'Royal Netherlands Meteorological Institute (KNMI)'
+        history = ' '
+        call extend_history(history)
+        write(j,'(2a)') '# history :: ',trim(history)
         write(j,'(8a)') '# ',vars(ivar),' [',trim(units(ivar)),'] ', &
             trim(lvars(ivar))
         write(j,'(3a,f6.2,a,f6.2,a,f6.1,4a)') '# ',trim(stationname) &

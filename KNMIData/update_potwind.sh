@@ -1,8 +1,8 @@
 #!/bin/sh
 
 mkdir -p tmp_potwind
-DEBUG=true
-if [ "$DEBUG" /= true ]; then
+DEBUG=false
+if [ "$DEBUG" != true ]; then
     wget=wget
     unzip=unzip
 else
@@ -74,3 +74,4 @@ EOF
     gzip -c upx$station.dat > upx$station.gz
 done
 echo "==============================================" >> list_upx.txt
+$HOME/NINO/copyfiles.sh upx* list_upx.txt

@@ -4,12 +4,12 @@ program txt2dat
 !   with daily maximum potential wind
 
     implicit none
-    integer,parameter :: yrbeg=1970,yrend=2020,hourperyear=24*366,npermax=366
+    integer,parameter :: yrbeg=1949,yrend=2020,hourperyear=24*366,npermax=366
     integer :: datum,yyyy,hh,dd,mm,qdd,up,qup,i,j,k,istation,nvals,olddatum,nyr,yr1,yr2, &
-        vals(24),iarg,ioldstation
+        vals(24),iarg,icategory,lun,istation1
     real :: upx(31,12,yrbeg:yrend),xlat,xlon,factor
     character :: file*1023,auxfile*1023,line*120,station*40,oldstation*40, &
-        description*400,license*400,url*120,version*50
+        description*400,license*400,url*120,version*50,station_*40
     integer :: iargc
     
     if ( iargc() == 0 ) then
@@ -17,13 +17,15 @@ program txt2dat
         write(0,*) '       generates upxNNN.dat'
         call exit(-1)
     end if
+    open(11,file='list_upx_sea.txt',status='old',position="append")
+    open(12,file='list_upx_coast.txt',status='old',position="append")
+    open(13,file='list_upx_land.txt',status='old',position="append")
     oldstation = 'unknown'
-    ioldstation = -999
     upx = 3e33
     do iarg=1,iargc()
         call getarg(iarg,file)
         write(0,*) 'txt2dat_potwind: opening file ',trim(file)
-        open(1,file=trim(file),status='old')
+        open(1,file=trim(file),status='old',err=900)
         description = ' '
         license = ' '
         factor = 1
@@ -39,16 +41,22 @@ program txt2dat
                 if ( line(k:k) /= ' ' ) k = k + 1
                 k = k - 1
                 read(line(i:k),'(i3)') istation
-                if ( ioldstation > 0 .and. istation /= ioldstation ) then
-                    write(0,*) 'txt2dat_potwind: error: station IDs do not agree ',ioldstation,istation
+                station = line(k+2:)
+                ! inconsistent names are a specialty of our data group
+                ! most are OK by only checking the first four characters, but this one has
+                ! to be hand-adjusted.
+                if ( station == 'R''DAM-GEULHAVEN' ) station = 'ROTTERDAM GEULHAVEN'
+                if ( oldstation /= 'unknown' .and. station(1:4) /= oldstation(1:4) ) then
+                    write(0,*) 'txt2dat_potwind: error: station names do not agree: ', &
+                        trim(oldstation),' ',trim(station)
                     call exit(-1)
                 end if
-                if ( istation /= ioldstation ) then
-                    if ( ioldstation > 0 ) close(2)
+                if ( station(1:4) /= oldstation(1:4) ) then
+                    if ( oldstation /= 'unknown' ) close(2)
                     write(file,'(a,i3.3,a)') 'upx',istation,'.dat'
                     open(2,file=trim(file))
+                    istation1 = istation
                 end if
-                station = line(k+2:)
                 ! get coordinates
                 write(file,'(a,i3.3,a)') 'latlon_wind',istation,'.txt'
                 open(3,file=trim(file),status='old')
@@ -70,10 +78,15 @@ program txt2dat
                  istation == 258 .or. istation == 285 .or. istation == 312 .or. &
                  istation == 313 .or. istation == 316 .or. istation == 320 .or. &
                  istation == 321 .or. istation == 331 ) then
-                ! sea stations
+                ! sea stations, inlcuing Houtribdijk?
+                icategory = 1
                 i = index(line,'OPEN LAND')
                 if ( i /= 0 ) then
-                    description = description(:i-1)//'OPEN WATER'//trim(description(i+10:))
+                    description = description(:i-1)//'OPEN WATER '//trim(description(i+10:))
+                    i = index(line,'OPEN LAND')
+                    if ( i /= 0 ) then
+                        description = description(:i-1)//'OPEN WATER '//trim(description(i+10:))
+                    end if
                     i = index(description,'0.03 METER')
                     if ( i == 0 ) then
                         write(0,*) 'txt2dat_potwind: error: expecting string "0.03 METER" in ', &
@@ -82,7 +95,24 @@ program txt2dat
                     end if
                     description(i-1:) = '0.002 METER'
                     factor = 1.081 ! from email by Andrew Stepek
+                    write(0,*) 'applying a factor ',factor,' to convert from 0.03 to 0.002 m roughness'
+                endif
+                i = index(line,'OPEN WATER')
+                if ( i /= 0 ) then
+                    factor = 1/1.081
+                    write(0,*) 'applying a factor ',factor,' to correct for a bug in the '// &
+                        'processing on 2018-01-30 of file ',trim(file)
                 end if
+            else if ( istation == 225 .or. istation == 229 .or. istation == 235 .or. &
+                      istation == 242 .or. istation == 250 .or. istation == 251 .or. &
+                      istation == 258 .or. istation == 268 .or. istation == 277 .or. &
+                      istation == 308 .or. istation == 310 .or. istation == 330 .or. &
+                      istation == 330 .or. istation == 605 ) then
+                ! coastal stations, including 258 Houtrib(dijk)
+                icategory = 2
+            else
+                ! inland stations
+                icategory = 3
             end if
             i = index(line,'http:')
             if ( i /= 0 ) then
@@ -100,14 +130,14 @@ program txt2dat
 
 !       print header
 
-        if ( istation /= ioldstation ) then
-            ioldstation = istation
+        if ( station(1:4) /= oldstation(1:4) ) then
+            oldstation = station
             call tolower(description)
             write(2,'(a)') '# Wind originally'//trim(description)
             write(2,'(3a,f7.2,a,f7.2,a)') '# ',trim(station),' ( ',xlat,'N, ',xlon,'E)'
             write(2,'(a,f7.2,a)') '# longitude :: ',xlon,' degrees_east'
             write(2,'(a,f7.2,a)') '# latitude :: ',xlat,' degrees_north'
-            write(2,'(a,i3.3)') '# station_code :: ',istation
+            write(2,'(a,i3.3)') '# station_code :: ',istation1
             write(2,'(2a)') '# station_name :: ',trim(station)
             write(2,'(a)') '# institution :: KNMI'
             ! URL from file no longer works.
@@ -136,6 +166,9 @@ program txt2dat
                 vals = -1
             end if
             olddatum = datum
+            if ( istation == 260 .and. datum < 20020101 ) goto 700 ! data indicate an inhomogenity between 2001 and 2002
+            if ( istation == 270 .and. datum < 19900101 ) goto 700 ! both data and metadata indicate an inhomogenity between 1989 and 1990
+            if ( istation == 320 .and. datum < 19950101 ) goto 700 ! by eye, incompatible data with the rest before a gap and discontinuity in 1995, supported by metadata
             if ( up >= 0 .and. qup == 0 ) then
                 yyyy = datum/10000
                 yr1 = min(yr1,yyyy)
@@ -146,6 +179,7 @@ program txt2dat
                 end if
                 vals(hh) = up
             end if
+        700 continue
             read(1,'(a)',err=800,end=800) line
         end do
     800 continue
@@ -153,7 +187,11 @@ program txt2dat
         vals = -1
         olddatum = -1
         close(1)
+    900 continue
     end do ! iarg
+    if ( istation /= istation1 ) then
+        write(2,'(a,i3.3)') '# station_code_1 :: ',istation
+    end if
     do yyyy=yrbeg,yrend
         do mm=1,12
             do dd=1,31
@@ -166,20 +204,30 @@ program txt2dat
 
 !   list output
 
+    station_ = station
+    do i=1,len(station_)
+        if ( station_(i:) == ' ' ) exit
+        if ( station_(i:i) == ' ' ) station(i:i) = '_'
+    end do
     nyr = yr2-yr1+1 ! approximately
     if ( nyr >= 8 ) then
-        print '(a)','=============================================='
-        print '(3a)',station,'(Netherlands)'
-        print '(a,f7.2,a,f7.2,a)','coordinates: ',xlat,'N, ',xlon,'E'
-        do i=1,len(station)
-            if ( station(i:) == ' ' ) exit
-            if ( station(i:i) == ' ' ) station(i:i) = '_'
+        do i=1,2
+            if ( i == 1 ) then
+                lun = 6
+            else
+                lun = 10 + icategory
+            end if
+            write(lun,'(a)') '=============================================='
+            write(lun,'(3a)') station,'(Netherlands)'
+            write(lun,'(a,f7.2,a,f7.2,a)') 'coordinates: ',xlat,'N, ',xlon,'E'
+            write(lun,'(a,i3.3,2a)') 'station code: ',istation1,' ',trim(station_)
+            !!!write(0,*) 'txt2dat_potwind: writing yr1,yr2',yr1,yr2
+            write(lun,'(a,i3,a,i4.4,a,i4.4)') 'Found ',nyr,' years with data in ',yr1,'-',yr2
         end do
-        print '(a,i3.3,2a)','station code: ',istation,' ',trim(station)
-        !!!write(0,*) 'txt2dat_potwind: writing yr1,yr2',yr1,yr2
-        print '(a,i3,a,i4.4,a,i4.4)','Found ',nyr,' years with data in ',yr1,'-',yr2
     end if
-    
+    close(11)
+    close(12)
+    close(13)
 end program txt2dat
 
 subroutine takemax(upx,yrbeg,yrend,olddatum,vals,factor)
@@ -203,12 +251,13 @@ subroutine takemax(upx,yrbeg,yrend,olddatum,vals,factor)
         yyyy = olddatum/10000
         mm = mod(olddatum/100,100)
         dd = mod(olddatum,100)
+        upmax = upmax*factor
         if ( upx(dd,mm,yyyy) < 1e33 ) then
-            if ( abs(upx(dd,mm,yyyy)-upmax) > 0.1 ) then
+            if ( abs(upx(dd,mm,yyyy)-upmax) > 0.11 ) then
                 write(0,*) 'txt2dat_potwind: warning: different values for ', &
-                    olddatum,upx(dd,mm,yyyy),upmax
+                    olddatum,upx(dd,mm,yyyy),upmax,factor
             end if
         end if
-        upx(dd,mm,yyyy) = upmax*factor
+        upx(dd,mm,yyyy) = upmax
     end if
 end subroutine takemax

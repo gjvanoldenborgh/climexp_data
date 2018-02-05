@@ -7,10 +7,10 @@ cmp neerslaggeg_DE-BILT_550.zip webreeksen/neerslaggeg_DE-BILT_550.zip
 if [ $? != 0 ]; then
     files=`curl http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
     nstations=`echo $files | wc -w`
-    (nstations++)) # Amsterdam filiaal wordt met de hand toegevoegd
-    echo 'located $nstations stations in 50.0N:54.0N, 3.0E:8.0E' > list_rr.txt
+    ((nstations++)) # Amsterdam filiaal wordt met de hand toegevoegd
+    echo "located $nstations stations in 50.0N:54.0N, 3.0E:8.0E" > list_rr.txt
     echo '==============================================' >> list_rr.txt
-    echo 'located $nstations stations in 50.0N:54.0N, 3.0E:8.0E' > list_sd.txt
+    echo "located $nstations stations in 50.0N:54.0N, 3.0E:8.0E" > list_sd.txt
     echo '==============================================' >> list_sd.txt
     for file in $files; do
         wget -q http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
@@ -42,8 +42,10 @@ EOF
 
     # first-order fix for the problems with the manual gauges
     ./fix_manual_gauges
+    rm sd???.dat.org
+    ./fix_sd.sh
 
-    for file in rr???.dat sd???.dat
+    for file in rr???.dat sd???.dat sdhom???.dat
     do
         c=`cat $file | wc -l`
         if [ -z "$c" ]; then
@@ -61,8 +63,18 @@ EOF
     do
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -2 $file | tail -1 | sed -e 's/# //' -e 's/ [(].*//' -e 's/ /_/g'`
-            echo dat2nc $file p "$station" $ncfile
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/:: //'` 
+            echo dat2nc $file s "$station" $ncfile
+            dat2nc $file i "$station" $ncfile
+        fi
+    done
+    ./makehom_sd.sh
+    for file in sdhom???.dat
+    do
+        ncfile=${file%.dat}.nc
+        if [ ! -s $ncfile -o $ncfile -ot $file ]; then
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/:: //'` 
+            echo dat2nc $file s "$station" $ncfile
             dat2nc $file i "$station" $ncfile
         fi
     done

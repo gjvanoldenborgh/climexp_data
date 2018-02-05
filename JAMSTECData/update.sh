@@ -10,6 +10,7 @@ do
     esac
     echo "# $region [Celsius] $name SST anomalies" > $region.dat
     echo "# from <a href=http://www.jamstec.go.jp/frcgc/research/d1/iod/e/index.html>JAMSTEC</a>" >> $region.dat
+    echo "# history :: retrieved at `date`" >> $region.dat
     tail -n +2 dmi.monthly.txt | tr ":" " " | cut -d " " -f 1,2,$col >> $region.dat
 done
 $HOME/NINO/copyfiles.sh *.dat

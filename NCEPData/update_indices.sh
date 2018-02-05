@@ -98,9 +98,12 @@ cp heat_content_index.txt heat_content_index.txt.old
 wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
 diff heat_content_index.txt heat_content_index.txt.old
 if [ $? != 0 ]; then
+  url=http://www.cpc.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
   cat > cpc_eq_heat300.dat <<EOF
-# CPC Equatorial Upper 300m temperature Average anomaly based on 1981-2010 Climatology, 130E-80W
-# Source <a href="">CPC/NCEP</a>
+# <a href="$url">CPC/NCEP</a> Equatorial Upper 300m temperature Average anomaly based on 1981-2010 Climatology, 130E-80W
+# institution :: NOAA/NCEP/CPC
+# source :: $url
+# history :: retrieved on `date`
 # heat300 [K] temperature averaged to 300m
 EOF
   tail -n +3 heat_content_index.txt | cut -b 1-20 >> cpc_eq_heat300.dat

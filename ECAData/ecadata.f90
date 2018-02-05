@@ -59,7 +59,7 @@ program eca
     end if
     if ( element == 'rr' ) then
         units = '[mm/day]'
-        longname = '24-hr summed precipittaion'
+        longname = '24-hr summed precipitation'
     else if ( element == 'pp' ) then
         units = '[mb]'
         longname = 'sea-level pressure'
@@ -68,7 +68,7 @@ program eca
         longname = 'daily mean temperature'
     else if ( element == 'tn' ) then
         units = '[Celsius]'
-        longname = 'daily minimukm temperature'
+        longname = 'daily minimum temperature'
     else if ( element == 'tx' ) then
         units = '[Celsius]'
         longname = 'daily maximum temperature'

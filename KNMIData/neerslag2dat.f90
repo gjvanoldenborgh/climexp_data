@@ -3,9 +3,9 @@ program neerslag2dat
 !   convert the KA datafiles to climate explorer conventions
 !
     implicit none
-    integer i,i1,i2,istation,datum,rr,sd,mmsd,deg,min,yr,yr1,yr2,yr1a,yr2a
+    integer i,j,i1,i2,istation,datum,rr,sd,mmsd,deg,min,yr,yr1,yr2,yr1a,yr2a
     real lat,lon
-    character infile*100,outfile*100,name*40,capsname*40,line*1000
+    character infile*100,outfile*100,name*40,capsname*40,line*1000,history*1000
     logical lwrite
     
     lwrite = .false.
@@ -84,7 +84,7 @@ program neerslag2dat
         else if ( sd == 998 ) then
             mmsd = 9
         else if ( sd == 999 ) then
-            mmsd = -999 ! no idea how to interpeet "sneeuwhopen"
+            mmsd = -999 ! no idea how to interpret "sneeuwhopen"
         else
             mmsd = 10*sd
         end if
@@ -97,8 +97,6 @@ program neerslag2dat
     if ( outfile == ' ' ) then
         write(outfile,'(a,i3.3,a)') 'rr',istation,'.dat'
         open(2,file=trim(outfile))
-        write(2,'(a)') '# THESE DATA CAN BE USED FREELY PROVIDED THAT THE '// &
-        &   'FOLLOWING SOURCE IS ACKNOWLEDGED: ROYAL NETHERLANDS METEOROLOGICAL INSTITUTE'
         write(2,'(a,i3.3,3a,f9.2,a,f9.2,a)') '# ',istation,' ',trim(name), &
         &   ' (',lat,'N, ',lon,'E)'
         write(2,'(a)') '# precip [mm/dy] precipitation (8-8)'
@@ -106,12 +104,25 @@ program neerslag2dat
     
         write(outfile,'(a,i3.3,a)') 'sd',istation,'.dat'
         open(3,file=trim(outfile))
-        write(3,'(a)') '# THESE DATA CAN BE USED FREELY PROVIDED THAT THE '// &
-        &   'FOLLOWING SOURCE IS ACKNOWLEDGED: ROYAL NETHERLANDS METEOROLOGICAL INSTITUTE'
         write(3,'(a,i3.3,3a,f9.2,a,f9.2,a)') '# ',istation,' ',trim(name), &
         &   ' (',lat,'N, ',lon,'E)'
         write(3,'(a)') '# sd [mm] snow depth'
         write(3,'(a)') '# time refers to the day it is observed, 8UTC'
+
+        history = ' '
+        call extend_history(history)
+        do j=2,3
+            write(j,'(a,f7.2,a)') '# longitude :: ',lon,' degrees_east'
+            write(j,'(a,f7.2,a)') '# latitude :: ',lat,' degrees_north'
+            write(j,'(a,i3.3)') '# station_code :: ',istation
+            write(j,'(2a)') '# station_name :: ',trim(name)
+            write(j,'(3a)') '# source_url :: http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen'
+            write(j,'(a)') '# institute :: Royal Netherlands Meteorological Institute (KNMI)'
+            write(j,'(a)') '# license :: These data can be used freely provided'// &
+                ' that the following source is acknowledged: '// &
+                'Royal Netherlands Meteorological Institute (KNMI)'
+            write(j,'(2a)') '# history :: ',trim(history)        
+        end do
         yr1 = yr
     end if
     yr2 = max(yr,yr2)

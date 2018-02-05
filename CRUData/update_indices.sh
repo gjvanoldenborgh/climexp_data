@@ -48,6 +48,11 @@ else # new version
     cat <<EOF > nao.dat
 # NAO [1] CRU North Atlantic Oscillation index
 # based on Iceland and Gibraltar pressure, <a href="https://crudata.uea.ac.uk/cru/data/nao/">data description</a>
+# institution :: UAE/CRU
+# author :: Tim Osborn
+# reference :: Jones, P.D., Jónsson, T. and Wheeler, D., 1997: Extension to the North Atlantic Oscillation using early instrumental pressure observations from Gibraltar and South-West Iceland. Int. J. Climatol. 17, 1433-1450 http://dx.doi.org/10.1002/(SICI)1097-0088(19971115)17:13%3C1433::AID-JOC203%3E3.0.CO;2-P
+# source :: https://crudata.uea.ac.uk/cru/data/nao/nao_3dp.dat
+# history :: retrieved from UEA/CRU on `date`
 EOF
     sed -e 's/-99\.990/ -999.9/g' nao_3dp.dat >> nao.dat
 fi
@@ -78,8 +83,11 @@ else # new version
     cat <<EOF > soi.dat
 # <a href="https://crudata.uea.ac.uk/cru/data/soi/">data description</a>
 # institution :: UAE/CRU
+# author :: Tim Osborn and Phil Jones
+# reference :: Ropelewski, C.F. and Jones, P.D., 1987: An extension of the Tahiti-Darwin Southern Oscillation Index. Monthly Weather Review 115, 2161-2165.
 # link :: https://crudata.uea.ac.uk/cru/data/soi/
-# history :: retrieved from AUE/CRU on `date`
+# source :: http://www.cru.uea.ac.uk/cru/data/soi/soi.dat
+# history :: retrieved from UEA/CRU on `date`
 # SOI [1] CRU Southern Oscillation Index
 EOF
     sed -e 's/-99\.990/ -999.9/g' soi_3dp.dat >> soi.dat

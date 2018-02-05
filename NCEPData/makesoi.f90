@@ -16,8 +16,7 @@ program makesoi
         enddo
     enddo
 
-    print '(a)','# <a href="ftp://ftp.ncep.noaa.gov/pub/cpc/'// &
-        'wd52dg/data/indices/soi.his">historical data</a>'
+    print '(a)','# <a href="ftp://ftp.cpc.ncep.noaa.gov/wd52dg/data/indices/soi.his">historical data</a>'
     open(1,file='soi.his',status='old')
     do i=1,3
         read(1,'(a)') line
@@ -28,8 +27,7 @@ program makesoi
     enddo
     close(1)
 
-    print '(a)','# <a href="ftp://ftp.ncep.noaa.gov/pub/cpc/'// &
-        'wd52dg/data/indices/soi">recent data</a>'
+    print '(a)','# <a href="http://www.cpc.ncep.noaa.gov/data/indices/soi">recent data</a>'
     open(1,file='soi',status='old')
     do i=1,10000
         read(1,'(a)') line

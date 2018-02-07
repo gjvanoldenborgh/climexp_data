@@ -148,6 +148,10 @@ echo @@@ NCEP/NCAR daily
 echo @@@ ERA-interim
 (ssh zuidzee "cd NINO/ERA-interim; ./update.sh |& tee update.log")
 
+echo @@@ ERA5
+(ssh zuidzee "cd NINO/ERA5; ./update_monthly.sh |& tee update_monthly.log")
+(ssh zuidzee "cd NINO/ERA5; ./update_daily.sh |& tee update_daily.log")
+
 echo @@@ GHCN-D
 (cd GDCNData; ./update.sh  | 2>&1 tee update.log )
 

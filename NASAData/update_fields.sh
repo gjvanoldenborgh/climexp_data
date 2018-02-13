@@ -41,15 +41,27 @@ do
 		sed -e "s/CURRENTYEAR/$yr/" sbbx2nc.in > sbbx2nc.f
 		make sbbx2nc
 		./sbbx2nc 0
+		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis land ${decor}km" \
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_land_$decor.nc
+		file=giss_temp_land_$decor.nc
+		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
 		./sbbx2nc 1
 		[ ! -L SST_DATA ] && rm SBBX.ERSST
 		[ ! -s SBBX.ERSST ] && exit -1
+		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis sea ${decor}km" \
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_sea_$decor.nc
+		file=giss_temp_sea_$decor.nc
+		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
 		./sbbx2nc 2
+		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis land/sea ${decor}km" \
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_both_$decor.nc
+		file=giss_temp_both_$decor.nc
+		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
 		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc bhlclim:climexp/NASAData/
 		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc gj@gatotkaca.duckdns.org:climexp/NASAData/

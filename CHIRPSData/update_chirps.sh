@@ -54,6 +54,8 @@ do
     done # yr
 	
 	$cdo copy v2p0chirps_????_${res}.nc v2p0chirps_$res.nc
+	file=v2p0chirps_$res.nc
+	. $HOME/climexp/add_climexp_url_field.cgi
     $HOME/NINO/copyfiles.sh v2p0chirps_$res.nc
 done # res(olution)
 
@@ -66,4 +68,6 @@ ncatted -a units,pr,m,c,"mm/month" v2p0chirps_mo_$res.nc
 $cdo sellonlatbox,28,54,-15,18 v2p0chirps_mo_$res.nc chirps_horn.nc
 $cdo remapcon,chirps_horn.nc $cenfile centrends_$res.nc
 patchfield centrends_$res.nc chirps_horn.nc none centrends_chirps.nc
+file=centrends_chirps.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh centrends_chirps.nc

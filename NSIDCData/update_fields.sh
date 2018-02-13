@@ -105,5 +105,6 @@ make day2mon
 ./day2mon
 make polar2grads
 ./polar2grads
-
-$HOME/NINO/copyfiles.sh conc_?.???
+for pole in n s; do
+    grads2nc conc_$pole.ctl conc_$pole.nc
+$HOME/NINO/copyfiles.sh conc_?.nc

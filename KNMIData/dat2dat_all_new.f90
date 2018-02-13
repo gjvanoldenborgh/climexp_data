@@ -215,8 +215,9 @@ program dat2dat
             'klimatologie/daggegevens/download.html'
         write(j,'(a)') '# institute :: Royal Netherlands Meteorological Institute (KNMI)'
         write(j,'(a)') '# license :: These data can be used freely provided'// &
-            ' that the following source is acknowledged: '// &
-            'Royal Netherlands Meteorological Institute (KNMI)'
+            ' that the following source is acknowledged: Royal Netherlands Meteorological Institute (KNMI)'
+        write(j,'(3a,i3.3)') '# climexp_url :: https://climexp.knmi.nl/getdutch',vars(ivar),'.cgi?WMO=', &
+            stationid
         history = ' '
         call extend_history(history)
         write(j,'(2a)') '# history :: ',trim(history)
@@ -230,15 +231,23 @@ program dat2dat
         write(j,'(3a)') '# from <a href="http://www.knmi.nl/', &
             'klimatologie/daggegevens/download.html">KNMI ', &
             'climatological service</a>'
-        call date_and_time(values=iarray)
-        write(j,'(a)') &
-            '# These data have not been corrected for changes' &
-            //' in observing practices and the surroundings'
-        write(j,'(a,i4,a,i2.2,a,i2.2)') '# last updated ', &
-        iarray(1),'-',iarray(2),'-',iarray(3)
+        if ( ( vars(ivar) == 'tg' .or. vars(ivar) == 'tn' .or. vars(ivar) == 'tx' ) &
+            .and. ( stationid == 235 .or. stationid == 260 .or. stationid == 280 .or. &
+                    stationid == 310 .or. stationid == 380 ) ) then
+            write(j,'(a)') '# These data have been homogenised.'
+            write(j,'(a)') '# reference :: T. Brandsma, Homogenization of daily '// &
+                'temperature data of the five principal stations in the Netherlands (version 1.0)'// &
+                'KNMI TR-356, https://climexp.knmi.nl/publicatiopns/TR_homogeniseren_dag.pdf.'
+        else
+            write(j,'(a)') '# These data have not been corrected for changes' &
+                //' in observing practices and the surroundings'
+        end if
         if ( vars(ivar) == 'qq' ) write(j,'(2a)') &
             '# Added a factor 1.022 to data before 1-1-1981 to ', &
             'correct for the difference between IPS1956 and WRR'
+        call date_and_time(values=iarray)
+        write(j,'(a,i4,a,i2.2,a,i2.2)') '# last updated ', &
+            iarray(1),'-',iarray(2),'-',iarray(3)
     end do
 
 !   convert and write data, get number of years with data

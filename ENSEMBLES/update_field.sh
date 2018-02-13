@@ -86,6 +86,12 @@ do
         else
             ncatted -a long_name,time,m,c,"Time" -a title,global,c,c,"E-OBS analyses $version" ${var}_${res}deg_reg_${version}u.nc
         fi
+        file=${var}_${res}deg_reg_${version}u.nc
+        ncatted -h -a institution,global,a,c,"KNMI" -a contact,global,a,c,"eca@knmi.nl" \
+                -a source_url,global,a,c,"http://www.ecad.eu/download/ensembles/ensembles.php" \
+                -a reference,global,a,c,"Haylock, M.R., N. Hofstra, A.M.G. Klein Tank, E.J. Klok, P.D. Jones, M. New. 2008: A European daily high-resolution gridded dataset of surface temperature and precipitation. J. Geophys. Res (Atmospheres), 113, D20119, doi:10.1029/2008JD10201" \
+                $file
+        . $HOME/climexp/add_climexp_url_field.cgi
         $HOME/NINO/copyfiles.sh ${var}_${res}deg_reg_${version}u.nc
         if [ $res = 0.25 ]; then
             cdo $cdoflags monmean ${var}_${res}deg_reg_${version}u.nc aap.nc

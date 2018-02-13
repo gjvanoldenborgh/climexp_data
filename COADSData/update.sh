@@ -13,5 +13,8 @@ do
     else
         mv $var.nobs.nc.old $var.nobs.nc
     fi
+    for file in $var.mean.nc $var.nobs1.nc
+        . $HOME/climexp/add_climexp_url_field.cgi
+    done
     $HOME/NINO/copyfiles.sh $var.mean.nc $var.nobs1.nc
 done

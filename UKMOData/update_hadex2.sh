@@ -24,7 +24,13 @@ do
     if [ ! -s $newfile -o $newfile -ot $file ]; then
         cdo -r -f nc4 -z zip selvar,Ann $file $newfile
         ncrename -v Ann,$var $newfile
-        ncatted -a long_name,${var},a,c,"$long_name" -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" $newfile
+        ncatted -h -a long_name,${var},a,c,"$long_name" -a Title,global,d,c,"" \
+                -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" \
+                -a source_url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadex2/" \
+                -a reference,global,a,c,"Donat, M.G., et al. (2012), Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset, JGR Atmospheres, doi:10.1002/jgrd.50150" \
+                    $newfile
+        file=$newfile
+        ncatted -h -a climexp_url,global,c,c,"https://climexp.knmi.nl/select.cgi?hadex2_ann_${var}" $newfile
     fi
     c=`ncdump -h $file | fgrep -c 'float Jan'`
     if [ $c != 0 ]; then
@@ -51,9 +57,14 @@ do
                 cdo -r -f nc4 -z zip selvar,$month $file aap.nc
                 cdo -r -f nc4 -z zip settaxis,1901-${mm}-01,0:00:00,1year aap.nc aap_$month.nc
                 ncrename -v ${month},$var aap_$month.nc
-                ncatted -a long_name,${var},a,c,"$long_name" -a units,${var},a,c,"$units" -a title,global,a,c,"HadEX2 analysis" aap_$month.nc
+                ncatted -h -a long_name,${var},a,c,"$long_name" -a units,${var},a,c,"$units" \
+                        -a title,global,a,c,"HadEX2 analysis" \
+                        -a source_url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadex2/" \
+                        -a reference,global,a,c,"Donat, M.G., et al. (2012), Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset, JGR Atmospheres, doi:10.1002/jgrd.50150" \
+                            aap_$month.nc
             done
             cdo -r -f nc4 -z zip mergetime aap_???.nc $newfile
+            ncatted -h -a climexp_url,global,c,c,"https://climexp.knmi.nl/select.cgi?hadex2_${var}" $newfile
             rm -f aap*.nc
         fi
     fi

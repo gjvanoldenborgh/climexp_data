@@ -152,14 +152,28 @@ EOF
     fi
     mm=`printf %02i $m`
 done
-echo cdo -r -f nc4 -z zip copy $nc1files cmorph_daily_05.nc
-cdo -r -f nc4 -z zip copy $nc1files cmorph_daily_05.nc
+file=cmorph_daily_05.nc
+echo cdo -r -f nc4 -z zip copy $nc1files $file
+cdo -r -f nc4 -z zip copy $nc1files $file
+        ncatted -h -a institution,global,c,c,"NCEP/CPC" \
+                -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
+                -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
+                    $file
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh cmorph_daily_05.nc
-echo cdo -r -f nc4 -z zip copy $ncfiles cmorph_daily.nc
-cdo -r -f nc4 -z zip copy $ncfiles cmorph_daily.nc
+file=cmorph_daily.nc
+echo cdo -r -f nc4 -z zip copy $ncfiles $file
+cdo -r -f nc4 -z zip copy $ncfiles $file
+cdo -r -f nc4 -z zip copy $nc1files $file
+        ncatted -h -a institution,global,c,c,"NCEP/CPC" \
+                -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
+                -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
+                    $file
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh cmorph_daily.nc
 cdo monmean cmorph_daily.nc aap.nc # too big to use daily2longerfield
 cdo settaxis,1998-01-15,00:00,1mon aap.nc cmorph_monthly.nc # cdo puts the date at the end of the month :-(
 rm aap.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh cmorph_monthly.nc
 rsync -avt cmorph_monthly.nc bvlclim:climexp/NCEPData/

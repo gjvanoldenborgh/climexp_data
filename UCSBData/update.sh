@@ -11,6 +11,8 @@ wget -q -N $base/$file
 cmp $file $file.old
 if [ $? != 0 -o $force = true ]; then
     cdo -r -f nc4 -z zip -selvar,precip -settaxis,1900-01-15,0:00,1month $file CenTrends_v1_monthly_ce.nc
+    file=CenTrends_v1_monthly_ce.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
 else
     mv $file.old $file
 fi

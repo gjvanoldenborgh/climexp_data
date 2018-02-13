@@ -116,11 +116,11 @@ program neerslag2dat
             write(j,'(a,f7.2,a)') '# latitude :: ',lat,' degrees_north'
             write(j,'(a,i3.3)') '# station_code :: ',istation
             write(j,'(2a)') '# station_name :: ',trim(name)
-            write(j,'(3a)') '# source_url :: http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen'
+            write(j,'(a)') '# source_url :: https://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen'
+            write(j,'(a,i3.3)') '# climexp_url :: https://climexp.knmi.nl/getdutchrr.cgi?WMO=',istation
             write(j,'(a)') '# institute :: Royal Netherlands Meteorological Institute (KNMI)'
-            write(j,'(a)') '# license :: These data can be used freely provided'// &
-                ' that the following source is acknowledged: '// &
-                'Royal Netherlands Meteorological Institute (KNMI)'
+            write(j,'(a)') '# license :: These data can be used freely provided that the '// &
+                'following source is acknowledged: Royal Netherlands Meteorological Institute (KNMI)'
             write(j,'(2a)') '# history :: ',trim(history)        
         end do
         yr1 = yr

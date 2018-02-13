@@ -10,7 +10,12 @@ wget -N http://berkeleyearth.lbl.gov/auto/Global/Complete_TAVG_complete.txt
 fgrep "Berkeley Dataset" Complete_TAVG_complete.txt | tr '%' "#" | \
 	sed -e 's@Berkeley Dataset@<a href="http://www.berkeleyearth.org">Berkeley Dataset</a>@' > t2m_land_best.dat
 echo 
-echo "# T2m_land_anom [K] land-surface average temperature anomalies relative to 1951-1980" >> t2m_land_best.dat
+cat >> t2m_land_best.dat <<EOF
+# institution :: Berkeley Earth Surface Temperature Project
+# source_url :: https://berkeleyearth.org/data/
+# history :: retrieved `date`
+# T2m_land_anom [K] land-surface average temperature anomalies relative to 1951-1980"
+EOF
 fgrep -v '%' Complete_TAVG_complete.txt | fgrep -v ' 2010 ' \
     | cut -b 1-22 \
     | fgrep -v NaN >> t2m_land_best.dat
@@ -20,9 +25,14 @@ wget -N http://berkeleyearth.lbl.gov/auto/Global/Land_and_Ocean_complete.txt
 cat << EOF > t2m_land_ocean_best.dat
 # Land temperature from <a href="http://www.berkeleyearth.org">Berkeley Dataset</a>, 
 # ocean temperature reinterpolated from HadSST, temperature over sea ice extrapolated from land.
+# institution :: Berkeley Earth Surface Temperature Project
+# source_url :: https://berkeleyearth.org/data/
+# history :: retrieved `date`
 # T2m_anom [K] global mean temperature anomalies relative to 1951-1980
 EOF
-sed '/Sea Ice Temperature Inferred from Water Temperatures/,$d' Land_and_Ocean_complete.txt \
+echo "# comment :: "`sed -e '/The reported data is broken into two sections/,$d' Land_and_Ocean_complete.txt \
+    | fgrep '%' | sed -e 's/^% //' | tr -d '\n'`  >> t2m_land_ocean_best.dat
+sed -e '/Sea Ice Temperature Inferred from Water Temperatures/,$d' Land_and_Ocean_complete.txt \
     | fgrep -v '%' \
     | cut -b 1-22 >> t2m_land_ocean_best.dat
 $HOME/NINO/copyfilesall.sh t2m_land_ocean_best.dat
@@ -60,16 +70,22 @@ do
 	    decade=$((decade + 10))
 	done
 	if [ ! -s ${var}_Daily_LatLong1.nc -o $new = true ]; then
-    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc ${var}_Daily_LatLong1.nc"
-    	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc ${var}_Daily_LatLong1.nc
-    	ncrename -v temperature,$var ${var}_Daily_LatLong1.nc
-	    $HOME/NINO/copyfiles.sh ${var}_Daily_LatLong1.nc
+    	file=${var}_Daily_LatLong1.nc
+    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc $file"
+    	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???.nc $file
+    	ncrename -v temperature,$var $file
+    	ncatted -h -a source_url,global,a,c,"http://berkeleyearth.org/data/" $file
+    	. $HOME/climexp/add_climexp_url_field.cgi
+	    $HOME/NINO/copyfiles.sh $file
 	fi
 	if [ ! -s ${var}_Daily_LatLong1_full.nc -o $fullnew = true ]; then
-    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc ${var}_Daily_LatLong1_full.nc"
-    	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc ${var}_Daily_LatLong1_full.nc
-	    $HOME/NINO/copyfiles.sh ${var}_Daily_LatLong1_full.nc
-    	ncrename -v temperature,$var ${var}_Daily_LatLong1_full.nc
+    	file=${var}_Daily_LatLong1_full.nc
+    	echo "cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc $file"
+    	cdo -r -f nc4 -z zip copy ${var}_Daily_LatLong1_[12]???_full.nc $file
+    	ncrename -v temperature,$var $file
+    	ncatted -h -a source_url,global,a,c,"http://berkeleyearth.org/data/" $file
+    	. $HOME/climexp/add_climexp_url_field.cgi
+	    $HOME/NINO/copyfiles.sh $file
 	fi
 
     file=Complete_${var}_LatLong1.nc
@@ -79,7 +95,10 @@ do
 	    ncatted -a units,time,m,c,"years since 0000-01-01 00:00" $file aap.nc
 	    cdo -r -f nc4 -z zip selvar,temperature aap.nc $ncfile
 	    rm aap.nc
-    	$HOME/NINO/copyfiles.sh ${var}_LatLong1.nc
+	    file=${var}_LatLong1.nc
+    	ncatted -h -a source_url,global,a,c,"http://berkeleyearth.org/data/" $file
+    	. $HOME/climexp/add_climexp_url_field.cgi
+    	$HOME/NINO/copyfiles.sh $file
 	fi
 	
 done

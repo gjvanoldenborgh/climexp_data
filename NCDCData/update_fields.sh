@@ -1,4 +1,7 @@
 #!/bin/sh
+if [ "$1" = force ]; then
+    force=true
+fi
 
 # ERSST v4,5
 for version in v5 v4
@@ -19,7 +22,11 @@ do
         cdo settaxis,1854-01-01,0:00,1mon ersst${version}_all.nc aap.nc
         ncatted -O -a calendar,time,m,c,"standard" aap.nc ersst${version}_all.nc
         cdo selvar,sst ersst${version}_all.nc ersst${version}.nc
+        file=ersst${version}.nc
+	    . $HOME/climexp/add_climexp_url_field.cgi 
         cdo selvar,ssta ersst${version}_all.nc ersst${version}a.nc
+        file=ersst${version}a.nc
+	    . $HOME/climexp/add_climexp_url_field.cgi 
         $HOME/NINO/copyfilesall.sh ersst${version}.nc ersst${version}a.nc
         if [ $version = v5 ]; then
             . ./makenino.sh
@@ -34,7 +41,6 @@ do
     fi
 done
 
-###force=true
 # GHCN-M v3 temperature
 base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
 file=grid-mntp-1880-current-v\?.\?.\?
@@ -61,12 +67,17 @@ if [ -n "$file" ]; then
 	if [ $? != 0 -o "$force" = true ]; then
 		make ncdc2grads
 		./ncdc2grads $file.dat
-		$HOME/NINO/copyfiles.sh temp_anom.dat temp_anom.ctl
+		grads2nc temp_anom.ctl temp_anom.nc
+        ncatted -h -a intitution,global,a,c,"NOAA/NCEI" \
+                -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" temp_anom.nc
+        file=temp_anom.nc
+	    . $HOME/climexp/add_climexp_url_field.cgi 
+		$HOME/NINO/copyfiles.sh temp_anom.nc
 	fi
 fi
 
-# merged datset
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/blended
+# merged dataset
+base=http://www1.ncdc.noaa.gov/pub/data/ghcn/blended/
 file=ncdc-merged-sfc-mntp
 wget -q -N $base/$file.dat.gz
 echo gunzipping $file.dat.gz 
@@ -74,80 +85,58 @@ cp $file.dat $file.dat.old
 gunzip -c $file.dat.gz > $file.dat
 cmp $file.dat $file.dat.old
 if [ $? != 0 -o "$force" = true ]; then
-  make ncdc2grads
-  ./ncdc2grads $file.dat
-  $HOME/NINO/copyfiles.sh t_anom.dat t_anom.ctl
+    make ncdc2grads
+    ./ncdc2grads $file.dat
+    grads2nc t_anom.ctl ncdc-merged-sfc-mntp.nc
+    ncatted -h -a title,global,m,c,"NOAA/NCEI Land and Ocean Temperature Anomalies" \
+            -a intitution,global,a,c,"NOAA/NCEI" \
+            -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" ncdc-merged-sfc-mntp.nc
+    file=ncdc-merged-sfc-mntp.nc
+	. $HOME/climexp/add_climexp_url_field.cgi
+	$HOME/NINO/copyfiles.sh ncdc-merged-sfc-mntp.nc
 fi
 
-#
 # NCDC precip
 yr=`date -d "1 month ago" +%Y`
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v2/grid/
+base=http://www1.ncdc.noaa.gov/pub/data/ghcn/v2/grid/
 file=grid_prcp_1900-current
 wget -q -N $base/$file.dat.gz
 cp $file.dat $file.dat.old
 gunzip -c $file.dat.gz > $file.dat
 cmp $file.dat $file.dat.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = true ]; then
 	make ncdc2grads
 	./ncdc2grads $file.dat
+	grads2nc prcp_anom.ctl prcp_anom.nc
 	grads -b -l <<EOF
-open prcp_anom.ctl
-sdfopen cru_ts_3_10_01_pre_5_clim.nc
-set t 1 last
+sdfopen prcp_anom.nc
+sdfopen cru_ts4.01.pre.clim_5.nc
 set x 1 72
-define pr = prcp.1 + mean.2(t=1)
+set dfile 2
+set t 1 12
+define clim = pre.2
+modify clim seasonal
+set dfile 1
+set t 1 last
+define pr = prcp.1 + clim
 set sdfwrite prcp_total.nc
 sdfwrite pr
 quit
 EOF
-	ncatted -a units,pr,c,c,"mm/month" -a long_name,pr,c,c,"total precipitation" prcp_total.nc
-	$HOME/NINO/copyfiles.sh prcp_anom.dat prcp_anom.ctl prcp_total.nc
+    for file in prcp_anom.nc prcp_total.nc; do
+        ncatted -h -a intitution,global,a,c,"NOAA/NCEI" \
+            -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" $file
+    	. $HOME/climexp/add_climexp_url_field.cgi
+    done    
+    ncatted -h -a units,pr,c,c,"mm/month" -a long_name,pr,c,c,"total precipitation" \
+            -a comment,global,a,c,"Added CRU TS4 climatology to NOAA/NCEI anomalies" \
+            -a institution,global,a,c,"KNMI Climate Explorer using data from NOAA/NCEI and UEA/CRU" prcp_total.nc
+	$HOME/NINO/copyfiles.sh prcp_anom.nc prcp_total.nc
 fi
 
 echo "not retrieving v2 temperatures"
 exit # no use retrieving the old ones, they are no longer updated.
 
-# T2m
-# old version
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v2/grid/
-file=grid-mntp-1880-current-v2
-wget -q -N $base/$file.dat.gz
-gzip -t $file.dat.gz
-if [ $? != 0 ]; then
-	echo "Corrupt file $file"
-else
-	echo gunzipping
-	cp $file.dat $file.dat.old
-	gunzip -c $file.dat.gz > $file.dat
-	cmp $file.dat $file.dat.old
-	if [ $? != 0 ]; then
-		make ncdc2grads
-		./ncdc2grads $file.dat
-		sed -e 's/temp_anom.dat/temp_anom_old.dat/' temp_anom.ctl > temp_anom_old.ctl
-		rm temp_anom.ctl
-		mv temp_anom.dat temp_anom_old.dat
-		$HOME/NINO/copyfiles.sh temp_anom_old.dat temp_anom_old.ctl
-	fi
-fi
-
-# merged SST/T2m dataset
-# old version
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/blended/usingGHCNMv2/
-file=ncdc_blended_merg53v3b
-wget -q -N $base/$file.dat.gz
-echo gunzipping $file.dat.gz
-cp $file.dat $file.dat.old
-gunzip -c $file.dat.gz > $file.dat
-cmp $file.dat $file.dat.old
-if [ $? != 0 ]; then
-  make ncdc2grads
-  ./ncdc2grads $file.dat
-  sed -e 's/t_anom.dat/t_anom_old.dat/' t_anom.ctl > t_anom_old.ctl
-  rm t_anom.ctl
-  mv t_anom.dat t_anom_old.dat
-  $HOME/NINO/copyfiles.sh t_anom_old.dat t_anom_old.ctl
-fi
 
 
 

@@ -8,6 +8,7 @@ $wget --header="accept-encoding: gzip" $base/$file.gz
 gunzip -c $file.gz > $file
 ncks -O -v temperature_anomaly $file aap.nc
 mv aap.nc $file
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh $file
 
 base=http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/gridded_fields
@@ -16,6 +17,7 @@ $wget --header="accept-encoding: gzip" $base/$file
 unzip -o $file
 ncks -O -v temperature_anomaly HadCRUT.${version}.median.nc aap.nc
 mv aap.nc HadCRUT.${version}.median.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh HadCRUT.${version}.median.nc
 
 if [ -n "$also_download_ensemble" ]; then
@@ -33,6 +35,8 @@ base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
 file=HadSST.${version}.median_netcdf.zip
 $wget --header="accept-encoding: gzip" $base/$file
 unzip -o $file
+file=HadSST.${version}.median.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh HadSST.${version}.median.nc
 
 if [ -n "$also_download_ensemble" ]; then

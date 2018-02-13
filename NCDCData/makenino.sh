@@ -7,7 +7,7 @@ get_index ersst${version}.nc 0 360 -20 20 > ersst_tropical.dat
 
 for nino in 12 3 3.4 4
 do
-  get_index ersst${version}.nc mask ersst${version}_nino${nino}_mask.nc > ersst_nino${nino}.dat
+  get_index ersst${version}.nc mask ersst${version}_nino${nino}_mask.nc | sed -e "s/spatial statistic of/Nino$nino index based on/" > ersst_nino${nino}.dat
   egrep '^#' ersst_nino${nino}.dat | fgrep -v '# sst [' > ersst_nino${nino}a.dat
   echo '# SSTA normalized to 1981-2010' >> ersst_nino${nino}a.dat
   echo "# Nino$nino [K] ERSST $version Nino$nino index" >> ersst_nino${nino}a.dat

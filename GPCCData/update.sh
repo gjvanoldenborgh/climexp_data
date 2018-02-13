@@ -99,15 +99,32 @@ do
         ncrename -v p,prcp gpcc_${res}_mon.nc
         ncrename -v s,n gpcc_${res}_n_mon.nc
         cdo -r -f nc4 -z zip ifthen gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
+        for file in gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc; do
+            if [ $res = 10 ]; then
+                ncatted -h -a title,global,a,c,", combined with the GPCC first guess product" \
+                        -a institution,global,a,c," and KNMI (merging)" $file
+            fi
+            . $HOME/climexp/add_climexp_url_field.cgi
+        done
         $HOME/NINO/copyfilesall.sh gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
 	    echo "Making gpcc_${res}_combined.nc"
         cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_mon.nc gpcc_${res}_mon1.nc
         cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
         cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_n1_mon.nc gpcc_${res}_n1_mon1.nc
         cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
-        ###patchfield gpcc_V7_${res}.nc gpcc_${res}_mon.nc gpcc_${res}_patched.nc
-        ###patchfield gpcc_V7_${res}_n1.nc gpcc_${res}_n1_mon.nc gpcc_${res}_n1_patched.nc
-        $HOME/NINO/copyfilesall.sh gpcc_${res}*combined.nc gpcc_${res}*patched.nc
+        for file in gpcc_${res}*combined.nc; do
+            if [ $res = 10 ]; then
+                ncatted -h -a title,global,a,c,", combined with the GPCC monitoring and first guess product" \
+                        -a long_name,prcp,o,c,"precipitation"
+                        -a institution,global,a,c," and KNMI (merging)" $file
+            else
+                ncatted -h -a title,global,a,c,", combined with the GPCC monitoring product" \
+                        -a long_name,prcp,o,c,"precipitation"
+                        -a institution,global,a,c," and KNMI (merging)" $file
+            fi
+            . $HOME/climexp/add_climexp_url_field.cgi
+        done
+        $HOME/NINO/copyfilesall.sh gpcc_${res}*combined.nc
         ###set +x
     fi
 done
@@ -199,6 +216,9 @@ if [ $doit = true ]; then
     ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n1.nc gpcc_firstguess_daily_n1.nc gpcc_combined_daily_n1.nc
     ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
+    for file in gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc; do
+        . $HOME/climexp/add_climexp_url_field.cgi
+    done
 fi
 $HOME/NINO/copyfiles.sh gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc
 

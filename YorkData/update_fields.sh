@@ -9,6 +9,7 @@ do
         gunzip -f $file.gz
         cdo delname,year,month $file aap.nc
         mv aap.nc $file
+	    . $HOME/climexp/add_climexp_url_field.cgi 
     fi
 done
 $HOME/NINO/copyfiles.sh *.nc

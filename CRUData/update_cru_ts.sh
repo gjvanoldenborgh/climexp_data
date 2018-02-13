@@ -35,6 +35,7 @@ do
         cdo -r -f nc4 -z zip selvar,stn $var/$file $sfile
         rm $var/$file
     fi
+    . $HOME/climexp/add_climexp_url_field.cgi
     f=$file
     f1=${f%.nc}_1.nc
     if [ ! -f $f1 ]; then

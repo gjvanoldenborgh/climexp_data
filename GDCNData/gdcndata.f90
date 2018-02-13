@@ -352,6 +352,9 @@ program gdcndata
             print '(a,f7.2,a)','# latitude :: ',rlat(jj),' degrees_north'
             print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
             print '(a,f8.1,a)','# elevation :: ',elev(jj),' m'
+            element = elements(type)
+            call tolower(element)
+            print '(4a)','# climexp_url :: https://climexp.knmi.nl/gdcn',element,'.cgi?WMO=',stations(jj)
             write(dir(ldir+1:),'(3a,i10.10,a)') '/ghcnd/',stations(jj),'.dly.gz'
             ldir = llen(dir)
             open(2,file=trim(dir),status='old',err=940)

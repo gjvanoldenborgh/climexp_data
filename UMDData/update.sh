@@ -1,6 +1,48 @@
 #!/bin/sh
 # OLR
 
+yrnow=`date -d "a month ago" +%Y`
+base=https://www.ncei.noaa.gov/data/outgoing-longwave-radiation-daily/access/
+version=v01r02
+yr=1979
+while [ $yr -le 2015 ]; do
+    if [ ! -s downloaded_2015_final ]; then
+        wget -q -N $base/olr-daily_${version}_${yr}0101_${yr}1231.nc
+    fi
+    ((yr++))
+done
+date > downloaded_2015_final 
+
+ok=true
+while [ $yr -lt $yrnow -a $ok = true ]; do
+    wget -q -N http://olr.umd.edu/CDR/Daily/${version}/olr-daily_${version}_${yr}0101_${yr}1231.nc
+    if [ ! -s olr-daily_${version}_${yr}0101_${yr}1231.nc ]; then
+        ok=false
+    else
+        ((yr++))
+    fi
+done
+ok=true
+prelimfiles=""
+while [ $yr -lt $yrnow -a $ok = true ]; do
+    wget -q -N http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc
+    if [ ! -s olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc ]; then
+        ok=false
+        echo "$0: something went wrong in retrieving http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc"
+        exit -1
+    else
+        prelimfiles="$prelimfiles olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc"
+        ((yr++))
+    fi
+done
+
+wget -N -q http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yrnow}0101_latest.nc
+prelimfiles="$prelimfiles ${version}-interim/olr-daily_${version}-preliminary_${yrnow}0101_latest.nc"
+cdo -r -f nc4 -z zip copy olr-daily_${version}_????0101_????1231.nc $prelimfiles umd_olr_dy.nc
+file=umd_olr_dy.nc
+. $HOME/climexp/add_climexp_url_field.cgi
+$HOME/NINO/copyfiles.sh umd_olr_dy.nc
+
 version=v02r02-1
 yr=`date -d "a month ago" +%Y`
 mo=`date -d "a month ago" +%m`
@@ -12,31 +54,15 @@ if [ ! -s olr-monthly_${version}-1_197901_$yr$mo.nc ]; then
         rm -f olr-monthly_${version}_197901_??????.nc
         mv aap.nc olr-monthly_${version}_197901_$yr$mo.nc
     fi
+    file=umd_olr_mo.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
+    $HOME/NINO/copyfiles.sh umd_olr_mo.nc
 fi
 
-base=ftp://eclipse.ncdc.noaa.gov/cdr/hirs-olr/daily/files/
 
-version=v01r02
-if [ ! -s downloaded_2013 ]; then
-    yr=1979
-    while [ $yr -le 2013 ]; do
-        wget -q -N $base/olr-daily_${version}_${yr}0101_${yr}1231.nc
-        ((yr++))
-    done
-    date > downloaded_2013
-fi
-if [ ! -s downloaded_2014 ]; then
-    wget -q -N http://olr.umd.edu/CDR/Daily/${version}/olr-daily_${version}_20140101_20141231.nc
-    date > downloaded_2014
-fi
-if [ ! -s downloaded_2015 ]; then
-    wget -q -N http://olr.umd.edu/CDR/Daily/${version}/olr-daily_${version}_20150101_20151231.nc
-    date > downloaded_2015
-fi
 
-wget -N -q http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_20160101_latest.nc
 
-cdo -r -f nc4 -z zip copy olr-daily_${version}_* olr-daily_${version}-preliminary_20160101_latest.nc umd_olr_dy.nc
+
 exit
 
 # NDVI

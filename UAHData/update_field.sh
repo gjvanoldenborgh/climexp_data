@@ -22,6 +22,12 @@ make msu2grads
 ./msu2grads $version
 grads2nc tlt.ctl tlt.nc
 mv tlt.nc tlt_$myversion.nc
+file=tlt_$myversion.nc
+ncatted -h -a institution,global,o,c,"Earth System Science Center, the University of Alabama in Huntsville" \
+        -a source_url,global,c,c,"https://www.nsstc.uah.edu/climate/" \
+        -a version,global,c,c,"$version" \
+            $file
+. $HOME/climexp/add_climexp_url_field.cgi
 
 cp tlt_$myversion.nc tlt.nc
 

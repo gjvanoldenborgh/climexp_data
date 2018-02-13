@@ -42,10 +42,9 @@ for var in $vars; do
                 bilfile=`ls PRISM_${var}_stable_4kmM?_${yr}${mon}_bil.bil 2> /dev/null | head -1`
                 version=${bilfile##*_4km}
                 version=${version%%_*}
-                if [ ! -s "$file" ]; then
+                if [ ! -s "$bilfile" ]; then
                     if [ $yr != $yrnow ]; then
-                        echo "$0: cannot find $file"
-                        exit -1
+                        echo "$0: warning: cannot find bilfile for yr,mon = ",$yr,$mon
                     fi
                 else
                     gdal_translate -of NetCDF $bilfile aap.nc
@@ -53,7 +52,7 @@ for var in $vars; do
                     ncrename -O -v Band1,$varname noot.nc PRISM_${var}_${yr}${mon}.nc
                     ncatted -a units,$varname,a,c,"$units" \
                             -a long_name,$varname,m,c,"$long_name" \
-                        -a title,global,a,c,"PRISM analysis 4k$version" PRISM_${var}_${yr}${mon}.nc
+                            -a title,global,a,c,"PRISM analysis 4k$version" PRISM_${var}_${yr}${mon}.nc
                 fi
             done
             f=`ls -t ${var}_prismM?_${yr}.nc | head -1`
@@ -82,6 +81,12 @@ for var in $vars; do
     if [ $doit = true -o ! -s ${var}_prism${version}.nc -o ! -s ${var}_prism${version}_25.nc ]; then
         cdo -r -f nc4 -z zip copy $files ${var}_prism${version}.nc
         cdo -r -f nc4 -z zip copy $files25 ${var}_prism${version}_25.nc
+        for file in ${var}_prism${version}.nc $files25 ${var}_prism${version}_25.nc; do
+            ncatted -h -a institution,global,c,c,"PRISM climate group, Northwest Alliance for Computational Science & Engineering (NACSE), based at Oregon State University" \
+                    -a source_url,global,c,c,"http://prism.oregonstate.edu" \
+                    -a contact,global,c,c,"prism-questions@nacse.org" $file
+            . $HOME/climexp/add_climexp_url_field.cgi
+        done
         ###$HOME/NINO/copyfiles.sh ${var}_prism${version}_25.nc ${var}_prism${version}.nc
         rsync ${var}_prism${version}_25.nc ${var}_prism${version}.nc bhlclim:climexp/PRISMData/
     fi

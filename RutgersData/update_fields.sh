@@ -8,5 +8,11 @@ cmp $file.gz $file.gz.old
 if [ $? != 0 -o "$force" = force ]; then
     gunzip -c $file.gz > $file
     ./polar2grads
-    $HOME/NINO/copyfiles.sh snow_rucl.???
+    grads2nc snow_rucl.ctl snow_rucl.nc
+    ncatted -h -a institution,global,o,c,"Rutgers University/Climate Lab/Global Snow Lab" \
+            -a source_url,global,c,c,"https://climate.rutgers.edu/snowcover/index.php" \
+            snow_rucl.nc
+    file=snow_rucl.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
+    $HOME/NINO/copyfiles.sh snow_rucl.nc
 fi

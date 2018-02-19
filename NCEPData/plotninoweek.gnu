@@ -8,12 +8,12 @@ set xrange [2003:2016]
 set term postscript epsf color solid
 set output 'plotninoweek0.eps'
 set yrange [-3:5]
-set xrange [1990:2004]
+set xrange [1991:2005]
 plot 'wksst.myfor' using (1990+(7*$1-5)/365.25):($3) title 'NINO12 index' w lines lt 5 lw 1, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($5) title 'NINO3 index' w lines lt 1 lw 5, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($7) title 'NINO3.4 index' w lines lt 4 lw 5, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($9) title 'NINO4 index' w lines lt 2 lw 3
-set xrange [2004:2018]
+set xrange [2005:2019]
 set output 'plotninoweek.eps'
 plot 'wksst.myfor' using (1990+(7*$1-5)/365.25):($3) title 'NINO12 index' w lines lt 5 lw 1, \
      'wksst.myfor' using (1990+(7*$1-5)/365.25):($5) title 'NINO3 index' w lines lt 1 lw 5, \

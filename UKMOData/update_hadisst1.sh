@@ -12,6 +12,7 @@ for var in sst ice; do
     $wget $base/HadISST_$var.nc.gz
     gunzip -c HadISST_$var.nc.gz > aap.nc
     $cdo selvar,$ncvar aap.nc HadISST_$var.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
     $HOME/NINO/copyfiles.sh HadISST_$var.nc
 done
 rm aap.nc

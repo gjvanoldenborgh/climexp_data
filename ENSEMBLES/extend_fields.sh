@@ -4,7 +4,7 @@ firstfile=`ls -t ??_0.25deg_reg_v*u.nc | head -1`
 version=${firstfile#*_reg_}
 version=${version%u.nc}
 echo "version=$version"
-daypath=/net/eobsdata/nobackup/users/besselaa/Data/Gridding/Daily/final/Days/
+daypath=/net/eobsdata/nobackup/users/besselaa/Data/Gridding/Daily/Rupdates/
 cdo="cdo -r -f nc4 -z zip"
 
 for res in 0.25 # only one
@@ -51,7 +51,7 @@ do
             fi
             mm=`printf %02i $mo`
             dd=`printf %02i $dy`
-            file=${var}_${res}deg_$yr$mm$dd.nc
+            file=${var}_day_${yr}${mm}${dd}_grid_ensmean.nc
             if [ ! -s $file -a -s $daypath/$file ]; then
                 # we make it smaller to avoid a Fortran 2G limit
                 $cdo selindexbox,41,464,1,201 $daypath/$file $file
@@ -59,6 +59,8 @@ do
             if [ -s $file ]; then
                 lastfile=$file
             else
+                echo "cannot find $file, exit"
+                exit -1
                 file=./${var}_${res}deg_undef_$yr$mm$dd.nc
                 if [ ! -s $file ]; then
                     echo "cannot find $file, making it"

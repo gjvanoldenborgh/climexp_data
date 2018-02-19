@@ -107,4 +107,21 @@ make polar2grads
 ./polar2grads
 for pole in n s; do
     grads2nc conc_$pole.ctl conc_$pole.nc
+    lastfile=`ls -t nt_??????_*_nrt_$pole.bin | head -n 1`
+    date=${lastfile$nt_}
+    date=${lastfile%_*}
+    enddate="${date%..}-${date#....}"
+    ncatted -h -a institution,global,o,c,"NSIDC (interpolated and merged at KNMI)" \
+            -a source_url,global,c,c,"http://nsidc.org/data/nsidc-0051.html" \
+            -a reference,global,c,c,"Cavalieri, D. J., C. L. Parkinson, P. Gloersen, and H. J. Zwally. 1996, updated yearly. Sea Ice Concentrations from Nimbus-7 SMMR and DMSP SSM/I-SSMIS Passive Microwave Data, Version 1. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. doi: http://dx.doi.org/10.5067/8GQ8LZQVL0VL. Accessed `date`" \
+                $file
+
+###            -a geospatial_lat_min,c,c,"45" \
+###            -a geospatial_lat_max,c,c,"90" \
+###            -a geospatial_lon_min,c,c,"-45" \
+###            -a geospatial_lon_max,c,c,"315" \
+###            -a time_coverage_start,c,c,"1978-11-01" \
+###            -a time_coverage_end,c,c,"$enddate"-01 \
+
+done
 $HOME/NINO/copyfiles.sh conc_?.nc

@@ -2,11 +2,69 @@
 if [ "$1" = force ]; then
     force=true
 fi
+
+files=""
+for var in mean_temperature heat_content; do
+    case $var in
+        mean_temperature) ncvar=T_dC_mt;seriesvar=seas_T_dC;myvar=temp;;
+        heat_content) ncvar=h18_hc;seriesvar=seas_h22;myvar=heat;;
+        8) echo "$0: error: unknown var $var"; exit -1;;
+    esac
+    for depth in 100 700 2000; do
+        if [ $var = heat_content -a $depth = 100 ]; then
+            echo "$var not available for $depth"
+        else
+            ncfile=${var}_anomaly_0-${depth}_seasonal.nc
+            echo "wget --no-check-certificate -q -N http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/NETCDF/heat_content/$ncfile"
+            wget --no-check-certificate -q -N http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/NETCDF/heat_content/$ncfile
+            # 2D field
+            file=$myvar$depth.nc
+            ncks -O -v $ncvar $ncfile $file
+            if [ $var = mean_temperature ]; then
+                ncatted -a long_name,$ncvar,m,c,"mean temperature anomaly 0-${depth}m" $file
+            else
+                ncatted -a long_name,$ncvar,m,c,"ocean heat content anomaly 0-${depth}m" $file            
+            fi
+            . $HOME/climexp/add_climexp_url_field.cgi
+            $HOME/NINO/copyfiles.sh $file
+            
+            for basin in WO NH SH AO NA SA PO NP SP IO NI SI; do
+                case $basin in
+                    WO) mybasin=global;;
+                    NH) mybasin=nh;;
+                    SH) mybasin=sh;;
+                    AO) mybasin=Atlantic;;
+                    NA) mybasin=North_Atlantic;;
+                    SA) mybasin=South_Atlantic;;
+                    PO) mybasin=Pacific;;
+                    NP) mybasin=North_Pacific;;
+                    SP) mybasin=South_Pacific;;
+                    IO) mybasin=Indian;;
+                    NI) mybasin=North_Indian;;
+                    SI) mybasin=South_Indian;;
+                    *) echo "$0: error: unknown basin $basin";exit -1;;
+                esac
+                seriesfile=$myvar${depth}_$mybasin
+                ncks -O -v ${seriesvar}_$basin $ncfile seas_$seriesfile.nc
+                yearly2shorter seas_$seriesfile.nc 12 > offset_$seriesfile.dat
+                timeshift offset_$seriesfile.dat 1 > $seriesfile.dat
+                ###rm seas_$seriesfile.nc offset_$seriesfile.dat
+                files="$files $seriesfile.dat"
+            done
+        fi
+    done
+done
+$HOME/NINO/copyfilesall.sh $files
+
+exit
+
+# old ascii versions
+
 for var in MT HC
 do
     case $var in
-        MT) altvar=mt;;
-        HC) altvar=heat;;
+        MT) altvar=mt;myvar=temp;;
+        HC) altvar=heat;myvar=temp;;
         *) ecjo "error huogiw7  f8pe"; exit -1;;
     esac
 
@@ -50,13 +108,21 @@ do
                 ((yr++))
                 yy=`echo $yr | sed -e 's/^10/A/' -e 's/^11/B/' -e 's/^12/C/' -e 's/^13/D/'`
                 for season in 01-03 04-06 07-09 10-12; do
-                    wget -q -N --no-check-certificate http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/${altvar}_3month/${var}_0-${depth}_${yy}${yy}${season}.dat
+                    if [ ! -s ${var}_0-${depth}_${yy}${yy}${season}.dat -o "$force" = true ]; then
+                        echo "checking for $depth $yy $season"
+                        wget -q -N --no-check-certificate http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/DATA/${altvar}_3month/${var}_0-${depth}_${yy}${yy}${season}.dat
+                    fi
                 done
             done
             make dat2grads
             ./dat2grads $depth $var
-            $HOME/NINO/copyfiles.sh heat${depth}.???
-            $HOME/NINO/copyfiles.sh temp${depth}.???
+            grads2nc $myvar$depth.ctl $myvar$depth.nc
+            file=$myvar${depth}.nc
+            ncatted -h -a institution,global,m,c,"NODC" $file
+            if [ $var = HC ]; then
+                ncatted -h -a source_url,global,m,c,"https://www.nodc.noaa.gov/cgi-bin/OC5/3M_HEAT/heatdata.pl?time_type=3month$depth" $file
+            . $HOME/climexp/add_climexp_url_field.cgi
+            $HOME/NINO/copyfiles.sh $myvar$depth.nc
         fi
     done
 done

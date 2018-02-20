@@ -56,14 +56,10 @@ do
         gzip -c tw$station.dat > tw$station.gz
     fi
 done
-$HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
 ###make add_pluim
 ./add_pluim.sh
 ###./maketxt.sh
-
-###make regen2dat
-###./regen2dat
-###./maketxt_rd.sh
+$HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
 
 ./update_neerslag.sh
 ./labrijn2dat > labrijn.dat

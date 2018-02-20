@@ -20,7 +20,7 @@ fi
 [ ! -d temp ] && mkdir temp
 (cd temp; wget -q -N ftp://ftp.pmel.noaa.gov/taodata/temp/\*.tmp)
 
-for ext in '' '-5dy' '-dy'
+for ext in '' '-dy'
 do
 
   make temp2dat$ext
@@ -31,12 +31,18 @@ do
     exit -1
   fi
   sed -e "s/@NT/$nt/" tao$ext.ctl.in > tao$ext.ctl
-  rsync -e ssh tao$ext.ctl tao$ext.dat bhlclim:climexp/TAOData/
+  grads2nc tao$ext.ctl tao$ext.nc
+  file=tao$ext.nc
+  . $HOME/climexp/add_climexp_url_field.cgi
+  rsync -e ssh tao$ext.nc bhlclim:climexp/TAOData/
 
   make getdepth
   ./getdepth 20 $ext > getdepth.log
   sed -e "s/@NT/$nt/" tao_z20$ext.ctl.in > tao_z20$ext.ctl
-  rsync -e ssh tao_z20$ext.ctl tao_z20$ext.dat bhlclim:climexp/TAOData/  
+  grads2nc tao_z20$ext.ctl tao_z20$ext.nc
+  file=tao_z20$ext.nc
+  . $HOME/climexp/add_climexp_url_field.cgi
+  rsync -e ssh tao_z20$ext.nc bhlclim:climexp/TAOData/  
 
 done
 
@@ -64,13 +70,21 @@ do
   for var in airt rh sst windu windv
   do
     sed -e "s/@NT/$nt/" tao_$var$ext.ctl.in > tao_$var$ext.ctl
-    rsync -e ssh tao_$var$ext.ctl tao_$var$ext.dat bhlclim:climexp/TAOData/
+    grads2nc tao_$var$ext.ctl tao_$var$ext.nc
+    file=tao_$var$ext.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
+    rsync -e ssh tao_$var$ext.nc bhlclim:climexp/TAOData/
   done
 
   make u2tau
   rm tao_tau_?$ext.ctl tao_tau_?$ext.dat
   ./u2tau tao_windu$ext.ctl tao_windv$ext.ctl
-  rsync -e ssh tao_tau_?$ext.ctl tao_tau_?$ext.dat bhlclim:climexp/TAOData/
+  for ctlfile in tao_tau_?$ext.ctl; do
+    file=${ctlfile%.ctl}.nc
+    grads2nc $ctlfile $file
+    . $HOME/climexp/add_climexp_url_field.cgi
+  done
+  rsync -e ssh tao_tau_?$ext.nc bhlclim:climexp/TAOData/
 
 done
 date > downloaded_$yr$mo

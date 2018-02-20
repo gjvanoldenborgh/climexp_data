@@ -20,6 +20,8 @@ get_index rss_tlt_anom.nc 0 360 -90  0 > rss_tlt_sh.dat
 get_index rss_tlt_anom.nc 0 360   0 90 > rss_tlt_nh.dat
 $HOME/NINO/copyfilesall.sh rss_tlt_??.dat
 
+exit
+
 yr=`date +%Y`
 mo=`date +%m`
 if [ -f downloaded_$yr$mo ]; then

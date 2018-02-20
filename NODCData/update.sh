@@ -19,7 +19,9 @@ for var in mean_temperature heat_content; do
             wget --no-check-certificate -q -N http://data.nodc.noaa.gov/woa/DATA_ANALYSIS/3M_HEAT_CONTENT/NETCDF/heat_content/$ncfile
             # 2D field
             file=$myvar$depth.nc
-            ncks -O -v $ncvar $ncfile $file
+            ncks -O -v $ncvar $ncfile seas_$file
+            yearly2shorterfield seas_$file 12 offset_$file
+            cdo shifttime,1mon offset_$file $file
             if [ $var = mean_temperature ]; then
                 ncatted -a long_name,$ncvar,m,c,"mean temperature anomaly 0-${depth}m" $file
             else

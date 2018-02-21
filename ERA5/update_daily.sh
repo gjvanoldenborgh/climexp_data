@@ -8,13 +8,14 @@ for var in $vars; do
     if [ $var != 3d ]; then
         sourcefiles="$sourcedir/????/day/era5_??????_${var}.nc"
         lastfile=`ls -t $sourcefiles | head -n 1`
-        outfile=era5_${var}_daily.nc
-        if [ $lastfile -nt $outfile ]; then
+        file=era5_${var}_daily.nc
+        if [ $lastfile -nt $file ]; then
             echo $var
-            $cdo copy $sourcefiles $outfile
-            filelist="$filelist $outfile"
+            $cdo copy $sourcefiles $file
+            filelist="$filelist $file"
         fi
-        ncatted -a title,global,c,c"ERA5 reanalysis, https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5" $outfile
+        ncatted -a title,global,c,c,"ERA5 reanalysis, https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5" $file
+        . $HOME/climexp/add_climexp_url_field.cgi
     fi
 done
 ncatted -a units,sfcWind,a,c,"m/s" era5_sfcWind_daily.nc

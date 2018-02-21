@@ -182,6 +182,10 @@ if [ $doit = true ]; then
     cdo -r -f nc4 -z zip ifthen gpcc_full_daily_n.nc gpcc_full_daily.nc gpcc_full_daily_n1.nc
     ncatted -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n1.nc
 fi
+for file in gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc; do
+    ncatted -a source_url,global,c,c,"ftp://ftp-anon.dwd.de/pub/data/gpcc/html/download_gate.html" $file
+    . $HOME/climexp/add_climexp_url_field.cgi
+done
 $HOME/NINO/copyfilesall.sh gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc
 
 mo=1

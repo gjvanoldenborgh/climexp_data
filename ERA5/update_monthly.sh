@@ -11,11 +11,12 @@ for var in $vars; do
     if [ $var != 3d ]; then
         sourcefiles="$sourcedir/????/mon/era5_${var}_*"
         lastfile=`ls -t $sourcefiles | head -n 1`
-        outfile=era5_${var}.nc
-        if [ $lastfile -nt $outfile ]; then
+        file=era5_${var}.nc
+        if [ $lastfile -nt $file ]; then
             echo $var
-            $cdo copy $sourcefiles $outfile
-            filelist="$filelist $outfile"
+            $cdo copy $sourcefiles $file
+            . $HOME/climexp/add_climexp_url_field.cgi
+            filelist="$filelist $file"
         fi
     fi
 done

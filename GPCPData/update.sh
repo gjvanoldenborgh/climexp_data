@@ -6,6 +6,7 @@ cdo -r -f nc4 -z zip copy $files gpcp_all.nc
 cdo selvar,precip gpcp_all.nc gpcp.nc
 ncatted -a units,precip,m,c,"mm/dy" gpcp.nc
 file=gpcp.nc
+ncatted -h -a source_url,global,c,c,"http://eagle1.umd.edu/GPCP_CDR/Monthly_Data" $file
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh gpcp.nc
 
@@ -26,6 +27,7 @@ if [ ! -s downloaded_$now$nowm ]; then
     ncatted -a units,precip,m,c,"mm/dy" gpcp_daily.nc
     describefield gpcp_daily.nc
     file=gpcp_daily.nc
+    ncatted -h -a source_url,global,c,c,"http://eagle1.umd.edu/GPCP_CDR/Daily_Data" $file
     . $HOME/climexp/add_climexp_url_field.cgi
     $HOME/NINO/copyfiles.sh gpcp_daily.nc
     date > downloaded_$now$nowm

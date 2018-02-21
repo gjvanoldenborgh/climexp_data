@@ -95,10 +95,10 @@ quit
 EOF
             cdo -r -f nc4 -z zip settaxis,${yr}-01-01,12:00,1day ../prcp_${region}_${yr}.nc ../aap.nc
             mv ../aap.nc ../prcp_${region}_${yr}.nc
-            ncatted -a units,prcp,a,c,"mm/dy" -a calendar,time,m,c,"standard" -a title,global,a,c,"NCEP/CPC daily analysis" ../prcp_${region}_${yr}.nc
+            ncatted -a units,prcp,a,c,"mm/dy" -a calendar,time,m,c,"standard" -a title,global,a,c,"CPC unified (gauge-based) precipitation" ../prcp_${region}_${yr}.nc
             cdo -r -f nc4 -z zip settaxis,${yr}-01-01,12:00,1day ../nprcp_${region}_${yr}.nc ../aap.nc
             mv ../aap.nc ../nprcp_${region}_${yr}.nc
-            ncatted -a calendar,time,m,c,"standard" -a title,global,a,c,"NCEP/CPC daily analysis" ../nprcp_${region}_${yr}.nc
+            ncatted -a calendar,time,m,c,"standard" -a title,global,a,c,"CPC unified (gauge-based) precipitation" ../nprcp_${region}_${yr}.nc
             rm PRCP_CU_GAUGE_V1.0${region}_${res}deg.lnx.${yr}????
         fi
     fi
@@ -109,9 +109,18 @@ echo "Concatenating $region..."
 cdo -r -f nc4 -z zip copy prcp_${region}_????.nc prcp_${region}_daily.nc
 cdo -r -f nc4 -z zip copy nprcp_${region}_????.nc nprcp_${region}_daily.nc
 cdo -r -f nc4 -z zip ifthen nprcp_${region}_daily.nc prcp_${region}_daily.nc prcp_${region}_daily_n1.nc
+for file in prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_daily_n1.nc; do
+    ncatted -h -a institution,global,m,c,"NOAA/NCEP/CPC" \
+            -a source_url,global,c,c,"ftp://ftp.cpc.ncep.noaa.gov/precip/CPC_UNI_PRCP/GAUGE_$region/" \
+            -a title,global,m,c,"CPC unified (gauge-based) precipitation" \
+                $file
+    . $HOME/climexp/add_climexp_url_field.cgi
+done
 rsync prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_daily_n1.nc bhlclim:climexp/NCEPData/
 if [ $region = CONUS ]; then
     averagefieldspace prcp_CONUS_daily.nc 2 2 prcp_CONUS_daily_05.nc
+    file=prcp_CONUS_daily_05.nc
+    . $HOME/climexp/add_climexp_url_field.cgi
     rsync prcp_CONUS_daily_05.nc bhlclim:climexp/NCEPData/
 fi
 done # region

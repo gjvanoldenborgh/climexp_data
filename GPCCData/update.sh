@@ -3,6 +3,10 @@ debug=false
 if [ "$1" = debug ]; then
     debug=true
 fi
+force=false
+if [ "$1" = force ]; then
+    force=true
+fi
 wgetflags="--no-passive-ftp"
 if [ `uname` == Darwin ]; then
     wgetflags=""
@@ -79,7 +83,7 @@ do
     		done
 		done
 	fi
-	if [ $doit = true ]; then
+	if [ $doit = true -o "$force" = true ]; then
 	    ###set -x
 	    echo "Making gpcc_${res}_mon.nc"
         cdo -r -f nc4 -z zip copy $files gpcc_${res}_mon_all.nc
@@ -101,8 +105,18 @@ do
         cdo -r -f nc4 -z zip ifthen gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
         for file in gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc; do
             if [ $res = 10 ]; then
-                ncatted -h -a title,global,a,c,", combined with the GPCC first guess product" \
-                        -a institution,global,a,c," and KNMI (merging)" $file
+                ncatted -h -a title,global,a,c," combined with the GPCC first guess product" \
+                        -a institution,global,a,c," and KNMI (merging)" \
+                        -a geospatial_lat_resolution,global,a,f,1.0 \
+                        -a geospatial_lon_resolution,global,a,f,1.0 \
+                        -a geospatial_lon_units,global,a,c,"degrees_east" \
+                        -a geospatial_lat_units,global,a,c,"degrees_north" $file
+                ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file
+            else
+                ncatted -h -a geospatial_lat_resolution,global,a,f,2.5 \
+                        -a geospatial_lon_resolution,global,a,f,2.5 \
+                        -a geospatial_lon_units,global,a,c,"degrees_east" \
+                        -a geospatial_lat_units,global,a,c,"degrees_north" $file
             fi
             . $HOME/climexp/add_climexp_url_field.cgi
         done
@@ -114,14 +128,23 @@ do
         cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
         for file in gpcc_${res}*combined.nc; do
             if [ $res = 10 ]; then
-                ncatted -h -a title,global,a,c,", combined with the GPCC monitoring and first guess product" \
-                        -a long_name,prcp,o,c,"precipitation"
-                        -a institution,global,a,c," and KNMI (merging)" $file
+                ncatted -h -a title,global,a,c," combined with the GPCC monitoring and first guess product" \
+                        -a long_name,prcp,o,c,"precipitation" \
+                        -a institution,global,a,c," and KNMI (merging)" \
+                        -a geospatial_lat_resolution,global,a,f,1.0 \
+                        -a geospatial_lon_resolution,global,a,f,1.0 \
+                        -a geospatial_lon_units,global,a,c,"degrees_east" \
+                        -a geospatial_lat_units,global,a,c,"degrees_north" $file
             else
-                ncatted -h -a title,global,a,c,", combined with the GPCC monitoring product" \
-                        -a long_name,prcp,o,c,"precipitation"
-                        -a institution,global,a,c," and KNMI (merging)" $file
+                ncatted -h -a title,global,a,c," combined with the GPCC monitoring product" \
+                        -a long_name,prcp,o,c,"precipitation" \
+                        -a institution,global,a,c," and KNMI (merging)" \
+                        -a geospatial_lat_resolution,global,a,f,2.5 \
+                        -a geospatial_lon_resolution,global,a,f,2.5 \
+                        -a geospatial_lon_units,global,a,c,"degrees_east" \
+                        -a geospatial_lat_units,global,a,c,"degrees_north" $file
             fi
+            ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file
             . $HOME/climexp/add_climexp_url_field.cgi
         done
         $HOME/NINO/copyfilesall.sh gpcc_${res}*combined.nc
@@ -170,9 +193,11 @@ while [ -s $file ]; do
     yr=$((yr+1))
     file=full_data_daily_$yr.nc
 done
-if [ $doit = true ]; then
+if [ $doit = true -o "$force" = true ]; then
     echo "Making gpcc_full_daily.nc"
     cdo -r -f nc4 -z zip copy $files gpcc_full_daily_all.nc
+    # cdo does not adjust time_coverage_start/end :-(
+    ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" gpcc_full_daily_all.nc
     cdo -r -f nc4 -z zip selvar,p gpcc_full_daily_all.nc gpcc_full_daily.nc
     ncatted -a long_name,p,m,c,"precipitation" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily.nc
     cdo -r -f nc4 -z zip selvar,s gpcc_full_daily_all.nc gpcc_full_daily_n.nc
@@ -206,7 +231,7 @@ while [ -s $file ]; do
     mm=`printf %02i $mo`
     file=first_guess_daily_$yr$mm.nc
 done
-if [ $doit = true ]; then
+if [ $doit = true -o "$force" = true ]; then
     echo "Making gpcc_combined_daily.nc"
     cdo -r -f nc4 -z zip copy $ffiles gpcc_firstguess_daily_all.nc
     cdo -r -f nc4 -z zip selvar,p gpcc_firstguess_daily_all.nc gpcc_firstguess_daily.nc
@@ -221,6 +246,8 @@ if [ $doit = true ]; then
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n1.nc gpcc_firstguess_daily_n1.nc gpcc_combined_daily_n1.nc
     ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
     for file in gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc; do
+        # cdo does not adjust these yet, recompute myself
+        ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file
         . $HOME/climexp/add_climexp_url_field.cgi
     done
 fi

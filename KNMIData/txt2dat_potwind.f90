@@ -145,6 +145,9 @@ program txt2dat
                 'http://projects.knmi.nl/klimatologie/onderzoeksgegevens/potentiele_wind/up_upd/'
             write(2,'(2a)') '# source_url_current :: '// &
                 'http://projects.knmi.nl/klimatologie/onderzoeksgegevens/potentiele_wind-sigma/'
+            write(2,'(3a)') '# references :: N. Weber and G. Groen, Improving potential wind for ', &
+                'extreme wind statistics, KNMI Scientific Report WR 2009-02, 2009, ', &
+                'http://bibliotheek.knmi.nl/knmipubWR/WR2009-02.pdf' 
             write(2,'(a)') '# license :: These data can be used freely provided'// &
             ' that the following source is acknowledged: '// &
             'Royal Netherlands Meteorological Institute (KNMI)'

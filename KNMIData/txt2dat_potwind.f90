@@ -142,7 +142,7 @@ program txt2dat
             write(2,'(a)') '# institution :: KNMI'
             ! URL from file no longer works.
             write(2,'(2a)') '# source_url_historical :: '// &
-                'ttp://projects.knmi.nl/klimatologie/onderzoeksgegevens/potentiele_wind/up_upd/'
+                'http://projects.knmi.nl/klimatologie/onderzoeksgegevens/potentiele_wind/up_upd/'
             write(2,'(2a)') '# source_url_current :: '// &
                 'http://projects.knmi.nl/klimatologie/onderzoeksgegevens/potentiele_wind-sigma/'
             write(2,'(a)') '# license :: These data can be used freely provided'// &

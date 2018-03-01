@@ -178,6 +178,7 @@ do
     if [ ! -s $f -o $f -ot $file ]; then
         gunzip -c $file > aap.nc
         cdo -r -f nc4 -z zip copy aap.nc $f
+        ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $f
     fi
 done
 

@@ -105,14 +105,14 @@ echo "Concatenating..."
 ###echo "cdo -r -f nc4 -z zip copy $files imerg_daily.nc"
 file=imerg_daily_05.nc
 cdo -r -f nc4 -z zip copy $files05 $file
-ncatted -a intitution,m,c,"NASA, converted to CF conventions, merged and averaged at KNMI" $file
+ncatted -a institution,global,c,c,"NASA, converted to CF conventions, merged and averaged at KNMI" $file
 . $HOME/climexp/add_climexp_url_field.cgi
 file=imerg_daily_02.nc
 cdo -r -f nc4 -z zip copy $files02 $file
-ncatted -a intitution,m,c,"NASA, converted to CF conventions, merged and averaged at KNMI" $file
+ncatted -a institution,global,c,c,"NASA, converted to CF conventions, merged and averaged at KNMI" $file
 . $HOME/climexp/add_climexp_url_field.cgi
 file=imerg_daily.nc
-cdo -r -f nc4 -z zip copy $files 
-ncatted -a intitution,m,c,"NASA, converted to CF conventions and merged at KNMI" $file
+cdo -r -f nc4 -z zip copy $files $file
+ncatted -a institution,global,c,c,"NASA, converted to CF conventions and merged at KNMI" $file
 . $HOME/climexp/add_climexp_url_field.cgi
 rsync -avt imerg_daily*.nc bhlclim:climexp/GPMData/

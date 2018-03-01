@@ -95,7 +95,11 @@ quit
 EOF
             cdo -r -f nc4 -z zip settaxis,${yr}-01-01,12:00,1day ../prcp_${region}_${yr}.nc ../aap.nc
             mv ../aap.nc ../prcp_${region}_${yr}.nc
-            ncatted -a units,prcp,a,c,"mm/dy" -a calendar,time,m,c,"standard" -a title,global,a,c,"CPC unified (gauge-based) precipitation" ../prcp_${region}_${yr}.nc
+            ncatted -a units,prcp,a,c,"mm/dy" \
+                    -a calendar,time,m,c,"standard" \
+                    -a long_name,prcp,c,c,"precipitation" \
+                    -a title,global,a,c,"CPC unified (gauge-based) precipitation" \
+                    ../prcp_${region}_${yr}.nc
             cdo -r -f nc4 -z zip settaxis,${yr}-01-01,12:00,1day ../nprcp_${region}_${yr}.nc ../aap.nc
             mv ../aap.nc ../nprcp_${region}_${yr}.nc
             ncatted -a calendar,time,m,c,"standard" -a title,global,a,c,"CPC unified (gauge-based) precipitation" ../nprcp_${region}_${yr}.nc
@@ -107,10 +111,13 @@ done
 cd ..
 echo "Concatenating $region..."
 cdo -r -f nc4 -z zip copy prcp_${region}_????.nc prcp_${region}_daily.nc
+ncatted -a long_name,prcp,c,c,"precipitation" prcp_${region}_daily.nc
 cdo -r -f nc4 -z zip copy nprcp_${region}_????.nc nprcp_${region}_daily.nc
+ncatted -a long_name,nprcp,c,c,"number of precipitation stations" nprcp_${region}_daily.nc
 cdo -r -f nc4 -z zip ifthen nprcp_${region}_daily.nc prcp_${region}_daily.nc prcp_${region}_daily_n1.nc
+ncatted -a long_name,prcp,m,c,"precipitation in grid boxes with observations" prcp_${region}_daily_n1.nc
 for file in prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_daily_n1.nc; do
-    ncatted -h -a institution,global,m,c,"NOAA/NCEP/CPC" \
+    ncatted -h -a institution,global,c,c,"NOAA/NCEP/CPC (converted to netcdf at KNMI)" \
             -a source_url,global,c,c,"ftp://ftp.cpc.ncep.noaa.gov/precip/CPC_UNI_PRCP/GAUGE_$region/" \
             -a title,global,m,c,"CPC unified (gauge-based) precipitation" \
                 $file

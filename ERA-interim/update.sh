@@ -20,11 +20,13 @@ $HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
 fi
 
 
-for var in txx tnn rx1day rx3day rx5day
+for var in tgx txx tnn tnx rx1day rx3day rx5day
 do
     case $var in
+        tgx) basevar=t2m;oper=max;;
         txx) basevar=tmax;oper=max;;
         tnn) basevar=tmin;oper=min;;
+        tnx) basevar=tmin;oper=max;;
         rx1day) basevar=tp;oper=max;;
         rx3day) basevar=tp;oper="max sum 3";;
         rx5day) basevar=tp;oper="max sum 5";;

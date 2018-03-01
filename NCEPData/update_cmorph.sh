@@ -155,9 +155,9 @@ done
 file=cmorph_daily_05.nc
 echo cdo -r -f nc4 -z zip copy $nc1files $file
 cdo -r -f nc4 -z zip copy $nc1files $file
-        ncatted -h -a institution,global,c,c,"NCEP/CPC" \
-                -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
-                -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
+ncatted -h -a institution,global,c,c,"NCEP/CPC" \
+        -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
+        -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
                     $file
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh cmorph_daily_05.nc
@@ -165,9 +165,9 @@ file=cmorph_daily.nc
 echo cdo -r -f nc4 -z zip copy $ncfiles $file
 cdo -r -f nc4 -z zip copy $ncfiles $file
 cdo -r -f nc4 -z zip copy $nc1files $file
-        ncatted -h -a institution,global,c,c,"NCEP/CPC" \
-                -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
-                -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
+ncatted -h -a institution,global,c,c,"NCEP/CPC" \
+        -a source_url,global,c,c,"http://www.cpc.ncep.noaa.gov/products/janowiak/cmorph_description.html" \
+        -a reference,global,c,c,"Joyce, R. J., J. E. Janowiak, P. A. Arkin, and P. Xie, 2004: CMORPH: A method that produces global precipitation estimates from passive microwave and infrared data at high spatial and temporal resolution.. J. Hydromet., 5, 487-503." \
                     $file
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh cmorph_daily.nc

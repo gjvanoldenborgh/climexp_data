@@ -11,7 +11,7 @@ if [ -f downloaded_$yr$mo -a "$force" != true ]; then
 fi
 [ ! -d ghcnm ] && mkdir ghcnm
 
-base=ftp://ftp.ncei.noaa.gov/pub/data/ghcn/v3
+base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3
 wget -q -N $base/country-codes
 
 somethingnew=false
@@ -41,6 +41,7 @@ do
             file=`ls -t ghcnm.$element.v3.?.?.????????.$type.$ext`
             version=${file#ghcnm.$element.}
             version=${version%.$type.$ext}
+            export version
             case $type in
                 qca) 
                     case $element in
@@ -62,6 +63,8 @@ do
 done
 cd ..
 
+date=`date`
+export date
 ./fillout_gettemp.sh
 
 rsync -r -e ssh -avt ghcnm bhlclim:climexp/NCDCData/

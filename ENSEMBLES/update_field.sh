@@ -9,11 +9,11 @@ force=false # true
 update=true # false
 
 # adjust with each version
-version=v15.0
-# end date of official file if in the same year as teh year of last month
-enddate="2016-12-31" # keep empty when shortening is not needed "2013-12-31"
+version=v16.0
+# end date of official file if in the same year as the year of last month
+enddate="2017-08-31" # keep empty when shortening is not needed "2013-12-31"
 # begin date of annual additions when in the previous year
-nextdate="" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
+nextdate="2017-09-01" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
 
 cdoflags="-r -f nc4 -z zip"
 
@@ -89,7 +89,7 @@ do
         file=${var}_${res}deg_reg_${version}u.nc
         ncatted -h -a institution,global,a,c,"KNMI" -a contact,global,a,c,"eca@knmi.nl" \
                 -a source_url,global,a,c,"http://www.ecad.eu/download/ensembles/ensembles.php" \
-                -a reference,global,a,c,"Haylock, M.R., N. Hofstra, A.M.G. Klein Tank, E.J. Klok, P.D. Jones, M. New. 2008: A European daily high-resolution gridded dataset of surface temperature and precipitation. J. Geophys. Res (Atmospheres), 113, D20119, doi:10.1029/2008JD10201" \
+                -a references,global,a,c,"Haylock, M.R., N. Hofstra, A.M.G. Klein Tank, E.J. Klok, P.D. Jones, M. New. 2008: A European daily high-resolution gridded dataset of surface temperature and precipitation. J. Geophys. Res (Atmospheres), 113, D20119, doi:10.1029/2008JD10201" \
                 $file
         . $HOME/climexp/add_climexp_url_field.cgi
         $HOME/NINO/copyfiles.sh ${var}_${res}deg_reg_${version}u.nc

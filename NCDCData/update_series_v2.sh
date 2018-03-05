@@ -29,15 +29,8 @@ do
 done
 
 if [ $somethingnew = true -o "$force" = true ]; then
-  make nodup
-  rm *_nodup
-  ./nodup v2.mean     v2.mean_nodup
-  ./nodup v2.mean_adj v2.mean_adj_nodup
-  ./nodup v2.min      v2.min_nodup
-  ./nodup v2.min_adj  v2.min_adj_nodup
-  ./nodup v2.max      v2.max_nodup
-  ./nodup v2.max_adj  v2.max_adj_nodup
 
+  export date=`date`
   ./fillout_gettemp_v2.sh
 
   $HOME/NINO/copyfiles.sh v2.prcp v2.prcp_adj v2.slp

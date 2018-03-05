@@ -1,3 +1,8 @@
+.SUFFIXES: .f90 .o
+
+.f90.o:
+	$(FC) $(FFLAGS)  -c $<
+
 all: getprcp gettemp getstation
 
 FFLAGS = -O

@@ -13,10 +13,13 @@ if [ $force != true -a -f downloaded_$yr$mo ]; then
 fi
 if [ 1 = 1 ]; then
 ./get_erainterim.py
-ssh zuidzee "cd NINO/ERA-interim; ./get_erainterim_daily.py; ./make_wspd.sh; rsync -at erai_*_daily.nc bhlclim:climexp/ERA-interim/"
+./get_erainterim_daily.py
+./make_wspd.sh
 ./update_tglobal.sh
 ./update_twetbulb.sh
-$HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
+# probably runs on zuidzee
+###$HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
+rsync -at erai_*.ncerai_*.dat bhlclim:climexp/ERA-interim/
 fi
 
 
@@ -32,11 +35,11 @@ do
         rx5day) basevar=tp;oper="max sum 5";;
         *) echo "$0: unknown var $var"; exit -1;;
     esac
-    echo "Computing $var on zuidzee"
+    echo "Computing $var"
     ###rsync erai_${basevar}_daily.nc zuidzee:NINO/ERA-interim/
-    ssh zuidzee "cd NINO/ERA-interim; daily2longerfield erai_${basevar}_daily.nc 1 $oper minfac 75 erai_$var.nc"
-    rsync -at zuidzee:NINO/ERA-interim/erai_$var.nc .
-    $HOME/NINO/copyfiles.sh erai_$var.nc
+    daily2longerfield erai_${basevar}_daily.nc 1 $oper minfac 75 erai_$var.nc
+    rsync -at erai_$var.nc bhlclim:climexp/ERA-interim/
+    ###$HOME/NINO/copyfiles.sh erai_$var.nc
 done
 
 date > downloaded_$yr$mo

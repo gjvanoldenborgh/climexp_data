@@ -9,11 +9,11 @@ program dailycet2dat
 
     call getarg(1,file)
     if ( file == 'cetdl1772on.dat' ) then
-        print '(a)','# CET [C] Central England Temperature'
+        print '(a)','# CET [Celsius] Central England Temperature'
     elseif ( file == 'cetmindly1878on_urbadj4.dat' ) then
-        print '(a)','# CETmin [C] Central England minimum temperature'
+        print '(a)','# CETmin [Celsius] Central England minimum temperature'
     elseif ( file == 'cetmaxdly1878on_urbadj4.dat' ) then
-        print '(a)','# CETmax [C] Central England maximum temperature'
+        print '(a)','# CETmax [Celsius] Central England maximum temperature'
     else
         write(0,*) 'unknown file ',trim(file)
         call abort

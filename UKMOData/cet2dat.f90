@@ -10,11 +10,11 @@ program cet2dat
     call getarg(1,file)
     open(1,file=file,status='old')
     if ( file == 'cetml1659on.dat' ) then
-        print '(a)','# CET [C] monthly mean Central England Temperature'
+        print '(a)','# CET [Celsius] monthly mean Central England Temperature'
     else if ( file == 'cetminmly1878on_urbadj4.dat' ) then
-        print '(2a)','# CETmin [C] monthly mean minimum Central England Temperature'
+        print '(2a)','# CETmin [Celsius] monthly mean minimum Central England Temperature'
     else if ( file == 'cetmaxmly1878on_urbadj4.dat' ) then
-        print '(2a)','# CETmax [C] monthly mean maximum Central England Temperature'
+        print '(2a)','# CETmax [Celsius] monthly mean maximum Central England Temperature'
     else
         write(0,*) 'error: unknown file ',trim(file)
         call abort

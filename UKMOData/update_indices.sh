@@ -44,9 +44,13 @@ diff $file $file.old
 if [ $? != 0 ]; then
 	cat > crutem4_$safearea.dat <<EOF
 # CRUTEM$version $name average
-# <a href="http://www.metoffice.gov.uk/hadobs/crutem4/data/diagnostics/global/nh+sh/index.html" target="_new">Climatic Research Unit / Met Office Hadley Centre</a>
+# <a href="https://www.metoffice.gov.uk/hadobs/crutem4/" target="_new">Climatic Research Unit / Met Office Hadley Centre</a>
 # error estimates not yet used
 # Ta [Celsius] T2m land temperature averaged over $area
+# institution :: University of East Angli / Climatic Research Unit and UK Met Office / Hadley Centre
+# source_url :: $base/$file
+# source :: https://www.metoffice.gov.uk/hadobs/crutem4/
+# references :: Jones, P. D., D. H. Lister, T. J. Osborn, C. Harpham, M. Salmon, and C. P. Morice (2012), Hemispheric and large-scale land surface air temperature variations: An extensive revision and an update to 2010, J. Geophys. Res., 117, D05127, doi:10.1029/2011JD017139
 # history :: retrieved `date`
 EOF
 	cut -b 1-15 $file | tr '/' ' ' >> crutem4_$safearea.dat
@@ -197,8 +201,15 @@ do
   cp $file $file.old
   wget -q -N $base/monthly/$file
   outfile=`basename $file .txt`.dat
-  echo '# From <a href="http://www.metoffice.gov.uk/hadobs/hadukp" target="_new">Hadley Centre</a>' > $outfile
-  echo "# prcp [mm/month] precipitation" >> $outfile
+  cat > $outfile <<EOF
+# From <a href="http://www.metoffice.gov.uk/hadobs/hadukp" target="_new">Hadley Centre</a>
+# prcp [mm/month] precipitation
+# institution :: UK Met Office / Hadley Centre
+# source_url :: $base/monthly/$file
+# source :: https://www.metoffice.gov.uk/hadobs/hadukp/
+# references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187
+# history :: retrieved `date`
+EOF
   sed -e 's/-99.9/-999.9/g' -e 's/  0.0/-999.9/g' -e 's/^\([^ ]\)/# \1/' $file >> $outfile
   $HOME/NINO/copyfiles.sh $outfile
 

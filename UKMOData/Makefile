@@ -4,7 +4,7 @@
 	$(FC) $(FFLAGS)  -c $<
 
 FC=pgf90
-FFLAGS = -O -m64
+FFLAGS = -O
 ###FFLAGS = -g -fbounds-check
 
 LIBS = $(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a \
@@ -22,11 +22,11 @@ ts2sigma:	ts2sigma.o
 		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
 
 cet2dat:	cet2dat.o
-		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+		$(FC) $(LDFLAGS) -o $@ $@.o 
 
 dailycet2dat:	dailycet2dat.o
-		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+		$(FC) $(LDFLAGS) -o $@ $@.o 
 
 dailyprcp2dat:	dailyprcp2dat.o
-		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+		$(FC) $(LDFLAGS) -o $@ $@.o 
 

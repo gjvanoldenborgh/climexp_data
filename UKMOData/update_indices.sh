@@ -19,6 +19,11 @@ do
 # HadSST $version $region averaged SST anomalies, median of ensemble
 # source: <a href="http://www.metoffice.gov.uk/hadobs/hadsst3/data/download.html">Met Office</a>
 # SSTa [K] $region SST anomalies
+# institution :: UK Met Office / Hadley Centre
+# source_url :: $base/$file
+# source :: https://www.metoffice.gov.uk/hadobs/hadsst3/
+# references :: Kennedy J.J., Rayner, N.A., Smith, R.O., Saunby, M. and Parker, D.E. (2011b). Reassessing biases and other uncertainties in sea-surface temperature observations since 1850 part 1: measurement and sampling errors. J. Geophys. Res., 116, D14103, doi:10.1029/2010JD015218\\n Kennedy J.J., Rayner, N.A., Smith, R.O., Saunby, M. and Parker, D.E. (2011c). Reassessing biases and other uncertainties in sea-surface temperature observations since 1850 part 2: biases and homogenisation. J. Geophys. Res., 116, D14104, doi:10.1029/2010JD015220
+# history :: retrieved `date`
 EOF
         cat $file | tr '/' ' ' | cut -b 1-17 >> $f
         $HOME/NINO/copyfiles.sh $f
@@ -42,6 +47,7 @@ if [ $? != 0 ]; then
 # <a href="http://www.metoffice.gov.uk/hadobs/crutem4/data/diagnostics/global/nh+sh/index.html" target="_new">Climatic Research Unit / Met Office Hadley Centre</a>
 # error estimates not yet used
 # Ta [Celsius] T2m land temperature averaged over $area
+# history :: retrieved `date`
 EOF
 	cut -b 1-15 $file | tr '/' ' ' >> crutem4_$safearea.dat
 	$HOME/NINO/copyfilesall.sh crutem4_$safearea.dat
@@ -70,6 +76,11 @@ do
 # <a href="http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html" target="_new">Met Office Hadley Centre</a>
 # error estimates not yet used
 # Ta [Celsius] T2m/SST temperature averaged over $area
+# institution :: UK Met Office / Hadley Centre
+# source_url :: $base/${root}_$area.txt
+# source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
+# references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
+# history :: retrieved `date`
 EOF
 		cut -b 1-17 ${root}_$area.txt | tr '/' ' ' >> hadcrut4_$area.dat
 		$HOME/NINO/copyfilesall.sh hadcrut4_$area.dat
@@ -94,6 +105,11 @@ EOF
 # <a href="http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html" target="_new">Met Office Hadley Centre</a>
 # error estimates not covered by ensemble not yet used
 # Ta [Celsius] T2m/SST temperature averaged over $area
+# institution :: UK Met Office / Hadley Centre
+# source_url :: $base/${root}_${area}_realisations.zip
+# source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
+# references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
+# history :: retrieved `date`
 EOF
 			cut -b 1-17 ${root}_${area}.$i.txt | tr '/' ' ' >> hadcrut4_${area}_$ens.dat
 			rm ${root}_${area}.$i.txt
@@ -121,6 +137,11 @@ do
 # <a href="http://www.metoffice.gov.uk/hadobs/hadcrut4/data/download.html" target="_new">Met Office Hadley Centre</a>
 # error estimates not yet used
 # Ta [Celsius] T2m/SST temperature averaged over $area
+# institution :: UK Met Office / Hadley Centre
+# source_url :: $base/${root}_$area.txt
+# source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
+# references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
+# history :: retrieved `date`
 EOF
       cut -b 1-17 ${root}_$area.txt | tr '/' ' ' >> hadcrut4_$area.dat
       $HOME/NINO/copyfilesall.sh hadcrut4_$area.dat

@@ -10,7 +10,7 @@ fi
 ###set -x
 tool=cdo
 
-for type in mean # anom
+for type in anom mean
 do
     i=1981
     file=$0
@@ -64,9 +64,14 @@ done
 
 for index in 12 3 34 4;do
     cat <<EOF > nino${index}_daily.dat
-# Nino$ondex [K] daily Nino$index index from SST OI v2 1/4 degree
+# Nino$index [K] daily Nino$index index from SST OI v2 1/4 degree
 EOF
+    init=0
     for file in nino${index}_daily_????.dat; do
+        if [ $init = 0 ]; then
+            fgrep ' :: ' $file | fgrep -v time_coverage >> nino${index}_daily.dat
+            init=1
+        fi
         fgrep -v '#' $file >> nino${index}_daily.dat
     done
 done

@@ -1,3 +1,8 @@
+.SUFFIXES: .f90 .o
+
+.f90.o:
+	$(FC) $(FFLAGS)  -c $<
+
 FC=pgf90
 FFLAGS = -O -m64
 ###FFLAGS = -g -fbounds-check
@@ -15,3 +20,13 @@ hadghcnd2grads: hadghcnd2grads.o
 
 ts2sigma:	ts2sigma.o
 		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+
+cet2dat:	cet2dat.o
+		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+
+dailycet2dat:	dailycet2dat.o
+		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+
+dailyprcp2dat:	dailyprcp2dat.o
+		$(FC) $(LDFLAGS) -o $@ $@.o $(LIBS)
+

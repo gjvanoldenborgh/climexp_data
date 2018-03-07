@@ -4,7 +4,7 @@ program txt2dat
     integer,parameter :: yrbeg=1880,yrend=2020
     integer :: i,j,vals(20),yr,idatum(8)
     real :: mdata(12,yrbeg:yrend),sdata(4,yrbeg:yrend),adata(yrbeg:yrend)
-    character :: line*300,history*100,reg*3,region*30,type*30,rg*2,tp*2
+    character :: line*300,history*100,reg*3,region*30,type*30,rg*2,tp*2,outfile*80
     logical :: lwrite
     integer :: iargc
 
@@ -48,27 +48,37 @@ program txt2dat
     write(history(len_trim(history)+2:),'(i2,a,i2.2,a,i2.2)') idatum(5),':',idatum(6),':',idatum(7)
 
     open(1,file=trim(reg)//'.'//trim(type)//'.txt',status='old')
-    open(2,file='giss_'//tp//'_'//rg//'_m.dat')
-    open(3,file='giss_'//tp//'_'//rg//'_s.dat')
-    open(4,file='giss_'//tp//'_'//rg//'_a.dat')
     do i=2,4
+        if ( i == 2 ) then
+            outfile = 'giss_'//tp//'_'//rg//'_m.dat'
+        else if ( i == 3 ) then
+            outfile = 'giss_'//tp//'_'//rg//'_s.dat'
+        else if ( i == 4 ) then
+            outfile = 'giss_'//tp//'_'//rg//'_a.dat'
+        else
+            write(0,*) 'txt2dat: error: fgyjuiol;jln'
+            call exit(-1)
+        end if
+        open(i,file=trim(outfile))
         if ( tp == 'Ts' ) then
             write(i,'(a)') '# GISS Surface Temperature Analysis, ' &
-                //trim(region)//' mean anomalies'
+                //trim(region)//' mean '//trim(type)//' anomalies'
         else
             write(i,'(a)') '# GISS Land-Ocean Temperature Index, ' &
-                //trim(region)//' mean anomalies'
+                //trim(region)//' mean '//trim(type)//' anomalies'
         end if
         write(i,'(a)') '# Source: <a href="http://data.giss.nasa.gov/gistemp/">NASA/GISS</a>'
-        write(i,'(a)')'# Ta [K] '//trim(region)//' temperature anomaly'
-        write(i,'(a)') '# title :: GISTEMP temperature anomalies reletive to 1951-1980'
+        write(i,'(a)')'# Ta [K] GISTEMP '//trim(region)//' '//trim(type)//' temperature anomaly'
+        write(i,'(a)') '# title :: GISTEMP '//trim(region)//' '//trim(type)//' temperature anomalies '// &
+            'relative to 1951-1980'
         write(i,'(a)') '# institution :: NASA/GISS'
         write(i,'(a)') '# contact :: https://www.giss.nasa.gov/staff/rruedy.html'
         write(i,'(a)') '# references :: Hansen, J., R. Ruedy, M. Sato, and K. Lo, 2010: '// &
             'Global surface temperature change, Rev. Geophys., 48, RG4004, doi:10.1029/2010RG000345'
         write(i,'(a)') trim(line)
-        write(i,'(a)') '# source_url :: http://data.giss.nasa.gov/gistemp/'
+        write(i,'(a)') '# source :: http://data.giss.nasa.gov/gistemp/'
         write(i,'(a)') trim(history)
+        write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?'//trim(outfile)
     end do
 
     mdata = 3e33

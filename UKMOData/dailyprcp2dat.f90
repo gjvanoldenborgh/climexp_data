@@ -31,7 +31,7 @@ program dailyprcp2dat
         write(0,*) 'unknown file ',trim(file)
         call exit(-1)   
     end if
-    outfile(i:) = '.dat' ! coordinate with calling script
+    outfile(i:) = ' ' ! coordinate with calling script
     print '(2a)','# climexp_url :: https:climexp.knmi.nl/getindices.cgi?',trim(outfile)
     open(1,file=file,status='old')
 100 continue

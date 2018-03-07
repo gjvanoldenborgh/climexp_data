@@ -69,7 +69,7 @@ root=HadCRUT.${version}.monthly
 for area in ns_avg nh sh 30S_30N
 do
 	case $area in
-		ns_avg) name="global (NNH+SH)/2 average";;
+		ns_avg) name="global (NH+SH)/2 average";;
 		nh) name="northern hemisphere";;
 		sh) name="southern hemisphere";;
 		30S_30N) name="tropics (30S-30N)";;

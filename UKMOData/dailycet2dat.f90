@@ -10,13 +10,13 @@ program dailycet2dat
     call getarg(1,file)
     if ( file == 'cetdl1772on.dat' ) then
         print '(a)','# CET [Celsius] Central England Temperature'
-        outfile = 'daily_cet.dat' ! coordinate with calling script
+        outfile = 'daily_cet' ! coordinate with calling script
     elseif ( file == 'cetmindly1878on_urbadj4.dat' ) then
         print '(a)','# CETmin [Celsius] Central England minimum temperature'
-        outfile = 'daily_cet_min.dat' ! coordinate with calling script
+        outfile = 'daily_cet_min' ! coordinate with calling script
     elseif ( file == 'cetmaxdly1878on_urbadj4.dat' ) then
         print '(a)','# CETmax [Celsius] Central England maximum temperature'
-        outfile = 'daily_cet_max.dat' ! coordinate with calling script
+        outfile = 'daily_cet_max' ! coordinate with calling script
     else
         write(0,*) 'unknown file ',trim(file)
         call abort

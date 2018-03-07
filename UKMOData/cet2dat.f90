@@ -11,13 +11,13 @@ program cet2dat
     open(1,file=file,status='old')
     if ( file == 'cetml1659on.dat' ) then
         print '(a)','# CET [Celsius] monthly mean Central England Temperature'
-        outfile = 'cet.dat' ! coordinate with calling script
+        outfile = 'cet' ! coordinate with calling script
     else if ( file == 'cetminmly1878on_urbadj4.dat' ) then
         print '(2a)','# CETmin [Celsius] monthly mean minimum Central England Temperature'
-        outfile = 'cet_min.dat' ! coordinate with calling script
+        outfile = 'cet_min' ! coordinate with calling script
     else if ( file == 'cetmaxmly1878on_urbadj4.dat' ) then
         print '(2a)','# CETmax [Celsius] monthly mean maximum Central England Temperature'
-        outfile = 'cet_max.dat' ! coordinate with calling script
+        outfile = 'cet_max' ! coordinate with calling script
     else
         write(0,*) 'error: unknown file ',trim(file)
         call abort

@@ -25,7 +25,7 @@ do
 # source :: https://www.metoffice.gov.uk/hadobs/hadsst3/
 # references :: Kennedy J.J., Rayner, N.A., Smith, R.O., Saunby, M. and Parker, D.E. (2011b). Reassessing biases and other uncertainties in sea-surface temperature observations since 1850 part 1: measurement and sampling errors. J. Geophys. Res., 116, D14103, doi:10.1029/2010JD015218\\n Kennedy J.J., Rayner, N.A., Smith, R.O., Saunby, M. and Parker, D.E. (2011c). Reassessing biases and other uncertainties in sea-surface temperature observations since 1850 part 2: biases and homogenisation. J. Geophys. Res., 116, D14104, doi:10.1029/2010JD015220
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/$f
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/$f
 EOF
         cat $file | tr '/' ' ' | cut -b 1-17 >> $f
         $HOME/NINO/copyfiles.sh $f
@@ -38,7 +38,7 @@ base=http://www.metoffice.gov.uk/hadobs/crutem4/data/diagnostics/global/nh+sh/
 area="n+s"
 safearea=ns
 name="NH+SH"
-version=4.5.0.0
+version=4.6.0.0
 file=CRUTEM.${version}.global_${area}_monthly
 cp $file $file.old
 wget -q -N $base/$file
@@ -54,7 +54,7 @@ if [ $? != 0 -o $force = true ]; then
 # source :: https://www.metoffice.gov.uk/hadobs/crutem4/
 # references :: Jones, P. D., D. H. Lister, T. J. Osborn, C. Harpham, M. Salmon, and C. P. Morice (2012), Hemispheric and large-scale land surface air temperature variations: An extensive revision and an update to 2010, J. Geophys. Res., 117, D05127, doi:10.1029/2011JD017139
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/crutem4_$safearea.dat
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/crutem4_$safearea.dat
 EOF
 	cut -b 1-15 $file | tr '/' ' ' >> crutem4_$safearea.dat
 	$HOME/NINO/copyfilesall.sh crutem4_$safearea.dat
@@ -88,7 +88,7 @@ do
 # source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
 # references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/hadcrut4_$area.dat
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/hadcrut4_$area
 EOF
 		cut -b 1-17 ${root}_$area.txt | tr '/' ' ' >> hadcrut4_$area.dat
 		$HOME/NINO/copyfilesall.sh hadcrut4_$area.dat
@@ -118,7 +118,7 @@ EOF
 # source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
 # references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/hadcrut4_${area}_%%.dat
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/hadcrut4_${area}_%%
 EOF
 			cut -b 1-17 ${root}_${area}.$i.txt | tr '/' ' ' >> hadcrut4_${area}_$ens.dat
 			rm ${root}_${area}.$i.txt
@@ -132,7 +132,7 @@ done
 for area in ns_avg nh sh 30S_30N
 do
 	case $area in
-		ns_avg) name="global (NNH+SH)/2 average";;
+		ns_avg) name="global (NH+SH)/2 average";;
 		nh) name="northern hemisphere";;
 		sh) name="southern hemisphere";;
 		30S_30N) name="tropics (30S-30N)";;
@@ -151,7 +151,7 @@ do
 # source :: https://www.metoffice.gov.uk/hadobs/hadcrut4/
 # references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187.
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/hadcrut4_$area.dat
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/hadcrut4_$area
 EOF
       cut -b 1-17 ${root}_$area.txt | tr '/' ' ' >> hadcrut4_$area.dat
       $HOME/NINO/copyfilesall.sh hadcrut4_$area.dat
@@ -215,7 +215,7 @@ do
 # source :: https://www.metoffice.gov.uk/hadobs/hadukp/
 # references :: Morice, C. P., J. J. Kennedy, N. A. Rayner, and P. D. Jones (2012), Quantifying uncertainties in global and regional temperature change using an ensemble of observational estimates: The HadCRUT4 dataset, J. Geophys. Res., 117, D08101, doi:10.1029/2011JD017187
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl?UKMOData/$outfile
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?UKMOData/${outfile%.dat}
 EOF
   sed -e 's/-99.9/-999.9/g' -e 's/  0.0/-999.9/g' -e 's/^\([^ ]\)/# \1/' $file >> $outfile
   $HOME/NINO/copyfiles.sh $outfile

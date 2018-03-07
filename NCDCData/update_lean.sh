@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ "$1" != debug ]; then
-    wget -q -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/monthly/
-    wget -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/yearly/
+    wget --no-check-certificate -q -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/monthly/
+    wget --no-check-certificate -q -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/yearly/
 fi
 
 # annual values

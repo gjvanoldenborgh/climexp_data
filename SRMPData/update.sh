@@ -5,6 +5,7 @@ cat  > solarradioflux.dat <<EOF
 # F10.7 [sfu] 10.7cm flux density
 # institution :: NRC-GNRC Canada
 # references :: https://www.nrc-cnrc.gc.ca/eng/solutions/advisory/solar_weather_monitoring.html
+# source_url :: ftp://ftp.geolab.nrcan.gc.ca/data/solar_flux/monthly_averages/solflux_monthly_average.txt
 # contact :: ken.tapping@nrc-cnrc.gc.ca
 # history :: retrieved `date`
 # climexp_url :: http://climexp.knmi.nl/getinidices.cgi?solarradioflux

@@ -6,9 +6,9 @@ mv sunspots.dat sunspots.dat.old
 make convert
 ./convert
 $HOME/NINO/copyfilesall.sh sunspots.dat
-make sunspots2double
-./sunspots2double > sunspots2.dat
-$HOME/NINO/copyfilesall.sh sunspots2.dat
+###make sunspots2double
+###./sunspots2double > sunspots2.dat
+###$HOME/NINO/copyfilesall.sh sunspots2.dat
 
 wget -N http://sidc.oma.be/silso/DATA/SN_d_tot_V2.0.txt
 echo "updating sunspots_daily.dat"

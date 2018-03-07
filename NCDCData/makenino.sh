@@ -21,7 +21,8 @@ do
 
   normdiff ersst_nino${nino}.dat ersst_tropical.dat none none > aap.dat
   scaleseries $factor aap.dat > ersst_nino${nino}_rel.dat
-  egrep '^#' ersst_nino${nino}a.dat | fgrep -v '[K]' > ersst_nino${nino}a_rel.dat
+  egrep '^#' ersst_nino${nino}a.dat | fgrep -v '[K]' | fgrep -v climexp_url > ersst_nino${nino}a_rel.dat
+  echo "# climexp_url :: https://climexp.knmi.nl/getindices.cgi?NCDCData/ersst_nino${nino}a_rel" >> ersst_nino${nino}a_rel.dat
   echo "# Nino$nino index minus 20S-20N average SST" >> ersst_nino${nino}a_rel.dat
   echo "# normalised by a factor $factor" >> ersst_nino${nino}a_rel.dat
   echo "# Nino${nino}r [K]  ERSST $version relative Nino$nino index" >> ersst_nino${nino}a_rel.dat

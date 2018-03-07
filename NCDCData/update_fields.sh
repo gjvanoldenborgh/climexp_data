@@ -68,7 +68,7 @@ if [ -n "$file" ]; then
 		make ncdc2grads
 		./ncdc2grads $file.dat
 		grads2nc temp_anom.ctl temp_anom.nc
-        ncatted -h -a intitution,global,a,c,"NOAA/NCEI" \
+        ncatted -h -a institution,global,a,c,"NOAA/NCEI" \
                 -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" temp_anom.nc
         file=temp_anom.nc
 	    . $HOME/climexp/add_climexp_url_field.cgi 
@@ -89,7 +89,7 @@ if [ $? != 0 -o "$force" = true ]; then
     ./ncdc2grads $file.dat
     grads2nc t_anom.ctl ncdc-merged-sfc-mntp.nc
     ncatted -h -a title,global,m,c,"NOAA/NCEI Land and Ocean Temperature Anomalies" \
-            -a intitution,global,a,c,"NOAA/NCEI" \
+            -a institution,global,m,c,"NOAA/NCEI" \
             -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" ncdc-merged-sfc-mntp.nc
     file=ncdc-merged-sfc-mntp.nc
 	. $HOME/climexp/add_climexp_url_field.cgi
@@ -124,13 +124,13 @@ sdfwrite pr
 quit
 EOF
     for file in prcp_anom.nc prcp_total.nc; do
-        ncatted -h -a intitution,global,a,c,"NOAA/NCEI" \
+        ncatted -h -a institution,global,a,c,"NOAA/NCEI" \
             -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" $file
     	. $HOME/climexp/add_climexp_url_field.cgi
     done    
     ncatted -h -a units,pr,c,c,"mm/month" -a long_name,pr,c,c,"total precipitation" \
             -a comment,global,a,c,"Added CRU TS4 climatology to NOAA/NCEI anomalies" \
-            -a institution,global,a,c,"KNMI Climate Explorer using data from NOAA/NCEI and UEA/CRU" prcp_total.nc
+            -a institution,global,m,c,"KNMI Climate Explorer using data from NOAA/NCEI and UEA/CRU" prcp_total.nc
 	$HOME/NINO/copyfiles.sh prcp_anom.nc prcp_total.nc
 fi
 

@@ -5,15 +5,18 @@ program dailycet2dat
     implicit none
     integer :: yr,mo,dy,val(12),i,j,idatum(8)
     real :: data(31,12)
-    character :: file*80,line*120
+    character :: file*80,line*120,outfile*80
 
     call getarg(1,file)
     if ( file == 'cetdl1772on.dat' ) then
         print '(a)','# CET [Celsius] Central England Temperature'
+        outfile = 'daily_cet.dat' ! coordinate with calling script
     elseif ( file == 'cetmindly1878on_urbadj4.dat' ) then
         print '(a)','# CETmin [Celsius] Central England minimum temperature'
+        outfile = 'daily_cet_min.dat' ! coordinate with calling script
     elseif ( file == 'cetmaxdly1878on_urbadj4.dat' ) then
         print '(a)','# CETmax [Celsius] Central England maximum temperature'
+        outfile = 'daily_cet_max.dat' ! coordinate with calling script
     else
         write(0,*) 'unknown file ',trim(file)
         call abort
@@ -29,6 +32,7 @@ program dailycet2dat
     write(line(len_trim(line)+2:),'(i4,a,i2.2,a,i2.2)') idatum(1),'-',idatum(2),'-',idatum(3)
     write(line(len_trim(line)+2:),'(i2,a,i2.2,a,i2.2)') idatum(5),':',idatum(6),':',idatum(7)
     print '(a)',trim(line)
+    print '(2a)','# climexp_url :: https:climexp.knmi.nl/getindices.cgi?',trim(outfile)
     open(1,file=file,status='old')
 100 continue
     read(1,*,end=800) yr,dy,val

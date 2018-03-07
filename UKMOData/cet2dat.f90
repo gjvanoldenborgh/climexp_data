@@ -5,16 +5,19 @@ program cet2dat
     implicit none
     integer :: yr,mo,idatum(8)
     real :: val(13)
-    character :: line*120,file*80
+    character :: line*120,file*80,outfile*80
 
     call getarg(1,file)
     open(1,file=file,status='old')
     if ( file == 'cetml1659on.dat' ) then
         print '(a)','# CET [Celsius] monthly mean Central England Temperature'
+        outfile = 'cet.dat' ! coordinate with calling script
     else if ( file == 'cetminmly1878on_urbadj4.dat' ) then
         print '(2a)','# CETmin [Celsius] monthly mean minimum Central England Temperature'
+        outfile = 'cet_min.dat' ! coordinate with calling script
     else if ( file == 'cetmaxmly1878on_urbadj4.dat' ) then
         print '(2a)','# CETmax [Celsius] monthly mean maximum Central England Temperature'
+        outfile = 'cet_max.dat' ! coordinate with calling script
     else
         write(0,*) 'error: unknown file ',trim(file)
         call abort
@@ -29,6 +32,7 @@ program cet2dat
     write(line(len_trim(line)+2:),'(i4,a,i2.2,a,i2.2)') idatum(1),'-',idatum(2),'-',idatum(3)
     write(line(len_trim(line)+2:),'(i2,a,i2.2,a,i2.2)') idatum(5),':',idatum(6),':',idatum(7)
     print '(a)',trim(line)
+    print '(2a)','# climexp_url :: https:climexp.knmi.nl/getindices.cgi?',trim(outfile)
 
 100 continue
     read(1,'(a)',end=800) line

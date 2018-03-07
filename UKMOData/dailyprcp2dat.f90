@@ -1,18 +1,18 @@
 program dailyprcp2dat
 
-!       convert the daily prcp format to standard Climate Explorer format.
+!   convert the daily prcp format to standard Climate Explorer format.
 
     implicit none
     integer :: yr,mo,dy,i,j,idatum(8)
     real :: val(31)
-    character file*80,line*1000
+    character file*80,outfile*80,line*1000
 
     call getarg(1,file)
     i = index(file,'Had') + 3
     j = i + index(file(i:),'_')
     if ( i == 3 .or. j == i ) then
         write(0,*) 'unknown file ',trim(file)
-        call abort
+        call exit(-1)   
     endif
     print '(3a)','# prcp [mm/dy] ',file(i:j-2),' precipitation'
     print '(2a)','# <a href="https://www.metoffice.gov.uk/hadobs/hadukp/" target="_new">Hadley Centre</a>'
@@ -25,6 +25,14 @@ program dailyprcp2dat
     write(line(len_trim(line)+2:),'(i4,a,i2.2,a,i2.2)') idatum(1),'-',idatum(2),'-',idatum(3)
     write(line(len_trim(line)+2:),'(i2,a,i2.2,a,i2.2)') idatum(5),':',idatum(6),':',idatum(7)
     print '(a)',trim(line)
+    outfile = file
+    i = index(outfile,'.txt')
+    if ( i == 0 ) then
+        write(0,*) 'unknown file ',trim(file)
+        call exit(-1)   
+    end if
+    outfile(i:) = '.dat' ! coordinate with calling script
+    print '(2a)','# climexp_url :: https:climexp.knmi.nl/getindices.cgi?',trim(outfile)
     open(1,file=file,status='old')
 100 continue
     read(1,'(a)',end=800) line

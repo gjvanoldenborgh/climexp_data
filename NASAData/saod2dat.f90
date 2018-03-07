@@ -28,7 +28,7 @@ program saod2dat
             'transport. Science 337, 78-81, doi:10.1126/science.1219371'
         write(i,'(a)') '# source_url :: https://data.giss.nasa.gov/modelforce/strataer/'
         write(i,'(a)') trim(history)
-        write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?'//trim(outfile)
+        write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?NASAData/'//trim(outfile)
     end do
     open(10,file='tau_line.txt',status='old')
     do i=1,4

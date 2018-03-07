@@ -78,7 +78,7 @@ program txt2dat
         write(i,'(a)') trim(line)
         write(i,'(a)') '# source :: http://data.giss.nasa.gov/gistemp/'
         write(i,'(a)') trim(history)
-        write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?'//trim(outfile)
+        write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?NASAData/'//trim(outfile)
     end do
 
     mdata = 3e33

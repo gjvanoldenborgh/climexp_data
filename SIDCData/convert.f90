@@ -21,7 +21,7 @@ program convert
     write(line(len_trim(line)+2:),'(i4,a,i2.2,a,i2.2)') idatum(1),'-',idatum(2),'-',idatum(3)
     write(line(len_trim(line)+2:),'(i2,a,i2.2,a,i2.2)') idatum(5),':',idatum(6),':',idatum(7)
     write(2,'(a)') trim(line)
-    write(2,'(a)') '# climexp_url :: https://climexp.knmi.nl/SIDCData/sunspots'
+    write(2,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?SIDCData/sunspots'
 
     do yr=1749,2100
         do mn=1,12

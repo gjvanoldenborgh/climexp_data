@@ -20,7 +20,7 @@ cat <<EOF > sunspots_daily.dat
 # source_url :: http://sidc.oma.be/silso/DATA/SN_m_tot_V2.0.txt
 # contact :: silso.info@oma.be
 # history :: retrieved `date`
-# climexp_url :: https://climexp.knmi.nl/SIDCData/unspots_daily
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?SIDCData/sunspots_daily
 EOF
 fgrep -v ' -1 ' SN_d_tot_V2.0.txt | cut -b 1-10,20-24 >> sunspots_daily.dat
 $HOME/NINO/copyfiles.sh sunspots_daily.dat

@@ -14,8 +14,8 @@ program saod2dat
     write(history(len_trim(history)+2:),'(i4,a,i2.2,a,i2.2)') ii(1),'-',ii(2),'-',ii(3)
     write(history(len_trim(history)+2:),'(i2,a,i2.2,a,i2.2)') ii(5),':',ii(6),':',ii(7)
     do i=1,3
-        outfile = 'saod_'//reg(i)//'.dat'
-        open(i,file=trim(outfile))
+        outfile = 'saod_'//reg(i)
+        open(i,file=trim(outfile)//'.dat')
         write(i,'(3a)') '# ',trim(region(i)),' Optical Thickness at 550 nm'
         write(i,'(3a)') '# from <a href="http://data.giss.nasa.gov/' &
             ,'modelforce/strataer/">NASA/GISS</a>'

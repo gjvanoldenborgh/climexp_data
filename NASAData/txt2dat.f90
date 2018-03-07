@@ -50,16 +50,16 @@ program txt2dat
     open(1,file=trim(reg)//'.'//trim(type)//'.txt',status='old')
     do i=2,4
         if ( i == 2 ) then
-            outfile = 'giss_'//tp//'_'//rg//'_m.dat'
+            outfile = 'giss_'//tp//'_'//rg//'_m'
         else if ( i == 3 ) then
-            outfile = 'giss_'//tp//'_'//rg//'_s.dat'
+            outfile = 'giss_'//tp//'_'//rg//'_s'
         else if ( i == 4 ) then
-            outfile = 'giss_'//tp//'_'//rg//'_a.dat'
+            outfile = 'giss_'//tp//'_'//rg//'_a'
         else
             write(0,*) 'txt2dat: error: fgyjuiol;jln'
             call exit(-1)
         end if
-        open(i,file=trim(outfile))
+        open(i,file=trim(outfile)//'.dat')
         if ( tp == 'Ts' ) then
             write(i,'(a)') '# GISS Surface Temperature Analysis, ' &
                 //trim(region)//' mean '//trim(type)//' anomalies'

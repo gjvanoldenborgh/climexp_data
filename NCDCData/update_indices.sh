@@ -32,7 +32,13 @@ do
         fi
         cat > $myfile <<EOF
 # $regionname $area mean temperature anomalies from <a href="http://www.ncdc.noaa.gov/monitoring-references/faq/anomalies.php">NCDC</a>
-# Ta [K] surface temperature anomaly
+# Ta [K] NOAA $regionname surface temperature
+# title :: NOAA/NCEI $reionnanme Land and Ocean Temperature Anomalies
+# institution :: NOAA/NCEI
+# source :: https://www.ncdc.noaa.gov/cag/global/time-series
+# source_url :: $base/$dir/$area/p12/12/$file
+# history :: retrived `date`
+# climexp_url :: https://climexp.knmi.nl/getindices.cgi?NCDCData/${myfile%.dat}
 EOF
         egrep '^[12]' $file | tr ',' ' ' >> $myfile
         yrfile=`basename $myfile .dat`_yr.dat

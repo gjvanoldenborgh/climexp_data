@@ -1,5 +1,6 @@
 #!/bin/sh
 force=false
+[ "$1" = force ] && force=true
 #
 # HadSST3
 #
@@ -12,7 +13,7 @@ do
     echo "wget -q -N $base/$file"
     wget -q -N $base/$file
     diff $file $file.old
-    if [ $? != 0 ]; then
+    if [ $? != 0 -o $force = true ]; then
         # only change filename for major updates
         f=HadSST3_monthly_${region}_ts.dat
 	    cat > $f <<EOF
@@ -42,7 +43,7 @@ file=CRUTEM.${version}.global_${area}_monthly
 cp $file $file.old
 wget -q -N $base/$file
 diff $file $file.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o $force = true ]; then
 	cat > crutem4_$safearea.dat <<EOF
 # CRUTEM$version $name average
 # <a href="https://www.metoffice.gov.uk/hadobs/crutem4/" target="_new">Climatic Research Unit / Met Office Hadley Centre</a>
@@ -76,7 +77,7 @@ do
 	cp ${root}_$area.txt ${root}_$area.txt.old
 	wget -q -N $base/${root}_$area.txt
 	diff ${root}_$area.txt ${root}_$area.txt.old
-	if [ $? != 0 ]; then
+	if [ $? != 0 -o $force = true ]; then
 		cat > hadcrut4_$area.dat <<EOF
 # HadCRUT$version $name average
 # <a href="http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html" target="_new">Met Office Hadley Centre</a>
@@ -139,7 +140,7 @@ do
 	cp ${root}_$area.txt ${root}_$area.txt.old
 	wget -q -N $base/${root}_$area.txt
 	diff ${root}_$area.txt ${root}_$area.txt.old
-	if [ $? != 0 ]; then
+	if [ $? != 0 -o $force = true ]; then
 		cat > hadcrut4_$area.dat <<EOF
 # HadCRUT4 $name average
 # <a href="http://www.metoffice.gov.uk/hadobs/hadcrut4/data/download.html" target="_new">Met Office Hadley Centre</a>

@@ -22,11 +22,15 @@ fi
 # and non-centered months are assumed centered.
 cdo inttime,2003-01-17,0:00,1day $landfile grace_land_daily.nc
 daily2longerfield grace_land_daily.nc 12 mean minfac 0.25 grace_land.nc
+file=grace_land.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh grace_land.nc
 rm grace_land_daily.nc
 
 cdo inttime,2003-01-17,0:00,1day $oceanfile grace_ocean_daily.nc
 daily2longerfield grace_ocean_daily.nc 12 mean minfac 0.25 grace_ocean.nc
+file=grace_ocean.nc
+. $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh grace_ocean.nc
 rm grace_ocean_daily.nc
 

@@ -75,11 +75,11 @@ EOF
 done
 
 
-if [ ghcn_cams_10.ctl -ot ghcn_cams_1948_cur.grb ]; then
+if [ ! -s ghcn_cams_10.nc -o ghcn_cams_10.nc -ot ghcn_cams_1948_cur.grb ]; then
   echo "generating the 1.0 degree version myself"
   rm ghcn_cams_10.*
   echo "Constructing 1x1 version"
-  $HOME/climexp/bin/averagefieldspace ghcn_cams_05.ctl 2 2 ghcn_cams_10.ctl
+  $HOME/climexp/bin/averagefieldspace ghcn_cams_05.ctl 2 2 ghcn_cams_10.nc
 fi
 echo "Copying to climexp"
 rsync -e ssh ghcn_cams_??.nc bhlclim:climexp/NCEPData/

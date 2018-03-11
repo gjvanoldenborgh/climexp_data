@@ -43,9 +43,6 @@ echo @@@ AOML
 echo @@@ NOC
 (cd NOCData; ./update.sh | 2>&1 tee update.log)
 
-echo @@@ NCAR
-(cd NCARData; ./update_indices.sh | 2>&1 tee update.log)
-
 ###echo @@@ BAS
 ###(cd BASData; ./update_indices.sh | 2>&1 tee update.log)
 
@@ -53,8 +50,8 @@ echo @@@ PMOD
 (cd PMODData; ./update_indices.sh | 2>&1 tee update.log)
 
 echo @@@ Rutgers
-(cd RutgersData; ./update.sh | 2>&1 tee update.log)
-(cd RutgersData; ./update_fields.sh | 2>&1 tee update_fields.log)
+(ssh zuidzee "cd NINO/RutgersData; ./update.sh |& tee update.log")
+(ssh zuidzee "cd NINO/RutgersData; ./update_fields.sh |& tee update.log")
 
 echo @@@ UW
 (cd UWData; ./update.sh | 2>&1 tee update.log)

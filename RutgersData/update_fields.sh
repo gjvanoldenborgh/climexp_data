@@ -2,6 +2,9 @@
 force=""
 [ -n "$1" ] && force=$1
 
+usecdr=true
+if [ usecdr = false ]; then
+
 file=rutgers-monthly-snow.mtx
 cp $file.gz $file.gz.old
 wget -N --no-check-certificate --user=knmi https://climate.rutgers.edu/snowcover/files/$file.gz
@@ -18,14 +21,29 @@ if [ $? != 0 -o "$force" = force ]; then
     $HOME/NINO/copyfiles.sh snow_rucl.nc
 fi
 
-exit
+else
 
-# new CDR files, not yet usable.
+# new CDR files, interplate to lat/lon, daily, monthly.
 
 base=https://www.ncei.noaa.gov/data/snow-cover-extent/access
 curl $base/ > index.html
 file=`fgrep nhsce_ index.html | sed -e 's/^.*href=\"//' -e 's/\".*$//'`
 rm index.html
-wget -q -N --no-check-certificate $base/$file
 
+if [ ! -s $file -o snow_rucl.nc -ot $file -o "$force" = force ]; then
+    rm nhsce_*.nc
+    wget -q -N --no-check-certificate $base/$file
+    cdo -r -f nc4 -z zip remapbil,snow_grid.nc $file snow_rucl_week.nc
+    cdo -r -f nc4 -z zip intntime,7 snow_rucl_week.nc snow_rucl_day.nc
+    # cdo monmean produces last months whenever there is 1 day of data...
+    daily2longerfield snow_rucl_day.nc 12 mean minfac 80 add_persist snow_rucl.nc
+    for file in snow_rucl.nc snow_rucl_day.nc; do
+        # curiously, these are not in the 1m metadata of his CDR...
+        ncatted -h -a references,global,a,c,"Robinson, David A., Estilow, Thomas W., and NOAA CDR Program (2012): NOAA Climate Data Record (CDR) of Northern Hemisphere (NH) Snow Cover Extent (SCE), Version 1. $name. NOAA National Centers for Environmental Information. doi:10.7289/V5N014G9" \
+                -a doi,global,a,c,"doi:10.7289/V5N014G9" $file
+        . $HOME/climexp/add_climexp_url_field.cgi
+    done
+    $HOME/NINO/copyfiles.sh snow_rucl.nc snow_rucl_day.nc
+fi
 
+fi

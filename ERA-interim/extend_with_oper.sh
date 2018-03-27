@@ -51,8 +51,8 @@ do
         # clean up the operational analyses if the ERA-interim exists
         [ -f oper_$var$yr$mo.grib ] && rm oper_*$yr$mo.grib
         [ -f oper_$var$yr$mo.nc ] && rm oper_*$yr$mo.nc
-    elif [ -s complete_oper_$var$yr$mo.txt ]; then
-        echo "found complete_oper_$var$yr$mo.txt, using old oper_$var$yr$mo.grib"
+    elif [ -s complete_oper_$yr$mo.txt ]; then
+        echo "found complete_oper_$yr$mo.txt, using old oper_$var$yr$mo.grib"
         dates="$dates $yr$mo"
     else
         echo "downloading oper_$var$yr$mo.grib ..."
@@ -123,35 +123,35 @@ do
 	            fi
 	            if [ force=true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}.nc -ot oper_${var}${yr}${mo}.grb ]; then
 		            echo "converting oper_${var}${yr}${mo} to netcdf"
-		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb aap.nc
+		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb extend_tmp$$.nc
                     # shift time so that the 00, 06, 12 and 18 analyses are averaged
-		            cdo $cdoflags shifttime,3hour aap.nc noot.nc
+		            cdo $cdoflags shifttime,3hour extend_tmp$$.nc extend_tmp1_$$.nc
 		            if [ $var = tdew ]; then
 		                oper=daymax
 		            else
 		                oper=daymean
 		            fi
-		            cdo $cdoflags $oper noot.nc aap.nc
+		            cdo $cdoflags $oper extend_tmp1_$$.nc extend_tmp$$.nc
 		            if [ 0 = 1 ]; then
     		            # shift time back from 21 to 12 UTC in order not to confuse the next program
-	    	            cdo $cdoflags shifttime,-9hour aap.nc oper_${var}${yr}${mo}.nc
+	    	            cdo $cdoflags shifttime,-9hour extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 	    	        else
 	    	            # somehow the time is already correct...
-	    	            mv aap.nc oper_${var}${yr}${mo}.nc
+	    	            mv extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 	    	        fi
-		            rm -f aap.nc noot.nc
+		            rm -f extend_tmp$$.nc extend_tmp1_$$.nc
 		            . ./gribcodes.sh
-		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
+		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc extend_tmp$$.nc
 		            ncatted -O -a long_name,$var,o,c,"$long_name" \
 				        -a units,$var,o,c,"$units" \
 				        -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
 				        -a title,global,o,c,"operational analysis" \
-			            aap.nc oper_${var}${yr}${mo}.nc
+			            extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 			        if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
-			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
-			            mv aap.nc oper_${var}${yr}${mo}.nc
+			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc extend_tmp$$.nc
+			            mv extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 			        fi
-			        [ -f aap.nc ] && rm aap.nc
+			        [ -f extend_tmp$$.nc ] && rm extend_tmp$$.nc
             	fi
             fi
         done
@@ -192,30 +192,30 @@ do
                 fi
 	            if [ force=true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}.nc -ot oper_${var}${yr}${mo}.grb ]; then
 		            echo "converting oper_${var}${yr}${mo} to netcdf"
-		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb aap.nc
+		            cdo $cdoflags copy oper_${var}${yr}${mo}.grb extend_tmp$$.nc
                     # shift time so that the 06, 12, 18 and 24 values are averaged
-		            cdo $cdoflags shifttime,-3hour aap.nc noot.nc
-		            cdo $cdoflags $oper noot.nc aap.nc
+		            cdo $cdoflags shifttime,-3hour extend_tmp$$.nc extend_tmp1_$$.nc
+		            cdo $cdoflags $oper extend_tmp1_$$.nc extend_tmp$$.nc
 		            if [ 0 = 1 ]; then
     		            # shift time back from 21 to 12 UTC in order not to confuse the next program
-	    	            cdo $cdoflags shifttime,-9hour aap.nc oper_${var}${yr}${mo}.nc
+	    	            cdo $cdoflags shifttime,-9hour extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 		            else
 		                # the time is already at 12:00...
-    		            mv aap.nc oper_${var}${yr}${mo}.nc
+    		            mv extend_tmp$$.nc oper_${var}${yr}${mo}.nc
     		        fi
-		            rm -f aap.nc noot.nc
+		            rm -f extend_tmp$$.nc extend_tmp1_$$.nc
 		            . ./gribcodes.sh
-		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
+		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc extend_tmp$$.nc
 		            ncatted -O -a long_name,$var,o,c,"$long_name" \
 				        -a units,$var,o,c,"$units" \
 				        -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
 				        -a title,global,o,c,"operational analysis" \
-			            aap.nc oper_${var}${yr}${mo}.nc
+			            extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 			        if [ $var = tmin -o $var = tmax ]; then
-			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc aap.nc
-			            mv aap.nc oper_${var}${yr}${mo}.nc
+			            cdo $cdoflags sub oper_${var}${yr}${mo}.nc oper_t2m_bias.nc extend_tmp$$.nc
+			            mv extend_tmp$$.nc oper_${var}${yr}${mo}.nc
 			        fi
-			        rm aap.nc
+			        rm extend_tmp$$.nc
             	fi
             elif [ $var = "tp" ]; then
 	            for step in 12 24
@@ -227,18 +227,18 @@ do
 	            done
 	            if [ force = true -o ! -s oper_${var}${yr}${mo}.nc -o oper_${var}${yr}${mo}_$step.nc -ot oper_${var}${yr}${mo}_24.grb ]; then
 		            echo "adding and converting $var to netcdf"
-		            cdo $cdoflags add oper_${var}${yr}${mo}_12.grb oper_${var}${yr}${mo}_24.grb aap.nc
+		            cdo $cdoflags add oper_${var}${yr}${mo}_12.grb oper_${var}${yr}${mo}_24.grb extend_tmp$$.nc
 		            . ./gribcodes.sh
-		            cdo $cdoflags divc,$fac aap.nc oper_${var}${yr}${mo}.nc
-		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc aap.nc
+		            cdo $cdoflags divc,$fac extend_tmp$$.nc oper_${var}${yr}${mo}.nc
+		            ncrename -O -v var$par,$var oper_${var}${yr}${mo}.nc extend_tmp$$.nc
 		            ncatted -O -a long_name,$var,a,c,"$long_name" \
 				        -a units,$var,a,c,"$units" \
 				        -a axis,lon,a,c,"x" -a axis,lat,a,c,"y" \
 				        -a title,global,a,c,"ERA-interim reanalysis" \
-			            aap.nc oper_${var}${yr}${mo}.nc
+			            extend_tmp$$.nc oper_${var}${yr}${mo}.nc
             	fi
-                [ -f aap.nc ] && rm aap.nc
-                [ -f noot.nc ] && rm noot.nc
+                [ -f extend_tmp$$.nc ] && rm extend_tmp$$.nc
+                [ -f extend_tmp1_$$.nc ] && rm extend_tmp1_$$.nc
             fi
         done
         wetbulb_field oper_tmax${yr}${mo}.nc \
@@ -247,7 +247,7 @@ do
             oper_twetbub${yr}${mo}.nc
 
         if [ $completemonth = true ]; then
-            date > complete_oper_tp$yr$mo.txt
+            date > complete_oper_$yr$mo.txt
         fi
         fi # any days in the month?
     fi # download or not?
@@ -283,28 +283,28 @@ if [ "$forecast" != false ]; then
             ecaccess-file-delete scratch:$gribfile
             ecaccess-file-delete scratch:$netcdffile
         fi
-        mv $netcdffile aap.nc
+        mv $netcdffile extend_tmp$$.nc
         # shift time so that the 00, 06, 12 and 18 analyses are averaged
-        cdo $cdoflags shifttime,3hour aap.nc noot.nc
+        cdo $cdoflags shifttime,3hour extend_tmp$$.nc extend_tmp1_$$.nc
         if [ $var = tdew ]; then
             oper=daymax
         else
             oper=daymean
         fi
-        cdo $cdoflags $oper noot.nc aap.nc
+        cdo $cdoflags $oper extend_tmp1_$$.nc extend_tmp$$.nc
         if [ 1 = 0 ]; then
             # shift time back from 15 to 12 UTC in order not to confuse the next program
-            cdo $cdoflags shifttime,-3hour aap.nc $netcdffile
+            cdo $cdoflags shifttime,-3hour extend_tmp$$.nc $netcdffile
         else
             # somehow the time is already correct...
-            mv aap.nc $netcdffile
+            mv extend_tmp$$.nc $netcdffile
         fi
-        rm -f aap.nc noot.nc
+        rm -f extend_tmp$$.nc extend_tmp1_$$.nc
         if [ $var = t2m -o $var = tmin -o $var = tmax ]; then
-            cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
-            mv aap.nc $netcdffile
+            cdo $cdoflags sub $netcdffile oper_t2m_bias.nc extend_tmp$$.nc
+            mv extend_tmp$$.nc $netcdffile
         fi
-        [ -f aap.nc ] && rm aap.nc
+        [ -f extend_tmp$$.nc ] && rm extend_tmp$$.nc
     done 
 
     cfvars=`fgrep "for var in tp" marsforecast.sh | sed -e "s/for var in //"`
@@ -333,37 +333,37 @@ if [ "$forecast" != false ]; then
             fi
             if [ force=true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
                 echo "converting $gribfile to netcdf"
-                cdo $cdoflags copy $gribfile aap.nc
+                cdo $cdoflags copy $gribfile extend_tmp$$.nc
                 # shift time so that the 06, 12, 18 and 24 values are averaged
-                cdo $cdoflags shifttime,-3hour aap.nc noot.nc
-                cdo $cdoflags $oper noot.nc aap.nc
+                cdo $cdoflags shifttime,-3hour extend_tmp$$.nc extend_tmp1_$$.nc
+                cdo $cdoflags $oper extend_tmp1_$$.nc extend_tmp$$.nc
                 if [ 0 = 1 ]; then
                     # shift time back from 21 to 12 UTC in order not to confuse the next program
-                    cdo $cdoflags shifttime,-9hour aap.nc $netcdffile
+                    cdo $cdoflags shifttime,-9hour extend_tmp$$.nc $netcdffile
                 else
                     # the time is already at 12:00...
-                    mv aap.nc $netcdffile
+                    mv extend_tmp$$.nc $netcdffile
                 fi
-                rm -f aap.nc noot.nc
+                rm -f extend_tmp$$.nc extend_tmp1_$$.nc
                 . ./gribcodes.sh
-                ncrename -O -v var$par,$var $netcdffile aap.nc
+                ncrename -O -v var$par,$var $netcdffile extend_tmp$$.nc
                 ncatted -O -a long_name,$var,o,c,"$long_name" \
                     -a units,$var,o,c,"$units" \
                     -a axis,lon,o,c,"x" -a axis,lat,o,c,"y" \
                     -a title,global,o,c,"operational analysis" \
-                    aap.nc $netcdffile
+                    extend_tmp$$.nc $netcdffile
                 if [ $var = tmin -o $var = tmax ]; then
-                    cdo $cdoflags sub $netcdffile oper_t2m_bias.nc aap.nc
-                    mv aap.nc $netcdffile
+                    cdo $cdoflags sub $netcdffile oper_t2m_bias.nc extend_tmp$$.nc
+                    mv extend_tmp$$.nc $netcdffile
                 fi
-                rm aap.nc
+                rm extend_tmp$$.nc
             fi
         elif [ $var = "tp" ]; then
             if [ force = true -o ! -s $netcdffile -o $netcdffile -ot $gribfile ]; then
                 echo "Warning: $var forecasts not yet ready"
             fi
-            [ -f aap.nc ] && rm aap.nc
-            [ -f noot.nc ] && rm noot.nc
+            [ -f extend_tmp$$.nc ] && rm extend_tmp$$.nc
+            [ -f extend_tmp1_$$.nc ] && rm extend_tmp1_$$.nc
         fi
     done
     wetbulb_field forecast_tmax${curyr}-${curmo}-${curdy}.nc \

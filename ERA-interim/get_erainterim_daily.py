@@ -13,8 +13,8 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             time = "00:00:00/06:00:00/12:00:00/18:00:00"
             step = "0"
         elif type == "fc" and var == 'u10' or var == 'v10':
-            time = "00:00:00/06:00:00/12:00:00/18:00:00"
-            step = "0/3"
+            time = "00:00:00/12:00:00"
+            step = "3/6/9/12"
         elif type == "fc" and var == 'tmin' or var == 'tmax':
             time = "00:00:00/12:00:00"
             step = "6/12"
@@ -197,10 +197,11 @@ for var in vars:
             else:
                 lastmonth = 1 + 12
             for month in range(1, lastmonth):
-                if month < 10:
-                    cmonth = '0' + str(month)
-                else:
-                    cmonth = str(month)
+                #if month < 10:                     #FK
+                    #cmonth = '0' + str(month)      #FK
+                #else:                              #FK
+                    #cmonth = str(month)            #FK
+                cmonth = str(month).zfill(2)
                 file = datavar + str(year) + cmonth + '.grib'
                 ncfile = var + str(year) + cmonth + '.nc'
                 dpm = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -208,6 +209,10 @@ for var in vars:
                     dpm[2] = 29
                 else:
                     dpm[2] = 28
+                # eventueel kan je ook..
+                # from calendar import monthrange
+                # dpm = monthrange(year,month)[1]
+                # date = str(year) + cmonth + '01/to/' + str(year) + cmonth + str(dpm))
                 date = str(year) + cmonth + '01/to/' + str(year) + cmonth + str(dpm[month])
                 try:
                     c = get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile)
@@ -215,7 +220,7 @@ for var in vars:
                         concatenate = True
                     if os.path.exists(ncfile) and os.path.getsize(ncfile) > 100:
                         ncfiles = ncfiles + " " + ncfile
-                except RuntimeError:
+                except:
                     print "OK, dat was het"
                     break
             # end of months loop

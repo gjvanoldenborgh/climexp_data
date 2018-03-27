@@ -25,6 +25,7 @@ mv tlt.nc tlt_$myversion.nc
 file=tlt_$myversion.nc
 ncatted -h -a institution,global,o,c,"Earth System Science Center, the University of Alabama in Huntsville" \
         -a source_url,global,c,c,"https://www.nsstc.uah.edu/climate/" \
+        -a contact,global,c,c,"gentry@nsstc.uah.edu" \
         -a version,global,c,c,"$version" \
             $file
 . $HOME/climexp/add_climexp_url_field.cgi

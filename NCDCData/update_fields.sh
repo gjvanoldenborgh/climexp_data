@@ -18,6 +18,8 @@ do
             filelist="$filelist $file"
         done
         cdo -r -f nc4 -z zip copy $filelist ersst${version}_all.nc
+        # cdo does not do this right yet
+        ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" ersst${version}_all.nc
         # the time axis has minutes since 1-jan-1854 in a 360-day calendar WTF?!
         cdo settaxis,1854-01-01,0:00,1mon ersst${version}_all.nc aap.nc
         ncatted -O -a calendar,time,m,c,"standard" aap.nc ersst${version}_all.nc

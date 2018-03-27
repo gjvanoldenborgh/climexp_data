@@ -263,12 +263,14 @@ for var in vars:
             if year == currentyear-1:
                 maxmonth = 1 + 12
             else:
+                # FK, maxmonth = currentmonth??
                 maxmonth = 1 + currentmonth - 1
             for month in range(1, maxmonth):
-                if month < 10:
-                    cmonth = '0' + str(month)
-                else:
-                    cmonth = str(month)
+                #if month < 10:
+                    #cmonth = '0' + str(month)
+                #else:
+                    #cmonth = str(month)
+                cmonth = str(month).zfill(2)
                 file = datavar + str(year) + cmonth + '_mo.grib'
                 ncfile = var + str(year) + cmonth + '_mo.nc'
                 date = str(year) + cmonth + '01'
@@ -277,7 +279,7 @@ for var in vars:
                     if c:
                         concatenate = True
                         ncfiles = ncfiles + " " + ncfile
-                except RuntimeError:
+                except:
                     print "OK, dat was het"
                     break
             # end of months loop
@@ -297,10 +299,11 @@ for var in vars:
 
             # clean up the old monthly files if they exist
             for month in range(1,13):
-                if month < 10:
-                    cmonth = '0' + str(month)
-                else:
-                    cmonth = str(month)
+                #if month < 10:
+                    #cmonth = '0' + str(month)
+                #else:
+                    #cmonth = str(month)
+                cmonth = str(month).zfill(2)
                 file = datavar + str(year) + cmonth + '_mo.grib'
                 if os.path.exists(file):
                     os.remove(file)

@@ -43,8 +43,8 @@ echo @@@ AOML
 echo @@@ NOC
 (cd NOCData; ./update.sh | 2>&1 tee update.log)
 
-###echo @@@ BAS
-###(cd BASData; ./update_indices.sh | 2>&1 tee update.log)
+echo @@@ BAS
+(cd BASData; ./update_indices.sh | 2>&1 tee update.log)
 
 echo @@@ PMOD
 (cd PMODData; ./update_indices.sh | 2>&1 tee update.log)

@@ -29,10 +29,15 @@ base=https://www.ncei.noaa.gov/data/snow-cover-extent/access
 curl $base/ > index.html
 file=`fgrep nhsce_ index.html | sed -e 's/^.*href=\"//' -e 's/\".*$//'`
 rm index.html
+echo "CDR file is $file"
 
+for oldfile in nhsce_*.nc; do
+    if [ -f $oldfile -a $oldfile != $file ]; then
+        rm $oldfile
+    fi
+done
+wget -q -N --no-check-certificate $base/$file
 if [ ! -s $file -o snow_rucl.nc -ot $file -o "$force" = force ]; then
-    rm nhsce_*.nc
-    wget -q -N --no-check-certificate $base/$file
     cdo -r -f nc4 -z zip remapbil,snow_grid.nc $file snow_rucl_week.nc
     cdo -r -f nc4 -z zip intntime,7 snow_rucl_week.nc snow_rucl_day.nc
     # cdo monmean produces last months whenever there is 1 day of data...

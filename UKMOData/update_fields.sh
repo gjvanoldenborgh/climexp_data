@@ -15,8 +15,11 @@ base=http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/gridded_fields
 file=HadCRUT.${version}.median_netcdf.zip
 $wget --header="accept-encoding: gzip" $base/$file
 unzip -o $file
-ncks -O -v temperature_anomaly HadCRUT.${version}.median.nc aap.nc
-mv aap.nc HadCRUT.${version}.median.nc
+ncks -O -v temperature_anomaly HadCRUT.${version}.median.nc tmp.nc
+mv tmp.nc HadCRUT.${version}.median.nc
+file=HadCRUT.${version}.median.nc
+ncatted -a institution,global,a,c,"Met Office Hadley Centre" \
+    -a url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadcrut4/" $file
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh HadCRUT.${version}.median.nc
 
@@ -35,6 +38,8 @@ base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
 file=HadSST.${version}.median_netcdf.zip
 $wget --header="accept-encoding: gzip" $base/$file
 unzip -o $file
+ncatted -a institution,global,a,c,"Met Office Hadley Centre" \
+    -a url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadsst3/" $file
 file=HadSST.${version}.median.nc
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh HadSST.${version}.median.nc

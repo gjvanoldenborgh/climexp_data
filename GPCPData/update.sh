@@ -29,7 +29,7 @@ if [ ! -s downloaded_$now$nowm ]; then
     describefield gpcp_daily.nc
     file=gpcp_daily.nc
     ncatted -h -a source_url,global,c,c,"http://eagle1.umd.edu/GPCP_CDR/Daily_Data" $file
-    ncatted -d -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file
+    ncatted -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file
     . $HOME/climexp/add_climexp_url_field.cgi
     $HOME/NINO/copyfiles.sh gpcp_daily.nc
     date > downloaded_$now$nowm

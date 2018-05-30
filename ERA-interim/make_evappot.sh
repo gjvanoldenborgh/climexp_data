@@ -18,8 +18,8 @@ while [ -s t2m$yr.nc ]; do
         set -x
         ./compute_Epot_ERA.py $yr
         if [ $yr = 1980 -o $yr = 2013 ]; then # no idea why these go wrong...
-            ncrename -d axis_0,time -v axis_0,time evappot$yr.nc aap.nc
-            cdo -r settaxis,1980-01-01,12:00,1day aap.nc evappot$yr.nc
+            ncrename -O -d axis_0,time -v axis_0,time evappot$yr.nc aap.nc
+            cdo -r settaxis,${yr}-01-01,12:00,1day aap.nc evappot$yr.nc
         fi
         cdo monmean evappot$yr.nc evappot${yr}_mo.nc
         set +x
@@ -29,22 +29,25 @@ while [ -s t2m$yr.nc ]; do
     ((yr++))
 done
 mo=1
-while [ -s t2m$yr$mo ]; do
-    if [ ! -s evappot$yr$mo.nc ]; then
+mm="01"
+while [ -s t2m$yr$mm.nc ]; do
+    if [ ! -s evappot$yr$mm.nc ]; then
         for var in $vars; do
-            if [ ! -s $var$yr$mo.nc ]; then
-                echo "$0: error: cannot locate $var$yr$mo.nc"
+            if [ ! -s $var$yr$mm.nc ]; then
+                echo "$0: error: cannot locate $var$yr$mm.nc"
                 exit -1
             fi
         done
         set -x
-        ./compute_Epot_ERA.py $yr$mo
-        cdo monmean evappot$yr$mo.nc evappot${yr}${mo}_mo.nc
+        ./compute_Epot_ERA.py $yr$mm
+        cdo monmean evappot$yr$mm.nc evappot${yr}${mm}_mo_tmp.nc
+        cdo settaxis,${yr}-${mm}-15,0:00,1month evappot${yr}${mm}_mo_tmp.nc evappot${yr}${mm}_mo.nc
         set +x
     fi
-    files="$files evappot$yr$mo.nc"
-    mofiles="$mofiles evappot${yr}${mo}_mo.nc"
+    files="$files evappot$yr$mm.nc"
+    mofiles="$mofiles evappot${yr}${mm}_mo.nc"
     ((mo++))
+    mm=`printf %02i $mo`
 done
 set -x
 cdo -r -f nc4 -z zip copy $mofiles erai_evappot.nc

@@ -8,7 +8,7 @@ elif [ "$1" = all ]; then
     if [ timescale = monthly ]; then
 	    vars="tas pr tasmin tasmax evspsbl huss hurs psl rlds rlus rlut rsds rsus rsdt rsut hfss hfls pme tos taz z500 z200"
 	else
-	    vars="altcdd csdi altcwd dtr fd gsl id prcptot r1mm r10mm r20mm r95p r99p rx1day rx5day sdii su tn10p tn90p tnn tnx tx10p tx90p txn txx wsdi"
+	    vars="altcdd csdi altcwd dtr fd gsl id prcptot r1mm r10mm r20mm r95p r99p rx1day rx5day sdii su tn10p tn90p tnn tnx tx10p tx90p txn txx wsdi tr"
 	fi
 else
 	vars="$@"

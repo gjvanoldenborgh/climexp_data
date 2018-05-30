@@ -22,9 +22,9 @@ for var in rr tg tn tx pp # rr tg tn tx pp # tg tn tx pp
 do
   for res in 0.50 0.25
   do
-    wget -q -N http://eca.knmi.nl/download/ensembles/data/Grid_${res}deg_reg/${var}_${res}deg_reg_${version}.nc.gz
+    wget -q -N https://www.ecad.eu/download/ensembles/data/months/${var}_${res}deg_reg_${version}.nc.gz
     if [ -n "$nextdate" ]; then
-        wget -q -N http://eca.knmi.nl/download/ensembles/data/months/${var}_${res}deg_reg_$((yr-1)).nc.gz
+        wget -q -N https://www.ecad.eu/download/ensembles/data/months/${var}_${res}deg_reg_$((yr-1)).nc.gz
     fi
     [ $update = true ] && wget -q -N http://eca.knmi.nl/download/ensembles/data/months/${var}_${res}deg_reg_$yr.nc.gz
     if [ $force = true -o ${var}_${res}deg_reg_$yr.nc.gz -nt ${var}_${res}deg_reg_${version}u.nc ]; then

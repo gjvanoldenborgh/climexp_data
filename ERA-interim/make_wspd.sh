@@ -32,8 +32,8 @@ while [ -s u10$yr.grib -o -s u10$yr$mm.grib ]; do
     maxoutfile=maxwspd$ext.nc
     if [ ! -s $outfile -o ! -s $maxoutfile ]; then
         echo "making $outfile and $maxoutfile"
-        $cdo -shifttime,1hour -sqr $ufile /tmp/utmp$ext.nc
-        $cdo -shifttime,1hour -sqr $vfile /tmp/vtmp$ext.nc
+        $cdo -shifttime,-1hour -sqr $ufile /tmp/utmp$ext.nc
+        $cdo -shifttime,-1hour -sqr $vfile /tmp/vtmp$ext.nc
         $cdo add /tmp/utmp$ext.nc /tmp/vtmp$ext.nc ./wspd2tmp$ext.nc
         rm /tmp/utmp$ext.nc /tmp/vtmp$ext.nc
         $cdo -sqrt -daymean ./wspd2tmp$ext.nc $outfile

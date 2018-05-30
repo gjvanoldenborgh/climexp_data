@@ -13,8 +13,8 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             time = "00:00:00/06:00:00/12:00:00/18:00:00"
             step = "0"
         elif type == "fc" and var == 'u10' or var == 'v10':
-            time = "00:00:00/12:00:00"
-            step = "3/6/9/12"
+            time = "00:00:00/06:00:00/12:00:00/18:00:00"
+            step = "0/3"
         elif type == "fc" and var == 'tmin' or var == 'tmax':
             time = "00:00:00/12:00:00"
             step = "6/12"
@@ -71,9 +71,8 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
                     " -shifttime,-9hour noot.nc " + ncfile
             elif var == "u10" or var == "v10":
                 # shift -1 hr to get the 00, 03, ... 21 values in the correct day
-                command = cdo + " -setname," + var + " -shifttime,1hour " + file + \
-                    " aap.nc; " + cdo + " -" + oper + " aap.nc noot.nc; " + cdo + \
-                    " -shifttime,-9hour noot.nc " + ncfile
+                command = cdo + " -setname," + var + " -shifttime,-1hour " + file + \
+                    " aap.nc; " + cdo + " -" + oper + " aap.nc + ncfile
             elif var == 'tp' or var == 'evap':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm
@@ -106,8 +105,7 @@ server = ECMWFDataServer()
 
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
-
-vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "rsds", "rsns", "rlns", "msl", "u10", "v10", "sp", "z500", "t500", "q500" ]
+vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "rsds", "rsns", "rlns", "msl","sp",  "u10", "v10", "z500", "t500", "q500" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -191,17 +189,16 @@ for var in vars:
     lastyear = 1 + currentyear
     for year in range(firstyear, lastyear):
 
-        if year == currentyear or ( year == currentyear-1 and currentmonth < 4):
+        if year == currentyear or ( year == currentyear-1 and currentmonth < 4 ):
             if year == currentyear:
                 lastmonth = 1 + currentmonth - 1
             else:
                 lastmonth = 1 + 12
             for month in range(1, lastmonth):
-                #if month < 10:                     #FK
-                    #cmonth = '0' + str(month)      #FK
-                #else:                              #FK
-                    #cmonth = str(month)            #FK
-                cmonth = str(month).zfill(2)
+                if month < 10:
+                    cmonth = '0' + str(month)
+                else:
+                    cmonth = str(month)
                 file = datavar + str(year) + cmonth + '.grib'
                 ncfile = var + str(year) + cmonth + '.nc'
                 dpm = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -209,10 +206,6 @@ for var in vars:
                     dpm[2] = 29
                 else:
                     dpm[2] = 28
-                # eventueel kan je ook..
-                # from calendar import monthrange
-                # dpm = monthrange(year,month)[1]
-                # date = str(year) + cmonth + '01/to/' + str(year) + cmonth + str(dpm))
                 date = str(year) + cmonth + '01/to/' + str(year) + cmonth + str(dpm[month])
                 try:
                     c = get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile)
@@ -220,7 +213,7 @@ for var in vars:
                         concatenate = True
                     if os.path.exists(ncfile) and os.path.getsize(ncfile) > 100:
                         ncfiles = ncfiles + " " + ncfile
-                except:
+                except RuntimeError:
                     print "OK, dat was het"
                     break
             # end of months loop

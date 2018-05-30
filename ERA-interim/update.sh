@@ -19,7 +19,7 @@ if [ 1 = 1 ]; then
 ./update_twetbulb.sh
 # probably runs on zuidzee
 ###$HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
-rsync -at erai_*.ncerai_*.dat bhlclim:climexp/ERA-interim/
+rsync -at erai_*.nc erai_*.dat bhlclim:climexp/ERA-interim/
 fi
 
 

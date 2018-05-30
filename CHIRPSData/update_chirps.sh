@@ -63,7 +63,8 @@ done # res(olution)
 
 res=25
 cenfile=$HOME/climexp/UCSBData/CenTrends_v1_monthly_ce.nc
-$cdo monsum v2p0chirps_$res.nc v2p0chirps_mo_$res.nc
+$cdo monsum v2p0chirps_$res.nc v2p0chirps_mo_${res}_tmp.nc
+$cdo settaxis,1981-01-15,0:00,1month v2p0chirps_mo_${res}_tmp.nc v2p0chirps_mo_${res}.nc
 ncatted -a units,pr,m,c,"mm/month" v2p0chirps_mo_$res.nc
 $cdo sellonlatbox,28,54,-15,18 v2p0chirps_mo_$res.nc chirps_horn.nc
 $cdo remapcon,chirps_horn.nc $cenfile centrends_$res.nc

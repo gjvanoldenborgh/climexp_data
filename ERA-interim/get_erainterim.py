@@ -1,4 +1,4 @@
-#!/home/oldenbor/bin/python
+#!/usr/bin/python
 # the above line does not work on the Mac, but it is the only way to run python on the servers.
 import os
 import subprocess

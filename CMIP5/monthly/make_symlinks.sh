@@ -47,7 +47,7 @@ do
 			mr*) type=Lmon;;
 			sic) type=OImon;;
 			sn?) type=LImon;;
-	        cdd|altcdd|csdi|cwd|altcwd|dtr|fd|gsl|id|prcptot|r1mm|r10mm|r20mm|r95p|r99p|rx1day|rx5day|sdii|su|tn10p|tn90p|tnn|tnx|tx10p|tx90p|txn|txx|wsdi) type=yr;;
+	        cdd|altcdd|csdi|cwd|altcwd|dtr|fd|gsl|id|prcptot|r1mm|r10mm|r20mm|r95p|r99p|rx1day|rx5day|sdii|su|tn10p|tn90p|tnn|tnx|tx10p|tx90p|txn|txx|wsdi|tr) type=yr;;
 			*) type=Amon;;
 		esac
 		for model in $models

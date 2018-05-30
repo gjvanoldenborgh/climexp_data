@@ -40,8 +40,7 @@ while [ -s t2m$yr$mm.nc ]; do
         done
         set -x
         ./compute_Epot_ERA.py $yr$mm
-        cdo monmean evappot$yr$mm.nc evappot${yr}${mm}_mo_tmp.nc
-        cdo settaxis,${yr}-${mm}-15,0:00,1month evappot${yr}${mm}_mo_tmp.nc evappot${yr}${mm}_mo.nc
+        cdo monmean evappot$yr$mm.nc evappot${yr}${mm}_mo.nc
         set +x
     fi
     files="$files evappot$yr$mm.nc"

@@ -19,7 +19,7 @@ program mjo2dat
         write(file,'(a,i2.2,a)') 'cpc_mjo',i,'_daily.dat'
         open(10+i,file=file,status='unknown')
         write(10+i,'(a,i2,4a)') '# MJO index #',i,' from ' &
-            ,'<a href="http://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/mjo_index.html">' &
+            ,'<a href="http://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/mjo_index.shtml">' &
             ,'CPC</a>'
         write(10+i,'(a)') '# interpolated from pentads to daily values'
         write(10+i,'(a)') '# institution :: NOAA/NCEP/CPC'

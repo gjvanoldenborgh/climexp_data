@@ -14,44 +14,44 @@ for type in anom mean
 do
     i=1981
     file=$0
-    file=sst.day.${type}.$i.v2.nc
+    file=sst.day.${type}.$i.nc
     [ $i -ge $((yr-1)) -o ! -s $file ] && wget -q -N $base/$file
     while [ -s $file ]; do
-        if [ ! -s sst.month.${type}.$i.nc -o sst.month.${type}.$i.nc -ot sst.day.${type}.$i.v2.nc ]; then
+        if [ ! -s sst.month.${type}.$i.nc -o sst.month.${type}.$i.nc -ot sst.day.${type}.$i.nc ]; then
             if [ $tool = cdo ]; then
-                cdo -r -f nc4 -z zip monmean sst.day.${type}.$i.v2.nc aap.nc
+                cdo -r -f nc4 -z zip monmean sst.day.${type}.$i.nc aap.nc
                 if [ $i = 1981 ]; then
                     cdo -r -f nc4 -z zip settaxis,${i}-09-15,0:00,1mon aap.nc sst.month.${type}.$i.nc
                 else
                     cdo -r -f nc4 -z zip settaxis,${i}-01-15,0:00,1mon aap.nc sst.month.${type}.$i.nc
                 fi
             else
-                daily2longerfield sst.day.${type}.$i.v2.nc 12 mean add_persist sst.month.${type}.$i.nc
+                daily2longerfield sst.day.${type}.$i.nc 12 mean add_persist sst.month.${type}.$i.nc
             fi
         fi
-        if [ ! -s sst.day.${type}.$i.05.nc -o sst.day.${type}.$i.05.nc -ot sst.day.${type}.$i.v2.nc ]; then
+        if [ ! -s sst.day.${type}.$i.05.nc -o sst.day.${type}.$i.05.nc -ot sst.day.${type}.$i.nc ]; then
             if [ $tool = cdo ]; then
-                cdo -r -f nc4 -z zip remapbil,r720x360 sst.day.${type}.$i.v2.nc sst.day.${type}.$i.05.nc
+                cdo -r -f nc4 -z zip remapbil,r720x360 sst.day.${type}.$i.nc sst.day.${type}.$i.05.nc
             else
-                averagefieldspace sst.day.${type}.$i.v2.nc 2 2 sst.day.${type}.$i.05.nc
+                averagefieldspace sst.day.${type}.$i.nc 2 2 sst.day.${type}.$i.05.nc
             fi
         fi
         if [ $type = anom ]; then
-            if [ ! -s nino12_daily_$i.dat -o nino12_daily_$i.dat -ot sst.day.${type}.$i.v2.nc ]; then
-                get_index sst.day.${type}.$i.v2.nc 270 280 -10 0 > nino12_daily_$i.dat
+            if [ ! -s nino12_daily_$i.dat -o nino12_daily_$i.dat -ot sst.day.${type}.$i.nc ]; then
+                get_index sst.day.${type}.$i.nc 270 280 -10 0 > nino12_daily_$i.dat
             fi
-            if [ ! -s nino3_daily_$i.dat -o nino3_daily_$i.dat -ot sst.day.${type}.$i.v2.nc ]; then
-                get_index sst.day.${type}.$i.v2.nc 210 270 -5 5 > nino3_daily_$i.dat
+            if [ ! -s nino3_daily_$i.dat -o nino3_daily_$i.dat -ot sst.day.${type}.$i.nc ]; then
+                get_index sst.day.${type}.$i.nc 210 270 -5 5 > nino3_daily_$i.dat
             fi
-            if [ ! -s nino34_daily_$i.dat -o nino34_daily_$i.dat -ot sst.day.${type}.$i.v2.nc ]; then
-                get_index sst.day.${type}.$i.v2.nc 190 240 -5 5 > nino34_daily_$i.dat
+            if [ ! -s nino34_daily_$i.dat -o nino34_daily_$i.dat -ot sst.day.${type}.$i.nc ]; then
+                get_index sst.day.${type}.$i.nc 190 240 -5 5 > nino34_daily_$i.dat
             fi
-            if [ ! -s nino4_daily_$i.dat -o nino4_daily_$i.dat -ot sst.day.${type}.$i.v2.nc ]; then
-                get_index sst.day.${type}.$i.v2.nc 160 210 -5 5 > nino4_daily_$i.dat
+            if [ ! -s nino4_daily_$i.dat -o nino4_daily_$i.dat -ot sst.day.${type}.$i.nc ]; then
+                get_index sst.day.${type}.$i.nc 160 210 -5 5 > nino4_daily_$i.dat
             fi
         fi
         i=$((i+1))
-        file=sst.day.${type}.$i.v2.nc
+        file=sst.day.${type}.$i.nc
         [ $i -ge $((yr-1)) -o ! -s $file ] && wget -q -N $base/$file
     done
     cdo -r -f nc4 -z zip copy sst.month.${type}.*.nc oisst_v2_${type}_monthly.nc

@@ -81,7 +81,7 @@ fi
 # merged dataset
 base=http://www1.ncdc.noaa.gov/pub/data/ghcn/blended/
 file=ncdc-merged-sfc-mntp
-wget -q -N $base/$file.dat.gz
+wget -q -N --no-check-certificate $base/$file.dat.gz
 echo gunzipping $file.dat.gz 
 cp $file.dat $file.dat.old
 gunzip -c $file.dat.gz > $file.dat

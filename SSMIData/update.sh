@@ -1,23 +1,34 @@
 #!/bin/sh
+download=true
+if [ "$1" = nodownload ]; then
+    download=false
+fi
 
 # RSS data
 
 base=ftp://ftp.remss.com/msu/data/netcdf
-version=v3_3
-for layer in tlt # tmt tts tls
+for version in V3_3 V4_0
 do
-  for anom in _anom ""
-  do
-    wget -q -N $base/rss_tb${anom}_maps_ch_${layer}_${version}.nc
-    ncks -O -v brightness_temperature rss_tb${anom}_maps_ch_${layer}_${version}.nc rss_$layer$anom.nc
-    ncrename -v brightness_temperature,$layer -v months,time -d months,time rss_$layer$anom.nc
-    ncatted -a units,longitude,m,c,"degrees_east" -a units,latitude,m,c,"degrees_north" rss_$layer$anom.nc
-    $HOME/NINO/copyfiles.sh rss_$layer$anom.nc
-  done
+    for layer in TLT # tmt tts tls
+    do
+        for anom in "" _Anom
+        do
+            infile=rss_Tb${anom}_Maps_ch_${layer}_${version}.nc
+            [ "$download" != false -o ! -s $infile ] && wget -q -N --user=oldenborgh@knmi.nl --password=oldenborgh@knmi.nl $base/$infile
+            file=`echo rss_$layer${anom}_$version.nc | tr '[:upper:]' '[:lower:]'`
+            ncks -O -v brightness_temperature $infile $file
+            ncrename -v brightness_temperature,$layer -v months,time -d months,time $file
+            # does not work due to a bug in ncrename
+            ###ncrename -a REFERENCES,references -a HISTORY,history -a INSTITUTION,institution -a TITLE,title $file
+            ncatted -a units,longitude,m,c,"degrees_east" -a units,latitude,m,c,"degrees_north" $file
+            . $HOME/climexp/add_climexp_url_field.cgi
+            $HOME/NINO/copyfiles.sh $file
+        done
+    done
 done
-get_index rss_tlt_anom.nc 0 360 -90 90 > rss_tlt_gl.dat
-get_index rss_tlt_anom.nc 0 360 -90  0 > rss_tlt_sh.dat
-get_index rss_tlt_anom.nc 0 360   0 90 > rss_tlt_nh.dat
+get_index $file 0 360 -90 90 > rss_tlt_gl.dat
+get_index $file 0 360 -90  0 > rss_tlt_sh.dat
+get_index $file 0 360   0 90 > rss_tlt_nh.dat
 $HOME/NINO/copyfilesall.sh rss_tlt_??.dat
 
 exit

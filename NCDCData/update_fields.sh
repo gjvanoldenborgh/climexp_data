@@ -3,6 +3,29 @@ if [ "$1" = force ]; then
     force=true
 fi
 
+# new merged dataset
+base=ftp://ftp.ncdc.noaa.gov/pub/data/noaaglobaltemp/operational/gridded/
+###file=`curl $base | fgrep asc.gz | sed -e 's/.*href="//' -e 's/asc.gz".*$//'`
+file=`curl $base | fgrep asc.gz | sed -e 's/^.* NOAA/NOAA/' -e 's/\.asc\.gz//'`
+wget -q -N --no-check-certificate $base/$file.asc.gz
+cp $file.asc $file.asc.old
+gunzip -c $file.asc.gz > $file.asc
+cmp $file.asc $file.asc.old
+if [ $? != 0 -o "$force" = true ]; then
+    make ncdc2grads4
+    ./ncdc2grads4 $file.asc
+    newfile=`echo $file | sed -e 's/\.v.*$//'`
+    version=`echo $file | sed -e 's/^.*\.v//' -e 's/\.20.*$//'`
+    grads2nc t_anom.ctl $newfile.nc
+    ncatted -h -a title,global,m,c,"NOAA/NCEI Land and Ocean Temperature Anomalies v$version" \
+            -a institution,global,m,c,"NOAA/NCEI" \
+            -a source_url,global,a,c,"https://www.ncdc.noaa.gov/data-access/marineocean-data/noaa-global-surface-temperature-noaaglobaltemp" \
+            $newfile.nc
+    file=$newfile.nc
+	. $HOME/climexp/add_climexp_url_field.cgi
+	$HOME/NINO/copyfiles.sh $file
+fi
+
 # ERSST v4,5
 for version in v5 v4
 do
@@ -78,7 +101,7 @@ if [ -n "$file" ]; then
 	fi
 fi
 
-# merged dataset
+# old merged version, turns out to be uniofficial
 base=http://www1.ncdc.noaa.gov/pub/data/ghcn/blended/
 file=ncdc-merged-sfc-mntp
 wget -q -N --no-check-certificate $base/$file.dat.gz

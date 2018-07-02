@@ -18,6 +18,7 @@ lastyr=$((thisyr-1))
 
 for res in 10 25
 do
+    base=ftp://ftp.dwd.de/pub/data/gpcc/monitoring_v6
     yr=1982
     files=""
     ffiles=""
@@ -26,11 +27,11 @@ do
     echo "Updating the $res monitoring analysis"
     while [ $yr -le $lastyr ]; do
         for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
-            file=monitoring_v5_${res}_${yr}_$mo.nc
+            file=monitoring_v6_${res}_${yr}_$mo.nc
     	    if [ $debug = false -o stillok = true ]; then
     	        if [ ! -s $file.gz ]; then
-    	            echo "wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz"
-        	        wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/monitoring_v5/$yr/$file.gz
+    	            echo "wget -q $wgetflags -N $base/$yr/$file.gz"
+        	        wget -q $wgetflags -N $base/$yr/$file.gz
         	        if [ -s $file.gz ]; then
         	            echo "Downloaded $file.gz"
         	        else
@@ -54,14 +55,15 @@ do
 	stillok=true
 	if [ $res = 10 ]; then
         echo "Updating the $res first guess analysis"
+        base=ftp://ftp.dwd.de/pub/data/gpcc/first_guess
 	    for yr in $lastyr $thisyr; do
             for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
-	            if [ ! -s monitoring_v5_${res}_${yr}_$mo.nc ]; then
+	            if [ ! -s monitoring_v6_${res}_${yr}_$mo.nc ]; then
 	                file=first_guess_monthly_${yr}_$mo.nc
             	    if [ $debug = false -a $stillok = true ]; then
             	        if [ ! -s $file.gz ]; then
                 	        ###echo "wget -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz"
-                    		wget -q $wgetflags -N ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess/$yr/$file.gz
+                    		wget -q $wgetflags -N $base/$yr/$file.gz
                     		if [ -s $file.gz ]; then
                     		    echo "Downloaded $file.gz"
                     		else
@@ -83,11 +85,11 @@ do
     		done
 		done
 	fi
+
 	if [ $doit = true -o "$force" = true ]; then
 	    ###set -x
 	    echo "Making gpcc_${res}_mon.nc"
         cdo -r -f nc4 -z zip copy $files gpcc_${res}_mon_all.nc
-        ncatted -a units,lat,m,c,"degrees_north" gpcc_${res}_mon_all.nc
         cdo -r -f nc4 -z zip selvar,p gpcc_${res}_mon_all.nc gpcc_${res}_mon.nc
         cdo -r -f nc4 -z zip selvar,s gpcc_${res}_mon_all.nc gpcc_${res}_n_mon.nc
         if [ $res = 10 ]; then
@@ -122,14 +124,13 @@ do
         done
         $HOME/NINO/copyfilesall.sh gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
 	    echo "Making gpcc_${res}_combined.nc"
-        cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_mon.nc gpcc_${res}_mon1.nc
-        cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
-        cdo -r -f nc4 -z zip seldate,2014-01-01,2100-12-31 gpcc_${res}_n1_mon.nc gpcc_${res}_n1_mon1.nc
-        cdo -r -f nc4 -z zip copy gpcc_V7_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
+        cdo -r -f nc4 -z zip seldate,2017-01-01,2100-12-31 gpcc_${res}_mon.nc gpcc_${res}_mon1.nc
+        cdo -r -f nc4 -z zip copy gpcc_V8_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
+        cdo -r -f nc4 -z zip seldate,2017-01-01,2100-12-31 gpcc_${res}_n1_mon.nc gpcc_${res}_n1_mon1.nc
+        cdo -r -f nc4 -z zip copy gpcc_V8_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
         for file in gpcc_${res}*combined.nc; do
             if [ $res = 10 ]; then
                 ncatted -h -a title,global,a,c," combined with the GPCC monitoring and first guess product" \
-                        -a long_name,prcp,o,c,"precipitation" \
                         -a institution,global,a,c," and KNMI (merging)" \
                         -a geospatial_lat_resolution,global,a,f,1.0 \
                         -a geospatial_lon_resolution,global,a,f,1.0 \
@@ -137,7 +138,6 @@ do
                         -a geospatial_lat_units,global,a,c,"degrees_north" $file
             else
                 ncatted -h -a title,global,a,c," combined with the GPCC monitoring product" \
-                        -a long_name,prcp,o,c,"precipitation" \
                         -a institution,global,a,c," and KNMI (merging)" \
                         -a geospatial_lat_resolution,global,a,f,2.5 \
                         -a geospatial_lon_resolution,global,a,f,2.5 \

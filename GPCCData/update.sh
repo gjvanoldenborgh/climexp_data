@@ -90,6 +90,7 @@ do
 	    ###set -x
 	    echo "Making gpcc_${res}_mon.nc"
         cdo -r -f nc4 -z zip copy $files gpcc_${res}_mon_all.nc
+        ncatted -a units,lat,m,c,"degrees_north" gpcc_${res}_mon_all.nc
         cdo -r -f nc4 -z zip selvar,p gpcc_${res}_mon_all.nc gpcc_${res}_mon.nc
         cdo -r -f nc4 -z zip selvar,s gpcc_${res}_mon_all.nc gpcc_${res}_n_mon.nc
         if [ $res = 10 ]; then

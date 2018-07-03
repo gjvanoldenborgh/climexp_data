@@ -9,6 +9,7 @@ do
         wget -N $base/$file.gz
         gunzip -c $file.gz > $file
     fi
+    ncatted -a units,lat,m,c,"degrees_north" $file
     cdo -r -f nc4 -z zip selvar,precip $file gpcc_V8_${res}.nc
     cdo -r -f nc4 -z zip selvar,numgauge $file gpcc_V8_${res}_n.nc
     cdo -r -f nc4 -z zip ifthen gpcc_V8_${res}_n.nc gpcc_V8_${res}.nc gpcc_V8_${res}_n1.nc

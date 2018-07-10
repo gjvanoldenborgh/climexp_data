@@ -24,20 +24,23 @@ while [ $yr -lt $yrnow -a $ok = true ]; do
 done
 ok=true
 prelimfiles=""
+base=http://olr.umd.edu/CDR/Daily/${version}-interim
 while [ $yr -lt $yrnow -a $ok = true ]; do
-    wget -q -N http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc
-    if [ ! -s olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc ]; then
+    file=olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc
+    wget -q -N $base/$file
+    if [ ! -s $file ]; then
         ok=false
         echo "$0: something went wrong in retrieving http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc"
         exit -1
     else
-        prelimfiles="$prelimfiles olr-daily_${version}-preliminary_${yr}0101_${yr}1231.nc"
+        prelimfiles="$prelimfiles $file"
         ((yr++))
     fi
 done
 
-wget -N -q http://olr.umd.edu/CDR/Daily/${version}-interim/olr-daily_${version}-preliminary_${yrnow}0101_latest.nc
-prelimfiles="$prelimfiles ${version}-interim/olr-daily_${version}-preliminary_${yrnow}0101_latest.nc"
+file=olr-daily_${version}-preliminary_${yrnow}0101_latest.nc
+wget -N -q $base/$file
+prelimfiles="$prelimfiles $file"
 cdo -r -f nc4 -z zip copy olr-daily_${version}_????0101_????1231.nc $prelimfiles umd_olr_dy.nc
 file=umd_olr_dy.nc
 . $HOME/climexp/add_climexp_url_field.cgi

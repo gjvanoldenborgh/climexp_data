@@ -7,14 +7,20 @@ mo=`date -d "last month" +%m`
 wget --no-check-certificate --save-cookies cookie_file --post-data="email=oldenborgh@knmi.nl&passwd=rEjESwPQ&action=login" https://rda.ucar.edu/cgi-bin/login
 
 set -x
-wget --no-check-certificate --load-cookies cookie_file -O ds010_1.ascii.gz http://rda.ucar.edu/cgi-bin/dattore/subgrid\?sd=189901\&ed=$yr$mo\&of=ascii\&c=gz\&t=monthly\&d=010.1\&i=molydata.bin\&if=slp
-c=`file ds010_1.ascii.gz | fgrep -c zip`
-if [ $c != 1 ]; then
-    echo "$0: error: something went wrong"
-    exit -1
+mv ds010_1.ascii ds010_1.ascii.old
+if [ "$compressed" = true ]; then
+    wget --no-check-certificate --load-cookies cookie_file -O ds010_1.ascii.gz \
+        https://rda.ucar.edu/cgi-bin/dattore/subgrid\?sd=189901\&ed=$yr$mo\&of=ascii\&c=gz\&t=monthly\&d=010.1\&i=molydata.bin\&if=slp
+    c=`file ds010_1.ascii.gz | fgrep -c zip`
+    if [ $c != 1 ]; then
+        echo "$0: error: something went wrong"
+        exit -1
+    fi
+    gunzip -c ds010_1.ascii.gz > ds010_1.ascii
+else
+    wget --no-check-certificate --load-cookies cookie_file -O ds010_1.ascii \
+        https://rda.ucar.edu/cgi-bin/dattore/subgrid\?sd=189901\&ed=$yr$mo\&of=ascii\&c=none\&t=monthly\&d=010.1\&i=molydata.bin\&if=slp
 fi
-cp ds010_1.ascii ds010_1.ascii.old
-gunzip -c ds010_1.ascii.gz > ds010_1.ascii
 cmp ds010_1.ascii ds010_1.ascii.old
 if [ $? != 0 -o "$force" = true ]; then
     make ascii2dat

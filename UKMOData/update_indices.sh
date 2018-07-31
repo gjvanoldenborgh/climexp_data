@@ -178,16 +178,19 @@ $HOME/NINO/copyfiles.sh cet_max.dat
 cp cetdl1772on.dat cetdl1772on.dat.old
 wget -q -N http://www.metoffice.gov.uk/hadobs/hadcet/cetdl1772on.dat
 ./dailycet2dat cetdl1772on.dat > daily_cet.dat
+./extend_cet.sh mean
 $HOME/NINO/copyfiles.sh daily_cet.dat
 
 cp cetmindly1878on_urbadj4.dat cetmindly1878on_urbadj4.dat.old
 wget -q -N http://www.metoffice.gov.uk/hadobs/hadcet/cetmindly1878on_urbadj4.dat
 ./dailycet2dat cetmindly1878on_urbadj4.dat > daily_cet_min.dat
+./extend_cet.sh min
 $HOME/NINO/copyfiles.sh daily_cet_min.dat
 
 cp cetmaxdly1878on_urbadj4.dat cetmaxdly1878on_urbadj4.dat.old
 wget -q -N http://www.metoffice.gov.uk/hadobs/hadcet/cetmaxdly1878on_urbadj4.dat
 ./dailycet2dat cetmaxdly1878on_urbadj4.dat > daily_cet_max.dat
+./extend_cet.sh max
 $HOME/NINO/copyfiles.sh daily_cet_max.dat
 
 # precipitation

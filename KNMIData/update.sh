@@ -23,7 +23,7 @@ do
     c=`cat etmgeg_$station.txt | wc -c`
     if [ $c -lt 2000 ]; then
       echo "Something went wrong while retrieving etmgeg_$station.txt"
-      ls l etmgeg_$station.txt etmgeg_$station.old
+      ls -l etmgeg_$station.txt etmgeg_$station.old
       mv etmgeg_$station.old etmgeg_$station.txt
     fi
 done

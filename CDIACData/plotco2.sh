@@ -1,7 +1,7 @@
 #!/bin/sh
 # make a few nice plots
 
-daily2longer maunaloa_f.dat 1 mean add_trend > maunaloa_f_mean1.dat
+daily2longer maunaloa_f.dat -1 mean add_trend > maunaloa_f_mean1.dat
 diffdat maunaloa_f_mean1.dat 2 > diff_maunaloa_mean1.dat
 diffdat co2_annual.dat 2 > diff_co2_annual.dat
 for scen in RCP3PD RCP45 RCP6 RCP85

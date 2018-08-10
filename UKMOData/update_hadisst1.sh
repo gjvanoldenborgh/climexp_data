@@ -8,14 +8,15 @@ for var in sst ice; do
         sst) ncvar=sst;;
         ice) ncvar=sic;;
     esac
-    echo "wget $base/HadISST_$var.nc.gz"
+    echo "$wget $base/HadISST_$var.nc.gz"
     $wget $base/HadISST_$var.nc.gz
-    gunzip -c HadISST_$var.nc.gz > aap.nc
-    $cdo selvar,$ncvar aap.nc HadISST_$var.nc
+    gunzip -c HadISST_$var.nc.gz > HadISST1_${var}_tmp.nc
+    $cdo -selvar,$ncvar -setctomiss,-1000. HadISST1_${var}_tmp.nc HadISST_$var.nc
+    file=HadISST_$var.nc
     . $HOME/climexp/add_climexp_url_field.cgi
     $HOME/NINO/copyfiles.sh HadISST_$var.nc
 done
-rm aap.nc
+rm HadISST1_${var}_tmp.nc
 
 ./makenino.sh
 ./make_iod.sh

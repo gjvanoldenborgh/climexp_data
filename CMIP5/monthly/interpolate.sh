@@ -9,6 +9,12 @@ else
     echo "$0: error: unnown time scale $timescale"
 fi
 
+if [ `uname` = Darwin ]; then
+    stat=gstat
+else
+    stat=stat
+fi
+
 ares=144
 amap=144x72grid.txt
 amap1=1x72grid.txt
@@ -146,8 +152,8 @@ do
 							imax=$i
 							oldfile=$file
 							# bloody MOS does not have creation dates!
-							ageold=`stat -L --printf=%Y $oldfile`
-							agenew=`stat -L --printf=%Y $newfile`
+							ageold=`$stat -L --printf=%Y $oldfile`
+							agenew=`$stat -L --printf=%Y $newfile`
 							agenew=$((agenew+deltat)) # often it is copied to MOS before the old file :-(
 							if [ "$lwrite" = true ]; then
 								echo "ageold=$ageold $oldfile"
@@ -277,8 +283,8 @@ do
 						if [ ! -s $avefile -a ! -L $avefile ]; then
 							doit=true
 						else
-							age=`stat -L --printf=%Y $file`
-							ageave=`stat -L --printf=%Y $avefile`
+							age=`$stat -L --printf=%Y $file`
+							ageave=`$stat -L --printf=%Y $avefile`
 							ageave=$((ageave+deltat)) # often it is copied to MOS before the old file :-(
 							if [ "$lwrite" = true ]; then
 								echo "age 0 =$age $file"
@@ -368,8 +374,8 @@ do
 		do
 			# and compute average only if necessary
 			if [ -s $file ]; then
-				age=`stat -L --printf=%Y $file`
-				ageave=`stat -L --printf=%Y $avefile`
+				age=`$stat -L --printf=%Y $file`
+				ageave=`$stat -L --printf=%Y $avefile`
 				ageave=$((ageave+10*deltat)) # often it is copied to MOS before the old file :-(
 				if [ "$lwrite" = true ]; then
 					echo "age 1 =$age $file"
@@ -428,8 +434,8 @@ do
 		do
 			#  compute average only if necessary
 			if [ -s $file ]; then
-				age=`stat -L --printf=%Y $file`
-				ageave=`stat -L --printf=%Y $avefile`
+				age=`$stat -L --printf=%Y $file`
+				ageave=`$stat -L --printf=%Y $avefile`
 				ageave=$((ageave+10*deltat)) # often it is copied to MOS before the old file :-(
 				if [ "$lwrite" = true ]; then
 					echo "age 2 =$age $file"
@@ -481,7 +487,7 @@ do
 		for file in $files
 		do
 			if [ -s $file ]; then
-				# if switched on, use stat to compute times...
+				# if switched on, use $stat to compute times...
 				if [ ! -s $medianfile -o $file -nt $medianfile ]; then
 					doit=true
 				fi

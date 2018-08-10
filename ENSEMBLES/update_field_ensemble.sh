@@ -16,12 +16,12 @@ enddate="" # "2017-08-31" # keep empty when shortening is not needed "2013-12-31
 nextdate="" # "2017-09-01" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
 
 cdoflags="-r -f nc4 -z zip"
-wgetflags="-q --no-check-certificate"
+wgetflags="-N --no-check-certificate"
 
 yr=`date -d "last month" "+%Y"`
 for var in rr tg tn tx pp # rr tg tn tx pp # tg tn tx pp
 do
-  for res in 0.25 0.1
+  for res in 0.25 # 0.1 too big for my computers
   do
     base=http://www.ecad.eu/download/ensembles/data/Grid_${res}deg_reg_ensemble/
     file=${var}_ens_mean_${res}deg_reg_$version.nc

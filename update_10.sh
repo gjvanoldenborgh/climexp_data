@@ -121,7 +121,7 @@ echo @@@ ECA
 (cd ECAData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ E-OBS
-(cd ENSEMBLES; ./update_field.sh | 2>&1 tee update.log)
+(cd ENSEMBLES; ./update_field_ensemble.sh | 2>&1 tee update.log)
 
 echo @@@ GHCN
 (cd NCDCData; ./update_series_v2.sh | 2>&1 tee update_series.log)

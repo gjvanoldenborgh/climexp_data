@@ -1,13 +1,13 @@
 #!/bin/sh
 export PATH=/usr/local/free/bin:$HOME/climexp/bin:$PATH
-firstfile=`ls -t ??_0.25deg_reg_v*u.nc | head -1`
+firstfile=`ls -t ??_0.25deg_reg_v*eu.nc | head -1`
 version=${firstfile#*_reg_}
 version=${version%u.nc}
 echo "version=$version"
 daypath=/net/eobsdata/nobackup/users/besselaa/Data/Gridding/Daily/Rupdates/
 cdo="cdo -r -f nc4 -z zip"
 
-for res in 0.25 # only one
+for res in 0.25 # 0.1 takes too much memory
 do
     for var in rr tg tn tx;
     do

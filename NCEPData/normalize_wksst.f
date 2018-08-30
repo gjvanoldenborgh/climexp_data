@@ -35,7 +35,8 @@
         do i=1,2000
             read(1,'(a)',err=900,end=100) line
  2000       format(i3,a3,i4,f9.1,f4.1,f9.1,f4.1,f9.1,f4.1,f9.1,f4.1)
-            read(line,2000) day,amonth,year,((nino(k,j,i),k=1,2),j=2,5)
+            read(line,2000,err=902) 
+     +          day,amonth,year,((nino(k,j,i),k=1,2),j=2,5)
             month = index(months,amonth)/4 + 1
             date(1,i) = day
             date(2,i) = month
@@ -133,10 +134,13 @@
 *
 *       error messages
 *
-        stop
+        goto 999
   900   print *,'error reading weekly data on file '
      +        ,weekfile(1:index(weekfile,' ')-1)
-        stop
+        goto 999
   901   print *,'error reading monthly data on file '
      +        ,monthfile(1:index(monthfile,' ')-1)
+        goto 999
+  902   print *,'error reading data from line ',trim(line)
+  999   continue
         end

@@ -1,5 +1,8 @@
 #!/bin/sh
 export PATH=/usr/local/free/bin:$HOME/climexp/bin:$PATH
+if [ `uname` = linux ]; then 
+    ulimit -s unlimited
+fi
 firstfile=`ls -t ??_0.25deg_reg_v*eu.nc | head -1`
 version=${firstfile#*_reg_}
 version=${version%u.nc}

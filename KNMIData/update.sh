@@ -1,6 +1,9 @@
 #!/bin/sh
 export PATH=$PATH:$HOME/climexp/bin/
-sudo mount /data/web/www2
+if [ `uname` = linux ]; then 
+    sudo mount /data/web/www2
+    ulimit -s unlimited
+fi
 ###dat2dat etmgeg_260_2001.dat
 ###for file in datafiles2/???/*.zip
 ###do

@@ -1,5 +1,8 @@
 #!/bin/sh
 export PATH=$PATH:/usr/local/free/bin:$HOME/climexp/bin
+if [ `uname` = linux ]; then 
+    ulimit -s unlimited
+fi
 # get the CMORPH 1.0 data once
 if [ ! -s downloaded_old_cmorph_data ]; then
     wget -q -N -r ftp://ftp.cpc.ncep.noaa.gov/precip/CMORPH_V1.0/RAW/0.25deg-DLY_00Z/

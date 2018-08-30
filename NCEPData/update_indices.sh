@@ -41,7 +41,7 @@ if [ $? != 0 ]; then
   pnmcrop plotninoweek.ppm | pnmscale 0.319 | pnmcut -left=1 | pnmtopng > ! plotninoweek.png
   rm -f plotninoweek.ppm
   epstopdf plotninoweek.eps
-  cp -f plotninoweek.png /usr/people/oldenbor/www2/research/global_climate/enso
+  ###cp -f plotninoweek.png /usr/people/oldenbor/www2/research/global_climate/enso
   ./ninoweek2daily
   for index in nino2 nino3 nino4 nino5
   do

@@ -1,21 +1,23 @@
-!  #[ getgetargs:
+!  #[ getget_command_arguments:
 !       support function common to getprpcp and gettemp
 !       Geert Jan van Oldenborgh, KNMI, 1999-2000
 !
 subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
- &        ,ifac,nmin,rmin,elevmin,elevmax,qcflag,list,nl,nlist)
+         ,ifac,nmin,rmin,elevmin,elevmax,qcflag,list,nl,nlist,polygon,npol)
     implicit none
-    integer n,nn,ifac,nmin(0:48),nl,nlist,narg
-    character sname*(*),station*11,list(nl)*11,qcflag*1,minnum*20
-    real slat,slon,slat1,slon1,rmin,elevmin,elevmax
+    integer :: n,nn,ifac,nmin(0:48),nl,nlist,narg,npol
+    character :: sname*(*),station*11,list(nl)*11,qcflag*1,minnum*20
+    real :: slat,slon,slat1,slon1,rmin,elevmin,elevmax
+    double precision :: polygon(2,npol)
 !
-    integer i,j,mon,lsum,m
-    character string*80
-    integer iargc
-    character months(12)*3
+    integer :: i,j,mon,lsum,m,npolmax
+    character :: string*80
+    logical :: lwrite
+    character :: months(12)*3
     data months /'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'     &
- &        ,'Sep','Oct','Nov','Dec'/
+         ,'Sep','Oct','Nov','Dec'/
 !
+    lwrite = .false.
     sname = ' '
     slat1 = 3e33
     slon1 = 3e33
@@ -29,22 +31,24 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
     mon = -1
     lsum = 1
     qcflag = 'O'
+    npolmax = npol
+    npol = 0
 !
     narg = 9999
-    call getarg(1,string)
+    call get_command_argument(1,string)
     minnum=""
-    if ( iargc() >= 3 ) call getarg(2,minnum)
-    if ( iargc() == 1 .or. minnum(1:3) == 'min' .or. minnum(1:4) == 'elev' ) then
+    if ( command_argument_count() >= 3 ) call get_command_argument(2,minnum)
+    if ( command_argument_count() == 1 .or. minnum(1:3) == 'min' .or. minnum(1:4) == 'elev' ) then
 !       is it a station ID?  I demand 11 letters, no spaces
 !       and at least 1 digit
-        if ( iargc() == 1 .and. len_trim(string) == 11 .and.           &
- &           index(string(1:11),' ') == 0 .and. (                      &
- &           index(string,'0') /= 0 .or. index(string,'1') /= 0 .or.   &
- &           index(string,'2') /= 0 .or. index(string,'3') /= 0 .or.   &
- &           index(string,'4') /= 0 .or. index(string,'5') /= 0 .or.   &
- &           index(string,'6') /= 0 .or. index(string,'7') /= 0 .or.   &
- &           index(string,'8') /= 0 .or. index(string,'9') /= 0 ) )    &
- &           then
+        if ( command_argument_count() == 1 .and. len_trim(string) == 11 .and.           &
+            index(string(1:11),' ') == 0 .and. (                      &
+            index(string,'0') /= 0 .or. index(string,'1') /= 0 .or.   &
+            index(string,'2') /= 0 .or. index(string,'3') /= 0 .or.   &
+            index(string,'4') /= 0 .or. index(string,'5') /= 0 .or.   &
+            index(string,'6') /= 0 .or. index(string,'7') /= 0 .or.   &
+            index(string,'8') /= 0 .or. index(string,'9') /= 0 ) )    &
+                then
             station = string
             n = 1
         else
@@ -56,12 +60,12 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
             enddo
             print *,'Looking for stations with substring ',trim(sname)
             n = 0
-            if ( iargc() > 1 ) then
+            if ( command_argument_count() > 1 ) then
                 narg = 2
             end if
         endif
     elseif ( string(1:4) == 'list' ) then
-        call getarg(2,string)
+        call get_command_argument(2,string)
         print '(2a)','Reading stationlist from file ',trim(string)
         open(1,file=trim(string),status='old')
 10      continue
@@ -70,8 +74,8 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
         if ( index(string(1:2),'#') /= 0 .or. index(string(1:2),'?') /= 0 ) then
             read(string(3:),*,err=18) slon,slon1,slat,slat1
             print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,a)'                 &
- &                    ,'Searching for stations in ',slat,'N:',      &
- &                      slat1,'N, ',slon,'E:',slon1,'E'
+                     ,'Searching for stations in ',slat,'N:',      &
+                       slat1,'N, ',slon,'E:',slon1,'E'
 18          continue
         else
             nlist = nlist + 1
@@ -92,12 +96,18 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
         station = '-1'
         if ( nlist == 0 ) then
             print *,'could not locate any stations'
-            stop
+            call exit(-1)
         endif
+    elseif ( string(1:7) == 'polygon' ) then
+        call get_command_argument(2,string)
+        print '(2a)','Reading polygon from file ',trim(string)
+        call read_polygon(string,npol,npolmax,polygon,lwrite)
+        narg = 3
+        station = '-1'
     else
         station = '-2'
         n = 10
-        call getarg(1,string)
+        call get_command_argument(1,string)
         i = index(string,':')
         if ( i == 0 ) i = 1 + len_trim(string)
         read(string(:i-1),*,err=900) slat
@@ -108,7 +118,7 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
         else
             station = '-1'
         endif
-        call getarg(2,string)
+        call get_command_argument(2,string)
         i = index(string,':')
         if ( i == 0 ) i = 1 + len_trim(string)
         read(string(:i-1),*,err=901) slon
@@ -124,8 +134,8 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
             endif
         endif
         if ( slat1 < 1e33 .neqv. slon1 < 1e33 ) goto 905
-        if ( iargc() >= 3 ) then
-            call getarg(3,string)
+        if ( command_argument_count() >= 3 ) then
+            call get_command_argument(3,string)
             if (  index(string,'min') == 0 .and.               &
  &                index(string,'elev') == 0 .and.              &
  &                index(string,'dist') == 0 ) then
@@ -142,19 +152,19 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
     end if
     i = narg
 100 continue
-    if ( iargc() >= i+1 ) then
-        call getarg(i,string)
+    if ( command_argument_count() >= i+1 ) then
+        call get_command_argument(i,string)
         if ( index(string,'elevmin') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=907) elevmin
         elseif ( index(string,'elevmax') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=908) elevmax
         elseif ( index(string,'min') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=904) nmin(0)
         elseif ( index(string,'mon') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=904) mon
             if ( mon < 0 .or. mon > 12 ) then
                 write(0,*) 'error: mon = ',12
@@ -170,7 +180,7 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
             endif
             nmin(0) = 0
         elseif ( index(string,'sum') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=904) lsum
             if ( mon == -1 ) then
                 write(0,*) 'please specify mon and sum'
@@ -194,10 +204,10 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
                 endif
             endif
         elseif ( index(string,'dist') /= 0 ) then
-            call getarg(i+1,string)
+            call get_command_argument(i+1,string)
             read(string,*,err=906) rmin
         elseif ( index(string,'qc') /= 0 ) then
-            call getarg(i+1,qcflag)
+            call get_command_argument(i+1,qcflag)
         else
             print *,'error: unrecognized argument: ',string
             call exit(-1)
@@ -206,9 +216,11 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
         goto 100
     endif
 !
-    if ( n > 1 .and. nlist == 0 ) print '(a,i4,a)','Looking up ',n,' stations'
+    if ( n > 1 .and. nlist == 0 .and. npol == 0 ) print '(a,i4,a)','Looking up ',n,' stations'
     if ( (n > 1 .or. slat1 < 1e33) .and. nlist == 0 ) then
-        if ( slat1 > 1e33 ) then
+        if ( npol > 0 ) then
+            print '(2a)','Searching for stations inside polygon ',trim(string)
+        else if ( slat1 > 1e33 ) then
             print '(a,f6.2,a,f7.2,2a)','Searching for stations near ', &
             & slat,'N, ',slon,'E'
         else
@@ -266,7 +278,7 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
     call exit(-1)
 999 continue
 end subroutine
-!  #] getgetargs:
+!  #] getget_command_arguments:
 !  #[ toupper:
 subroutine toupper(string)
     implicit none

@@ -4,6 +4,8 @@ if [ -d /usr/local/free/bin ]; then
 fi
 export PATH=$HOME/climexp/bin:$PATH
 wget="wget -q --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies"
+ulimit -s
+ulimit -s unlimited
 
 # get the research / final run
 

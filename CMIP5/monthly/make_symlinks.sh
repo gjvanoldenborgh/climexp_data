@@ -95,14 +95,14 @@ do
 								exit -1
 							fi
 							link=${var}_${type}_${modelp}_${exp}_$ens.nc
-							###echo "ln -s $file $link"
+							echo "ln -s $file $link"
 							ln -s $file $link
 						fi
 						i=$((i+1))
 					done
 					r=$((r+1))
 				done
-			p=$((p+1))
+			    p=$((p+1))
 			done
 		done
 	done

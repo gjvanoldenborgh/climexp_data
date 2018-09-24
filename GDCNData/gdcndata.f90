@@ -1,37 +1,37 @@
 program gdcndata
 !
-!       get GHCN-D stations near a given coordinate, or with a given name,
-!       or the data
+!   get GHCN-D stations near a given coordinate, or with a given name,
+!   or in a box, or inside a polygon; or get the data
 !
     implicit none
-    integer nn
-    parameter(nn=200000)
-    double precision pi
-    parameter (pi = 3.1415926535897932384626433832795d0)
-    integer i,j,k,jj,kk,n,ldir,nmin(0:48),yr,nok,nlist              &
- &        ,idates(18),iecd,ist,iwm,igsn
-    integer iwmo(nn),firstyr(nn),lastyr(nn),nyr(nn),ind(nn)         &
- &       ,type,tmin,tmax,temp,prcp,mo,dy,ielev,vals(31)             &
- &       ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)     &
- &       ,statbuf(13)
-    real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon      &
- &        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin             &
- &        ,rlatmax,val,elev(nn),distj
-    character name(nn)*30,stations(nn)*11,elevflag(nn)*1,           &
- &       datasource*1,qcflag*1
-    character station*11,id*11,list(nn)*11,id1*8,id2*8,wmo*5
-    character flags1(31)*1,flags2(31)*1,flags3(31)*1,dummy1*1,      &
- &       dummy2*1,tminflags(31)*1,tmaxflags(31)*1
-    character country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4 &
- &       ,units(9)*10,uppercountry*50,longname(9)*60
-    character string*200,line*500,sname*25,history*1000
-    character dir*256,command*1024
-    logical lwrite
-    integer iargc,llen,getcode
+    integer,parameter :: nn=200000
+    double precision,parameter :: pi = 3.1415926535897932384626433832795d0
+    integer :: i,j,k,jj,kk,n,ldir,nmin(0:48),yr,nok,nlist              &
+         ,idates(18),iecd,ist,iwm,igsn
+    integer :: iwmo(nn),firstyr(nn),lastyr(nn),nyr(nn),ind(nn)         &
+        ,type,tmin,tmax,temp,prcp,mo,dy,ielev,vals(31)             &
+        ,tminyr,tminmo,tmaxyr,tmaxmo,tminvals(31),tmaxvals(31)     &
+        ,statbuf(13),npol
+    real :: rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon      &
+         ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin             &
+         ,rlatmax,val,elev(nn),distj,d
+    double precision :: polygon(2,nn),dlon1,dlon2,dlat1,dlat2
+    character :: name(nn)*30,stations(nn)*11,elevflag(nn)*1,           &
+        datasource*1,qcflag*1
+    character :: station*11,id*11,list(nn)*11,id1*8,id2*8,wmo*5
+    character :: flags1(31)*1,flags2(31)*1,flags3(31)*1,dummy1*1,      &
+        dummy2*1,tminflags(31)*1,tmaxflags(31)*1
+    character :: country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4 &
+        ,units(9)*10,uppercountry*50,longname(9)*60
+    character :: string*200,line*500,sname*25,history*1000
+    character :: dir*256,command*1024
+    logical :: lwrite
+    integer,external :: getcode
+    real,external :: in_polygon
     data elements /'TMIN','TEMP','TMAX','PRCP','TAVE','TDIF','PRCP',&
- &       'SNOW','SNWD'/
+        'SNOW','SNWD'/
     data units /'[Celsius]','[Celsius]','[Celsius]','[mm/day]',     &
- &       '[Celsius]','[Celsius]','[mm/day]','[mm/day]','[mm]'/
+        '[Celsius]','[Celsius]','[mm/day]','[mm/day]','[mm]'/
     data longname /'daily minimum temperature','daily mean temperature', &
         'daily maximum temperature','precipitation', &
         'average of minimum and maximum temperature', &
@@ -53,15 +53,17 @@ program gdcndata
     call getenv('LWRITE',string)
     call tolower(string)
     if ( string(1:1) == 't' ) lwrite = .true.
-    if ( iargc() < 1 ) then
-        print '(a)','usage: gdcn{tmin|tmax|prcp|snow|snwd} '//      &
- &            '[lat lon|name] [min years]'
+    if ( command_argument_count() < 1 ) then
+        print '(a)','usage: gdcn{tmin|tmax|prcp|snow|snwd} '// &
+            '{name|lat lon|lat1:lat2 lon1:lon2} [min years]'// &
+            '[elevmin z1] [elevmax z2] [dist D] [begin yr1] [end yr2]'// &
+            '[polygon file.txt]' 
         print *,'gives stationlist with years of data' 
-        print '(a)','       gdcn{tmin|temp|tmax|prcp station_id'
+        print '(a)','       gdcn{tmin|temp|tmax|prcp} station_id'
         print *,'gives data station_id,'
-        stop
+        call exit(-1)
     endif
-    call getarg(0,string)
+    call get_command_argument(0,string)
     if ( index(string,'gdcntemp') /= 0 ) then
         type = 2
     elseif ( index(string,'gdcntmin') /= 0 ) then
@@ -82,11 +84,12 @@ program gdcndata
         type = 9
     else
         print *,'do not know which database to use when running as ' &
- &            ,string(1:llen(string))
+ &            ,trim(string)
         call exit(-1)
     endif
+    npol = nn
     call gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station,1      &
- &        ,nmin,rmin,elevmin,elevmax,qcflag,list,nn,nlist)
+ &        ,nmin,rmin,elevmin,elevmax,qcflag,list,nn,nlist,polygon,npol)
 !       no monthly time information yet
     do i=1,48
         if ( nmin(i) /= 0 ) then
@@ -107,12 +110,12 @@ program gdcndata
     endif
     call getenv('DIR',dir)
     if ( dir /= ' ' ) then
-        ldir = llen(dir)
+        ldir = len_trim(dir)
         dir(ldir+1:) = '/GDCNData/'
     else
         dir = '/usr/people/oldenbor/NINO/GDCNData/'
     endif
-    ldir = llen(dir)
+    ldir = len_trim(dir)
     do i=0,0
         country(i) = 'unknown'
         cc(i) = '  '
@@ -211,11 +214,11 @@ program gdcndata
         uppercountry = country(k)
         call toupper(uppercountry)
         if ( index(name(i),trim(sname)) /= 0 .or.    &
- &           sname(1:1) == '(' .and. index(uppercountry,trim(sname(2:))) /= 0 ) then
+            sname(1:1) == '(' .and. index(uppercountry,trim(sname(2:))) /= 0 ) then
             i = i + 1
             if ( i > nn ) then
                 print *,'Maximum ',nn,' stations'
-                stop
+                call exit(-1)
             endif
         else
             goto 100
@@ -226,22 +229,36 @@ program gdcndata
             i = i + 1
             goto 200
         endif
+    elseif ( npol > 0 ) then
+        ! serch inside a polygon
+        d = in_polygon(polygon,npol,dble(rlon(i)),dble(rlat(i)),' ',lwrite)
+        if ( d > 1e33 ) d = in_polygon(polygon,npol,dble(rlon(i)+0.001d0),dble(rlat(i)),' ',lwrite)
+        if ( d > 1e33 ) d = in_polygon(polygon,npol,dble(rlon(i)),dble(rlat(i)+0.001d0),' ',lwrite)
+        if ( d > 0 .and. d < 1e33 ) then
+            dist(i) = 1 ! anything but 3e33
+            n = i
+            i = i + 1
+            if ( i > nn ) then
+                print *,'Maximum ',nn,' stations'
+                call exit(-1)
+            endif
+        end if
     elseif ( slat1 < 1e33 ) then
 !       look for a station in the box
-        if ( (slon1 > slon .and.                      &
- &            rlon(i) > slon .and. rlon(i) < slon1   &
- &            .or.                                     &
- &            slon1 < slon .and.                      &
- &            (rlon(i) < slon1 .or. rlon(i) > slon)  &
- &            ) .and. (                                &
- &            rlat(i) > min(slat,slat1) .and.         &
- &            rlat(i) < max(slat,slat1) )             &
- &            ) then
+        if ( (slon1 > slon .and.                    &
+             rlon(i) > slon .and. rlon(i) < slon1   &
+             .or.                                   &
+             slon1 < slon .and.                     &
+             (rlon(i) < slon1 .or. rlon(i) > slon)  &
+             ) .and. (                              &
+             rlat(i) > min(slat,slat1) .and.        &
+             rlat(i) < max(slat,slat1) )            &
+             ) then
             dist(i) = 3e33
             do j=1,i-1
                 dlon = min(abs(rlon(i)-rlon(j)),  &
- &                abs(rlon(i)-rlon(j)-360),   &
- &                abs(rlon(i)-rlon(j)+360))
+                    abs(rlon(i)-rlon(j)-360),   &
+                    abs(rlon(i)-rlon(j)+360))
                 distj = (rlat(i)-rlat(j))**2 + (dlon*cos(rlat(i)/180*pi))**2
                 dist(i) = min(dist(i),distj)
             end do
@@ -250,15 +267,15 @@ program gdcndata
                 i = i + 1
                 if ( i > nn ) then
                     print *,'Maximum ',nn,' stations'
-                    stop
+                    call exit(-1)
                 endif
             end if
         endif
     elseif ( station == '-1' .and. sname == ' ' ) then
 !       search closest
         dlon = min(abs(rlon(i)-slon),  &
- &            abs(rlon(i)-slon-360),   &
- &            abs(rlon(i)-slon+360))
+                   abs(rlon(i)-slon-360),   &
+                   abs(rlon(i)-slon+360))
         dist(i) = (rlat(i)-slat)**2 + (dlon*cos(slat/180*pi))**2
         i = i + 1
     else
@@ -281,15 +298,35 @@ program gdcndata
 !   output
     if ( n == 0 ) then
         print '(a)','Cannot locate station'
-        stop
+        call exit(-1)
     endif
-    if ( station(1:1) == '-' ) print '(a,i5,a)','Found ',n,' stations'
+    if ( npol > 0 ) then
+        dlon1 = 3e33
+        dlon2 = -3e33
+        dlat1 = 3e33
+        dlat2 = -3e33
+        do i=1,npol
+            if ( polygon(2,i) < 1e33 ) then
+                dlon1 = min(dlon1,polygon(2,i))
+                dlon2 = max(dlon2,polygon(2,i))
+            end if
+            if ( polygon(1,i) < 1e33 ) then
+                dlat1 = min(dlat1,polygon(1,i))
+                dlat2 = max(dlat2,polygon(1,i))
+            end if
+        end do
+        print '(a,i5,a,f7.2,a,f7.2,a,f7.2,a,f7.2,a)','Found ',n,' stations in ', &
+            real(dlon1),'N:',real(dlon2),'N,',real(dlat1),'E:',real(dlat2),'E'
+    else if ( station(1:1) == '-' ) then
+        print '(a,i5,a)','Found ',n,' stations'
+    end if
     if ( nlist > 0 ) then
         call printbox(rlonmin,rlonmax,rlatmin,rlatmax)
     endif
     nok = 0
     do j=1,nn
-        if ( nlist > 1 .or. station /= '-1' .or. sname /= ' ' .or. slat1 < 1e33 ) then
+        if ( nlist > 1 .or. station /= '-1' .or. sname /= ' ' &
+            .or. slat1 < 1e33 .or. npol > 0 ) then
             jj = j
         else
             jj = ind(j)
@@ -300,7 +337,7 @@ program gdcndata
         if ( nok > n ) goto 800
         if ( station(1:1) == '-' ) print '(a)'  &
  &            ,'=============================================='
-        do k=1,llen(name(jj))
+        do k=1,len_trim(name(jj))
             if ( name(jj)(k:k) == ' ' ) name(jj)(k:k) = '_'
         enddo
         k = getcode(stations(jj)(1:2),cc)
@@ -356,7 +393,7 @@ program gdcndata
             call tolower(element)
             print '(4a)','# climexp_url :: https://climexp.knmi.nl/gdcn',element,'.cgi?WMO=',stations(jj)
             write(dir(ldir+1:),'(3a,i10.10,a)') '/ghcnd/',stations(jj),'.dly.gz'
-            ldir = llen(dir)
+            ldir = len_trim(dir)
             open(2,file=trim(dir),status='old',err=940)
             close(2)
             call mystat(trim(dir),statbuf,i)

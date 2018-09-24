@@ -1,6 +1,9 @@
 #!/bin/sh
 export PATH=$PATH:$HOME/climexp/bin/
-sudo mount /data/web/www2
+if [ `uname` = linux ]; then 
+    sudo mount /data/web/www2
+    ulimit -s unlimited
+fi
 ###dat2dat etmgeg_260_2001.dat
 ###for file in datafiles2/???/*.zip
 ###do
@@ -23,7 +26,7 @@ do
     c=`cat etmgeg_$station.txt | wc -c`
     if [ $c -lt 2000 ]; then
       echo "Something went wrong while retrieving etmgeg_$station.txt"
-      ls l etmgeg_$station.txt etmgeg_$station.old
+      ls -l etmgeg_$station.txt etmgeg_$station.old
       mv etmgeg_$station.old etmgeg_$station.txt
     fi
 done

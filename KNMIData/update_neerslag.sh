@@ -1,19 +1,22 @@
 #!/bin/sh
 # update the 8-8 precipitation data from the volunteer stations
+force=false
+[ "$1" == force ] && force=true
 [ ! -d tmp ] && mkdir tmp
 [ ! -d webreeksen ] && mkdir webreeksen
-wget -q -N http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/neerslaggeg_DE-BILT_550.zip
+wget -q -N https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/neerslaggeg_DE-BILT_550.zip
 cmp neerslaggeg_DE-BILT_550.zip webreeksen/neerslaggeg_DE-BILT_550.zip
-if [ $? != 0 ]; then
-    files=`curl http://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
+if [ $? != 0 -o $force = true ]; then
+    files=`curl https://www.knmi.nl/nederland-nu/klimatologie/monv/reeksen | fgrep .zip | sed -e 's@^.*monv_reeksen/@@' -e 's/zip.*$/zip/'`
     nstations=`echo $files | wc -w`
+    echo "nstations=$nstations"
     ((nstations++)) # Amsterdam filiaal wordt met de hand toegevoegd
     echo "located $nstations stations in 50.0N:54.0N, 3.0E:8.0E" > list_rr.txt
     echo '==============================================' >> list_rr.txt
     echo "located $nstations stations in 50.0N:54.0N, 3.0E:8.0E" > list_sd.txt
     echo '==============================================' >> list_sd.txt
     for file in $files; do
-        wget -q http://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
+        wget -q https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/monv_reeksen/$file
         mv $file webreeksen/
         if [ -s "webreeksen/$file" ]; then
             echo "updating from $file"
@@ -63,7 +66,7 @@ EOF
     do
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/:: //'` 
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'` 
             echo dat2nc $file s "$station" $ncfile
             dat2nc $file i "$station" $ncfile
         fi
@@ -73,7 +76,7 @@ EOF
     do
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/:: //'` 
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'` 
             echo dat2nc $file s "$station" $ncfile
             dat2nc $file i "$station" $ncfile
         fi

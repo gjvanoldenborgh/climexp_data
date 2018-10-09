@@ -21,4 +21,14 @@ do
         fi
     fi
 done
-rsync precip???hom19??.dat.gz precip???hom19??.nc bhlclim:climexp/KNMIData/
+averageseries const precip???hom1910.nc \
+    | sed -e 's/file ::.*$/file :: precip_hom1910_ave.dat/' \
+          -e '/station.*::/d' -e '/longitude ::/d' -e '/latitude :: /d' \
+          -e 's@getdutchpreciphom1910.cgi?WMO=010@getindices.cgi?WMO=KNMIData/precip_hom1910_ave&STATION=pr_hom1910_ave@' \
+    > precip_hom1910_ave.dat
+averageseries const precip???hom1951.nc \
+    | sed -e 's/file ::.*$/file :: precip_hom1910_ave.dat/' \
+          -e '/station.*::/d' -e '/longitude ::/d' -e '/latitude :: /d' \
+          -e 's@getdutchpreciphom1951.cgi?WMO=0..@getindices.cgi?WMO=KNMIData/precip_hom1910_ave&STATION=pr_hom1951_ave@' \
+> precip_hom1951_ave.dat
+rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat bhlclim:climexp/KNMIData/

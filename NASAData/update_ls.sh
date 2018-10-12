@@ -42,7 +42,7 @@ d aave(maskout(tempanomaly,$mask,lon=0,lon=360,lat=-90,lat=90)
 disable fwrite
 quit
 EOF
-    grads2ascii giss_$type.ctl > giss_$type.dat
+    netcdf2ascii giss_$type.ctl > giss_$type.dat
     daily2longer giss_$type.dat 1 mean > giss_${type}_mean1.dat
     $HOME/NINO/copyfilesall.sh giss_$type.dat giss_${type}_mean1.dat
     plotdat giss_${type}_mean1.dat > giss_${type}_mean1.txt

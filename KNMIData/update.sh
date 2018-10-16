@@ -1,4 +1,5 @@
 #!/bin/sh
+sudo mount /data/web/www2
 export PATH=$PATH:$HOME/climexp/bin/
 if [ `uname` = linux ]; then 
     sudo mount /data/web/www2

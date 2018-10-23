@@ -1,7 +1,8 @@
 #!/bin/sh
 ###set -x
 
-echo "Please download the file PIOMAS.vol.daily.1979.*.dat by hand from http://psc.apl.washington.edu/wordpress/research/projects/arctic-sea-ice-volume-anomaly/data/"
+###echo "Please download the file PIOMAS.vol.daily.1979.*.dat by hand from http://psc.apl.washington.edu/wordpress/research/projects/arctic-sea-ice-volume-anomaly/data/"
+wget -N http://psc.apl.uw.edu/wordpress/wp-content/uploads/schweiger/ice_volume/PIOMAS.vol.daily.1979.2018.Current.v2.1.dat.gz
 zfile=`ls -t PIOMAS.vol.daily.1979.*.dat.gz | head -1`
 [ -s "$zfile" ] && gunzip -f $zfile
 file=`ls -t PIOMAS.vol.daily.1979.*.dat | head -1`

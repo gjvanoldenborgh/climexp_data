@@ -72,7 +72,7 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             elif var == "u10" or var == "v10":
                 # shift -1 hr to get the 00, 03, ... 21 values in the correct day
                 command = cdo + " -setname," + var + " -shifttime,-1hour " + file + \
-                    " aap.nc; " + cdo + " -" + oper + " aap.nc + ncfile
+                    " aap.nc; " + cdo + " -" + oper + " aap.nc " + ncfile
             elif var == 'tp' or var == 'evap':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm

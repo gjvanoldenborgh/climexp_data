@@ -12,8 +12,8 @@ if [ $force != true -a -f downloaded_$yr$mo ]; then
   exit
 fi
 if [ 1 = 1 ]; then
-./get_erainterim.py
-./get_erainterim_daily.py
+./get_erainterim.py > get_erainterim.log 2>&1
+./get_erainterim_daily.py > get_erainterim_daily.log 2>&1
 ./make_wspd.sh
 ./update_tglobal.sh
 ./update_twetbulb.sh

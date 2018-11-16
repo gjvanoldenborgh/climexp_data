@@ -66,7 +66,7 @@ done
 $HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
 
 ./update_neerslag.sh
-./labrijn2dat > labrijn.dat
+./labrijn2dat.sh > labrijn.dat
 ./makecnt.sh
 $HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat tg260_mean12.dat
 ./extend_homogenised_precip.sh

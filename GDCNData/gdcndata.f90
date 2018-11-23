@@ -315,10 +315,10 @@ program gdcndata
                 dlat2 = max(dlat2,polygon(1,i))
             end if
         end do
-        print '(a,i5,a,f7.2,a,f7.2,a,f7.2,a,f7.2,a)','Found ',n,' stations in ', &
+        print '(a,i7,a,f7.2,a,f7.2,a,f7.2,a,f7.2,a)','Found ',n,' stations in ', &
             real(dlon1),'N:',real(dlon2),'N,',real(dlat1),'E:',real(dlat2),'E'
     else if ( station(1:1) == '-' ) then
-        print '(a,i5,a)','Found ',n,' stations'
+        print '(a,i7,a)','Found ',n,' stations'
     end if
     if ( nlist > 0 ) then
         call printbox(rlonmin,rlonmax,rlatmin,rlatmax)

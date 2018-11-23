@@ -11,7 +11,7 @@ for var in $vars; do
     esac
     if [ $var != 3d ]; then
         # leave out 2000-2007 as long as it has not yet been downloaded...
-        sourcefiles="$sourcedir/200[89]/mon/era5_${var}_* $sourcedir/201?/mon/era5_${var}_*"
+        sourcefiles="$sourcedir/2???/mon/era5_${var}_*"
         lastfile=`ls -t $sourcefiles | head -n 1`
         file=era5_${var}.nc
         if [ $lastfile -nt $file -o -n "$force" ]; then

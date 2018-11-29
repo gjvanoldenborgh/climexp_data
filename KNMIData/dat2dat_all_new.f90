@@ -237,7 +237,7 @@ program dat2dat
             write(j,'(a)') '# These data have been homogenised.'
             write(j,'(a)') '# reference :: T. Brandsma, Homogenization of daily '// &
                 'temperature data of the five principal stations in the Netherlands (version 1.0)'// &
-                'KNMI TR-356, https://climexp.knmi.nl/publicatiopns/TR_homogeniseren_dag.pdf.'
+                'KNMI TR-356, https://climexp.knmi.nl/publications/TR_homogeniseren_dag.pdf.'
         else
             write(j,'(a)') '# These data have not been corrected for changes' &
                 //' in observing practices and the surroundings'

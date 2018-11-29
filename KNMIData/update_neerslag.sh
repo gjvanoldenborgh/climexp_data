@@ -46,7 +46,7 @@ EOF
     # first-order fix for the problems with the manual gauges
     ./fix_manual_gauges
     rm sd???.dat.org
-    ./fix_sd.sh
+    ###./fix_sd.sh  # snow depth data has been fixed upstream 19-oct-2018
 
     for file in rr???.dat sd???.dat sdhom???.dat
     do

@@ -5,6 +5,7 @@ cdo="cdo -r -b 32 -f nc4 -z zip"
 
 yr=2008
 lastok=true
+make km2latlon
 date > log
 while [ $lastok = true ]; do
     yr=$((yr+1))
@@ -57,6 +58,7 @@ while [ $lastok = true ]; do
         if [ -s $sumfile -a ! -s ${sumfile%.nc}_latlon.nc -o ${sumfile%.nc}_latlon.nc -ot $sumfile ]; then
             echo "converting sum to latlon grid"
             # my programs do not compress yet :-(
+            make km2latlon
             ./km2latlon $sumfile aap.nc
             # cut out the area with data
             $cdo selindexbox,225,482,144,466 aap.nc ${sumfile%.nc}_latlon.nc

@@ -31,6 +31,9 @@ echo @@@ NODC
 (cd NODCData; ./update.sh | 2>&1 tee update.log )
 echo @@@ JAMSTEC
 (cd JAMSTECData; ./update.sh | 2>&1 tee update.log )
+echo @@@ Rutgers
+(ssh zuidzee "cd NINO/RutgersData; ./update.sh |& tee update.log")
+(ssh zuidzee "cd NINO/RutgersData; ./update_fields.sh |& tee update.log")
 echo @@@ MERRA
 (ssh zuidzee "cd NINO/MERRA; ./update_fields.sh |& tee update_fields.log")
 

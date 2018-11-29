@@ -9,18 +9,16 @@ program gettemp
     implicit none
     integer,parameter :: nn=21000,ncountry=233
     double precision,parameter :: pi=3.1415926535897932384626433832795d0
-    integer :: i,j,k,jj,kk,n,m,ldir,istation,isub, &
-        nyr(0:48),nyrmin(0:48),nyrmax(0:48),nmin(0:48),nok,nlist
-    integer :: ic(nn),iwmo(nn),imod(nn),ielevs(nn),ielevg(nn) &
-        ,ipop(nn),iloc(nn),itowndis(nn),icountry(0:ncountry),nflag &
-        ,ind(nn),list(2,nn),nrec,nstat,yr1,yr2
-    real :: rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon,d &
-        ,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin,rlatmax
-    character :: name(nn)*30,grveg(nn)*16,pop(nn)*1,topo(nn)*2,stveg(nn)*2
+    integer :: i,j,k,jj,kk,n,m,ldir,istation,isub,nyr(0:48),nmin(0:48),nok,nlist
+    integer :: ic(nn),iwmo(nn),imod(nn),ielevg(nn),ipop(nn),iloc(nn),itowndis(nn), &
+        icountry(0:ncountry),nflag,ind(nn),list(2,nn),nrec,nstat,yr1,yr2,iline
+    real :: rlat(nn),rlon(nn),elevs(nn),slat,slon,slat1,slon1,dist(nn), &
+        dlon,d,rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin,rlatmax
+    character :: name(nn)*30,grveg(nn)*16,pop(nn)*1,topo(nn)*2,stveg(nn)*2,popcss(nn)
     character :: stloc(nn)*2,airstn(nn)*1
     character(48) :: country(0:999)
-    character :: string*80,sname*30,type*7,file*1023,wmostring*12
-    character :: dir*256
+    character :: string*80,sname*30,type*7,file*1023,invfile*1023,datfile*1023,version*100
+    character :: dir*1023,line*1023,wmostring*12,prog*12
     logical :: lmin,enough,okstation,lwrite
     integer :: iargc
 
@@ -66,11 +64,13 @@ program gettemp
 
     lwrite = .false. 
     if ( iargc() < 1 ) then
-        print '(a)','usage: gettemp lat lon [number] [min years] [begin yr1] [end yr2]'
+        print '(a)','usage: gettemp lat lon [number] [min years]', &
+        ' [begin yr1] [end yr2]'
         print '(a)','       gettemp [name|station_id]'
-        print *,'gives historical temperature for station_id or when'
+        print * &
+        ,'gives historical temperature for station_id or when'
         print *,'number=1, otherwise stationlist with years of data'
-        call exit(-1)
+        stop
     end if
     call getgetargs(sname,slat,slon,slat1,slon1,n,nn,istation,isub &
         ,nmin,rmin,elevmin,elevmax,list,nn,nlist,yr1,yr2)
@@ -82,18 +82,6 @@ program gettemp
     do i=1,nn
         dist(i) = 3e33
     end do
-    if ( istation > 0 ) then
-        if ( isub == 0 ) then
-            print '(a,i5,a)','# Searching for station nr ',istation, &
-                ' in v2.temperature.inv'
-        else if ( isub < 10 ) then
-            print '(a,i5,a,i1,a)','# Searching for substation nr ' &
-                ,istation,'.',isub,' in v2.temperature.inv'
-        else
-            print '(a,i5,a,i2,a)','# Searching for substation nr ' &
-                ,istation,'.',isub,' in v2.temperature.inv'
-        end if
-    end if
 
 !   read countrycode from file
     do j=0,999
@@ -116,102 +104,95 @@ program gettemp
         read(string,'(i3)',err=902) icountry(k)
         country(k) = string(5:)
     end do
+    close(1)
  30 continue
 
     call getarg(0,string)
-    if ( index(string,'slp') /= 0 ) then
-        if ( lmin ) then
-            file = 'v2.slp.inv.withmonth'
-        else
-            file = 'v2.slp.inv'
-        end if
-    else if ( index(string,'prcpall') /= 0 ) then
-        if ( lmin ) then
-            file = 'v2.prcp.inv.withmonth'
-        else
-            file = 'v2.prcp.inv'
-        end if
-    else if ( index(string,'prcp ') /= 0 ) then
-        if ( lmin ) then
-            file = 'v2.prcp.adj.inv.withmonth'
-        else
-            file = 'v2.prcp.adj.inv'
-        end if
+    if ( index(string,'gettemp ') /= 0 ) then
+        type = 'temp'
+        file = 'ghcnm.tavg.v3.qca'
+        nrec  = NREC_MEAN_ADJ
+        nstat = NSTAT_MEAN_ADJ
+        version = 'VERSION_MEAN_ADJ'
+    else if ( index(string,'getmin ') /= 0 ) then
+        type = 'tmin'
+        file = 'ghcnm.tmin.v3.qca'
+        nrec  = NREC_MIN_ADJ
+        nstat = NSTAT_MEAN_ADJ
+        version = 'VERSION_MIN_ADJ'
+    else if ( index(string,'getmax ') /= 0 ) then
+        type = 'tmax'
+        file = 'ghcnm.tmax.v3.qca'
+        nrec  = NREC_MAX_ADJ
+        nstat = NSTAT_MAX_ADJ
+        version = 'VERSION_MAX_ADJ'
+    else if ( index(string,'gettempall') /= 0 ) then
+        type = 'tempall'
+        file = 'ghcnm.tavg.v3.qcu'
+        nrec  = NREC_MEAN_ALL
+        nstat = NSTAT_MEAN_ALL
+        version = 'VERSION_MEAN_ALL'
+    else if ( index(string,'getminall') /= 0 ) then
+        type = 'tminall'
+        file = 'ghcnm.tmin.v3.qcu'
+        nrec  = NREC_MIN_ALL
+        nstat = NSTAT_MIN_ALL
+        version = 'VERSION_MIN_ALL'
+    else if ( index(string,'getmaxall') /= 0 ) then
+        type = 'tmaxall'
+        file = 'ghcnm.tmax.v3.qcu'
+        nrec  = NREC_MAX_ALL
+        nstat = NSTAT_MAX_ALL
+        version = 'VERSION_MAX_ALL'
     else
-        if ( lmin ) then
-            if ( index(string,'all ') /= 0 ) then
-                file = 'v2.temperature.inv.withmonth'
-            else
-                file = 'v2.temperature_adj.inv.withmonth'
-            end if
-        else
-            file = 'v2.temperature.inv'
-        end if
-    end if
-    file = trim(dir)//file
-    if ( lwrite ) print *,'opening ',trim(file)
-    open(1,file=trim(file),status='old')
-    if ( index(string,'getslp') /= 0 ) then
-        type = 'slp'
-        if ( n > 1 .or. lwrite ) print '(a)','Opening v2.slp'
-        open(unit=2,file=dir(1:ldir)//'v2.slp',status='old', &
-            form='formatted',access='direct',recl=77)
-        nrec  = NREC_SLP
-        nstat = NSTAT_SLP
-    else if ( index(string,'getprcpall') /= 0 ) then
-        type = 'prcpall'
-        if ( n > 1 .or. lwrite ) print '(a)','Opening v2.prcp'
-        open(unit=2,file=dir(1:ldir)//'v2.prcp',status='old', &
-            form='formatted',access='direct',recl=77)
-        nrec  = NREC_PRCP_ALL
-        nstat = NSTAT_PRCP_ALL
-    else if ( index(string,'getprcp') /= 0 ) then
-        type = 'prcp'
-        if ( n > 1 ) print '(a)','Opening v2.prcp_adj'
-        open(unit=2,file=dir(1:ldir)//'v2.prcp_adj',status='old', &
-            form='formatted',access='direct',recl=77)
-        nrec  = NREC_PRCP_ADJ
-        nstat = NSTAT_PRCP_ADJ
-    else
-        print *,'gettemp_v2: do not know which database to use '// &
-        'when running as ',trim(string)
+        print *,'do not know which database to use when running as ',trim(string)
         call exit(-1)
+    end if
+    invfile = trim(dir)//'ghcnm/'//trim(file)//'.inv.withmonth'
+    datfile = trim(dir)//'ghcnm/'//trim(file)//'.dat'
+    if ( lwrite ) print *,'opening ',trim(file)
+    open(1,file=trim(invfile),status='old')
+    if ( n > 1 .or. lwrite ) print '(2a)','Opening ',trim(datfile)
+    open(unit=2,file=trim(datfile),status='old',form='formatted',access='direct',recl=116)
+    if ( istation > 0 ) then
+        if ( isub == 0 ) then
+            print '(a,i5,4a)','# Searching for station nr ', &
+                istation,' in ',trim(file),' ',trim(version)
+        else if ( isub < 10 ) then
+            print '(a,i5,a,i1,4a)','# Searching for substation nr ', &
+                istation,'.',isub,' in ',trim(file),' ',trim(version)
+        else
+            print '(a,i5,a,i2,4a)','# Searching for substation nr ', &
+                istation,'.',isub,' in ',trim(file),' ',trim(version)
+        end if
     end if
 
     i = 1
+    iline = 0
 100 continue
-    if ( type(1:4) == 'prcp' .or. type(1:3) == 'slp' ) then
-        if ( lmin ) then
-            read(1,1001,end=200)ic(i),iwmo(i),imod(i),name(i), &
-                rlat(i),rlon(i),ielevs(i),nyr,nyrmin,nyrmax
-        else
-            read(1,1001,end=200)ic(i),iwmo(i),imod(i),name(i), &
-                rlat(i),rlon(i),ielevs(i)
-        end if
-   1001 format(i3.3,i5.5,i3.3,1x,a30,1x,f6.2,1x,f7.2,1x,i4,147i4)
+    iline = iline + 1
+    if ( lmin ) then
+        read(1,1000,end=200,err=905)ic(i),iwmo(i),imod(i), &
+            rlat(i),rlon(i),elevs(i),name(i),ielevg(i), &
+            pop(i),ipop(i),topo(i),stveg(i), &
+            stloc(i),iloc(i),airstn(i),itowndis(i), &
+            grveg(i),popcss(i),nyr
     else
-        if ( lmin ) then
-            read(1,1000,end=200)ic(i),iwmo(i),imod(i),name(i), &
-                rlat(i),rlon(i),ielevs(i),ielevg(i), &
-                pop(i),ipop(i),topo(i),stveg(i), &
-                stloc(i),iloc(i),airstn(i),itowndis(i), &
-                grveg(i),nyr,nyrmin,nyrmax
-        else
-            read(1,1000,end=200)ic(i),iwmo(i),imod(i),name(i), &
-                rlat(i),rlon(i),ielevs(i),ielevg(i), &
-                pop(i),ipop(i),topo(i),stveg(i), &
-                stloc(i),iloc(i),airstn(i),itowndis(i), &
-                grveg(i)
-        end if
-   1000 format(i3.3,i5.5,i3.3,1x,a30,1x,f6.2,1x,f7.2,1x,i4, &
-               1x,i4,a1,i5,3(a2),i2,a1,i2,a16,147i4)
+        read(1,1000,end=200,err=905)ic(i),iwmo(i),imod(i), &
+            rlat(i),rlon(i),elevs(i),name(i),ielevg(i), &
+            pop(i),ipop(i),topo(i),stveg(i), &
+            stloc(i),iloc(i),airstn(i),itowndis(i), &
+            grveg(i),popcss(i)
     end if
+1000 format(i3.3,i5.5,i3.3,1x,f8.4,1x,f9.4,1x,f6.1,1x,a30, &
+    &        1x,i4,a1,i5,3(a2),i2,a1,i2,a16,a1,147i4)
 !   note that some names are lowercase !
     call toupper(name(i))
+    if ( lwrite ) print *,'processing station ',name(i)
 
 !   check that we have enough years of data
     if ( lmin ) then
-        call checknyr(type,nmin,nyr,nyrmin,nyrmax,enough)
+        call checknyr(type,nmin,nyr,nyr,nyr,enough)
         if ( .not. enough ) then
             if ( lwrite ) print *,'not enough data '
             goto 100
@@ -219,10 +200,12 @@ program gettemp
     end if
 
 !   check elevation
-    if ( ielevs(i) > -998 ) then
-        if ( ielevs(i) < elevmin .or. ielevs(i) > elevmax ) goto 100
+    if ( elevs(i) > -998 ) then
+        if ( elevs(i) < elevmin .or. elevs(i) > elevmax ) &
+        goto 100
     else if ( type(1:4) /= 'prcp' .or. type(1:3) == 'slp' ) then
-        if ( ielevg(i) < elevmin .or. ielevg(i) > elevmax ) goto 100
+        if ( ielevg(i) < elevmin .or. ielevg(i) > elevmax ) &
+        goto 100
     end if
 
     okstation = .false. 
@@ -230,7 +213,8 @@ program gettemp
         do j=1,nlist
             if ( iwmo(i) == list(1,j) .and. &
             imod(i) == list(2,j) ) then
-                call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax,rlon(i),rlat(i))
+                call updatebox(i,rlonmin,rlonmax,rlatmin,rlatmax &
+                ,rlon(i),rlat(i))
                 okstation = .true. 
                 exit
             end if
@@ -257,17 +241,16 @@ program gettemp
                 if ( ic(i) == icountry(k) ) goto 110
             end do
             k = 0
-        110 continue
+            110 continue
             if ( index(country(k),trim(sname(2:))) /= 0 ) then
                 okstation = .true. 
             end if
         end if
     else if ( slat1 < 1e33 ) then
-        if ( (slon1 > slon .and. rlon(i) > slon .and. rlon(i) < slon1 &
-         .or. &
-        slon1 < slon .and. (rlon(i) < slon1 .or. rlon(i) > slon) &
-        ) .and. ( &
-        rlat(i) > min(slat,slat1) .and. rlat(i) < max(slat,slat1) ) ) then
+        if ( (slon1 > slon .and. rlon(i) > slon .and. rlon(i) < slon1 .or. &
+              slon1 < slon .and. (rlon(i) < slon1 .or. rlon(i) > slon) &
+                ) .and. ( &
+              rlat(i) > min(slat,slat1) .and. rlat(i) < max(slat,slat1) ) ) then
             dist(i) = i
             n = i
             okstation = .true. 
@@ -280,7 +263,8 @@ program gettemp
 !   check range of years
 
     if ( okstation .and. ( yr1 > 0 .or. yr2 < 3000 ) ) then
-        call getdata(type,2,100000*ic(i)+iwmo(i),imod(i),0,nyr,nrec,nstat,yr1,yr2)
+        call getdata3(type,2,100000*ic(i)+iwmo(i),imod(i) &
+            ,0,nyr,nrec,nstat,yr1,yr2,version)
         if ( lmin ) then
             call checknyr(type,nmin,nyr,nyr,nyr,enough)
         else
@@ -307,21 +291,22 @@ program gettemp
 200 continue
     i = i - 1
 
-    if ( nlist > 1 .or. istation /= 0 .or. sname /= ' ' .or. slat1 < 1e33 ) then
+    if ( nlist > 1 .or. istation /= 0 .or. &
+    sname /= ' ' .or. slat1 < 1e33 ) then
         n = i
     else
         call sortdist(i,n,dist,rlon,rlat,ind,rmin)
-        if ( i < n ) n = i
     end if
 
-!   output
+!       output
     if ( istation <= 0 ) print '(a,i7,a)','Found ',n,' stations'
     if ( nlist > 0 ) then
         call printbox(rlonmin,rlonmax,rlatmin,rlatmax)
     end if
     nok = 0
     do j=1,nn
-        if ( nlist > 1 .or. istation /= 0 .or. sname /= ' ' .or. slat1 < 1e33 ) then
+        if ( nlist > 1 .or. istation /= 0 .or. &
+        sname /= ' ' .or. slat1 < 1e33 ) then
             jj = j
         else
             jj = ind(j)
@@ -338,11 +323,11 @@ program gettemp
     210 continue
         print '(3a,a,a)','# ',name(jj),'(',trim(country(k)),')'
         if ( type(1:4) == 'prcp' .or. type(1:3) == 'slp' ) then
-            print '(a,f6.2,a,f7.2,a,i4,a,i4,a)','# coordinates: ' &
-                ,rlat(jj),'N, ',rlon(jj),'E, ',ielevs(jj),'m'
+            print '(a,f6.2,a,f7.2,a,f9.1,a,i4,a)','# coordinates: ' &
+                ,rlat(jj),'N, ',rlon(jj),'E, ',elevs(jj),'m'
         else
-            print '(a,f6.2,a,f7.2,a,i4,a,i4,a)','# coordinates: ' &
-                ,rlat(jj),'N, ',rlon(jj),'E, ',ielevs(jj) &
+            print '(a,f6.2,a,f7.2,a,f9.1,a,i4,a)','# coordinates: ' &
+                ,rlat(jj),'N, ',rlon(jj),'E, ',elevs(jj) &
                 ,'m (prob: ',ielevg(jj),'m)'
         end if
         call tidyname(name(jj),country(k))
@@ -372,12 +357,12 @@ program gettemp
                     print '(a)','Rural station'
                 else if ( pop(jj) == 'S' ) then
                     print '(a,i5,a)' &
-                    ,'Associated with small town (pop.' &
-                    ,ipop(jj)*1000,')'
+                        ,'Associated with small town (pop.' &
+                        ,ipop(jj)*1000,')'
                 else if ( pop(jj) == 'U' ) then
                     print '(a,i8,a)' &
-                    ,'Associated with urban area (pop.' &
-                    ,ipop(jj)*1000,')'
+                        ,'Associated with urban area (pop.' &
+                        ,ipop(jj)*1000,')'
                 else
                     print '(2a)','Unknown population code ',pop(jj)
                 end if
@@ -424,22 +409,31 @@ program gettemp
             nflag = 1
             ! new-style metadata
             print '(a)','# institution :: NOAA/NCEI'
-            print '(a)','# source_url :: https://www.ncdc.noaa.gov/ghcnm/v2.php'
+            print '(a)','# source_url :: https://www.ncdc.noaa.gov/ghcnm/v3.php'
             print '(a)','# contact_email :: NCDC.GHCNM@noaa.gov.'
-            !!!print '(a)','# source_doi :: accessed DATE'
-            print '(a)','# retrieved :: DATE'
-            print '(a)','# references :: Peterson, T.C., and R.S. Vose, 1997: '// &
-                'An overview of the Global Historical Climatology Network temperature database.'// &
-                'Bulletin of the American Meteorological Society, 78 (12), 2837-2849'
+            print '(a)','# source_doi :: 10.7289/V5X34VDR accessed DATE'
+            print '(a)','# references :: Durre, I., M.J. Menne, and R.S. Vose, 2008: '// &
+                'Strategies for evaluating quality assurance procedures. '// &
+                'Journal of Applied Meteorology and Climatology, 47(6), 1785-1791.\\n'// &
+                'Lawrimore, J. H., M. J. Menne, B. E. Gleason, C. N. Williams, D. B. Wuertz, '// &
+                'R. S. Vose, and J. Rennie (2011), An overview of the Global Historical '// &
+                'Climatology Network monthly mean temperature data set, version 3, '// &
+                'J. Geophys. Res., 116, D19121, doi:10.1029/2011JD016187.'
             print '(2a)','# station_name :: ',trim(name(jj))
             print '(2a)','# station_country :: ',trim(country(k))
             print '(2a)','# station_code :: ',trim(wmostring)
             print '(a,f7.2,a)','# latitude :: ',rlat(jj),' degrees_north'
             print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
-            print '(a,i8,a)','# elevation :: ',ielevs(jj),' m'
-            print '(4a)','# climexp_url :: https://climexp.knmi.nl/get',trim(type),'.cgi?WMO=',trim(wmostring)
+            print '(a,f8.1,a)','# elevation :: ',elevs(jj),' m'
+            if ( type == 'temp' .or. type == 'tempall' ) then
+                prog = 'get'//type
+            else
+                prog = 'ge'//type ! stupid convention a long, long, time ago
+            end if
+            print '(4a)','# climexp_url :: https://climexp.knmi.nl/',trim(prog),'.cgi?WMO=',trim(wmostring)
         end if
-        call getdata(type,2,100000*ic(jj)+iwmo(jj),imod(jj),nflag,nyr,nrec,nstat,yr1,yr2)
+        call getdata3(type,2,100000*ic(jj)+iwmo(jj),imod(jj) &
+            ,nflag,nyr,nrec,nstat,yr1,yr2,version)
     700 continue
     end do
 800 continue
@@ -455,13 +449,17 @@ program gettemp
     call exit(-1)
 904 print *,'please give station ID or name, not ',string
     call exit(-1)
+905 read(1,'(a)') line
+    print *,'error reading data from line ',iline, ' of ',trim(invfile)
+    print *,trim(line)
+    call exit(-1)
 999 continue
 end program gettemp
 
 subroutine checknyr(type,nmin,nyr,nyrmin,nyrmax,enough)
     implicit none
     integer :: nmin(0:48),nyr(0:48),nyrmin(0:48),nyrmax(0:48)
-    character :: type*(*)
+    character type*(*)
     logical :: enough
     integer :: j
     enough = .true. 

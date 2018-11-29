@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # run on zuidzee
 import os
+import subprocess
 from datetime import datetime
 from ecmwfapi import ECMWFDataServer
 cdo = "cdo -r -R -b 32 -f nc4 -z zip"
@@ -38,7 +39,10 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
         if levtype == "pl":
             dict['levelist'] = levelist
         print dict
-        server.retrieve(dict)
+        try:
+            server.retrieve(dict)
+        except:
+            pass # we check for existence of the output files
 
     if not os.path.isfile(file) or os.stat(file).st_size == 0:
         return False
@@ -72,7 +76,7 @@ def get_from_ecmwf(year,date,var,code,type,levtype,levelist,file,ncfile):
             elif var == "u10" or var == "v10":
                 # shift -1 hr to get the 00, 03, ... 21 values in the correct day
                 command = cdo + " -setname," + var + " -shifttime,-1hour " + file + \
-                    " aap.nc; " + cdo + " -" + oper + " aap.nc + ncfile
+                    " aap.nc; " + cdo + " -" + oper + " aap.nc " + ncfile
             elif var == 'tp' or var == 'evap':
                 # shift -6 hr to get both the 12:00 and 24:00 values in the correct day
                 # multiply by 1000 to get from m to mm
@@ -105,7 +109,7 @@ server = ECMWFDataServer()
 
 currentyear = datetime.now().year
 currentmonth = datetime.now().month
-vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "rsds", "rsns", "rlns", "msl","sp",  "u10", "v10", "z500", "t500", "q500" ]
+vars = [ "t2m", "tmin", "tmax", "tdew","tp", "evap", "rsds", "rsns", "rlns", "msl","sp",  "u10", "v10", "z500", "t500", "q500", "u850", "v850" ]
 for var in vars:
     ncfiles = ""
     concatenate = False
@@ -153,6 +157,18 @@ for var in vars:
         type = "an"
         units = "kg/kg"
         levelist = "500"
+        levtype = "pl"
+    elif var == "u850":
+        code = "131.128"
+        type = "an"
+        units = "m/s"
+        levelist = "850"
+        levtype = "pl"
+    elif var == "v850":
+        code = "132.128"
+        type = "an"
+        units = "m/s"
+        levelist = "850"
         levtype = "pl"
     elif var == "tp":
         code = "228.128"
@@ -213,7 +229,7 @@ for var in vars:
                         concatenate = True
                     if os.path.exists(ncfile) and os.path.getsize(ncfile) > 100:
                         ncfiles = ncfiles + " " + ncfile
-                except RuntimeError:
+                except:
                     print "OK, dat was het"
                     break
             # end of months loop

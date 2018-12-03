@@ -1,6 +1,6 @@
 #!/bin/sh
 # download GPCC v8
-download=false # true
+download=true
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data_2018/
 for res in 25 10 05 025
 do

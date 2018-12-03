@@ -201,16 +201,16 @@ if [ $doit = true -o "$force" = true ]; then
     # cdo does not adjust time_coverage_start/end :-(
     ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" gpcc_full_daily_all.nc
     cdo -r -f nc4 -z zip selvar,p gpcc_full_daily_all.nc gpcc_full_daily.nc
-    ncatted -a long_name,p,m,c,"precipitation" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily.nc
+    ncatted -h -a long_name,p,m,c,"precipitation" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily.nc
     cdo -r -f nc4 -z zip selvar,s gpcc_full_daily_all.nc gpcc_full_daily_n.nc
-    ncatted -a long_name,s,m,c,"number of gauges per grid box" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n.nc
+    ncatted -h -a long_name,s,m,c,"number of gauges per grid box" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n.nc
     ncrename -v p,prcp gpcc_full_daily.nc
     ncrename -v s,n gpcc_full_daily_n.nc
     cdo -r -f nc4 -z zip ifthen gpcc_full_daily_n.nc gpcc_full_daily.nc gpcc_full_daily_n1.nc
-    ncatted -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n1.nc
+    ncatted -h -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n1.nc
 fi
 for file in gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc; do
-    ncatted -a source_url,global,c,c,"ftp://ftp-anon.dwd.de/pub/data/gpcc/html/download_gate.html" $file
+    ncatted -h -a source_url,global,c,c,"ftp://ftp-anon.dwd.de/pub/data/gpcc/html/download_gate.html" $file
     . $HOME/climexp/add_climexp_url_field.cgi
 done
 $HOME/NINO/copyfilesall.sh gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc
@@ -242,11 +242,11 @@ if [ $doit = true -o "$force" = true ]; then
     ncrename -v s,n gpcc_firstguess_daily_n.nc
     cdo -r -f nc4 -z zip ifthen gpcc_firstguess_daily_n.nc gpcc_firstguess_daily.nc gpcc_firstguess_daily_n1.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily.nc gpcc_firstguess_daily.nc gpcc_combined_daily.nc
-    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n.nc gpcc_firstguess_daily_n.nc gpcc_combined_daily_n.nc
-    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n1.nc gpcc_firstguess_daily_n1.nc gpcc_combined_daily_n1.nc
-    ncatted -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
     for file in gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc; do
         # cdo does not adjust these yet, recompute myself
         ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file

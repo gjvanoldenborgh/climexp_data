@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 var="$1"
 if [ -z "$var" ]; then
     echo "usage: $0 mean|min|max"

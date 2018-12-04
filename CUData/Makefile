@@ -1,11 +1,10 @@
 ###FFLAGS = -Ktrap=fp -O3  -Mlarge_arrays
 FFLAGS = -g -C # -Ktrap=fp -Mlarge_arrays
 
-###FC = g95
-FC = pgf90
+FC = gfortran
 
-LIBS = 	$(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a \
-        $(HOME)/lib/$(PVM_ARCH)/libnr.a
+LIBS = 	$(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
+        $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
 
 tenday2month:	tenday2month.o $(LIBS)
-	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS) -L$(HOME)/lib -L/sw/lib -lnetcdff -lnetcdf
+	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS) -L$(HOME)/lib -L/sw/lib -lnetcdff -lnetcdf -lfgsl -lgsl

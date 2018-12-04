@@ -102,6 +102,6 @@ EOF
         mv soi.dat.old soi.dat
     fi
 fi
-$HOME/copyfilesall.sh soi.dat soi5.dat
+$HOME/NINO/copyfilesall.sh soi.dat soi5.dat
 
 ./makenao.sh

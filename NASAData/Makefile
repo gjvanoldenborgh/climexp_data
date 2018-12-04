@@ -7,10 +7,10 @@
 
 FC = gfortran
 FFLAGS = -g -C -I/usr/local/free/include  -I/sw/include/ -fconvert=big-endian -m64 
-LDFLAGS = -L/usr/local/free/lib -L/sw/lib -L/usr/lib/x86_64-linux-gnu -lnetcdff -lnetcdf
+LDFLAGS = -L/usr/local/free/lib -L/sw/lib -L/usr/lib/x86_64-linux-gnu
 
 LIBS =  $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
-    $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
+    $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a  -lnetcdff -lnetcdf
 
 txt2dat:	txt2dat.o Makefile
 		$(FC) $(FFLAGS) -o txt2dat txt2dat.o $(LIBS)

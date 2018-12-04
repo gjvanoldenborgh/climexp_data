@@ -34,7 +34,7 @@ ENDVARS
 EOF
     grads -b -l > /tmp/grads.$type.log <<EOF
 sdfopen giss_temp_both_1200.nc
-open $HOME/NINO/NCEPData/ghcn_cams_10.ctl
+sdfopen $HOME/climexp_data/NCEPData/ghcn_cams_10.nc
 set t 1 last
 set gxout fwrite
 set fwrite giss_$type.grd

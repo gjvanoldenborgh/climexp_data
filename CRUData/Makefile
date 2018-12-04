@@ -1,7 +1,7 @@
 ###FFLAGS = -O
 FFLAGS = -g -fbounds-check
 
-FC = pgf90
+FC = gfortran
 
 .SUFFIXES: .f90 .o
 

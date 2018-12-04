@@ -11,7 +11,7 @@ FFLAGS = -m64 -g -fbounds-check
 ###FC = g95
 FC = gfortran
 
-LIBS = $(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a
+LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
 
 getpress:	getpress.o support.o
 		$(FC) $(FFLAGS) -o $@ $@.o support.o

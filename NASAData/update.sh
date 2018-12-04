@@ -50,7 +50,7 @@ file=tau.line_2012.12.txt
 $getit $base/$file
 mv tau.line_2012.12.txt tau_line.txt
 if [ ! -x sao2dat ]; then
-    gfortran -o sao2dat sao2dat.f90
+    gfortran -o saod2dat saod2dat.f90
 fi
 ./saod2dat
 $HOME/NINO/copyfilesall.sh saod*.dat

@@ -39,6 +39,10 @@ do
 		ln -s SBBX.ERSST SST_DATA
 		yr=`date -d "last month" "+%Y"`
 		sed -e "s/CURRENTYEAR/$yr/" sbbx2nc.in > sbbx2nc.f
+		if [ ! -L netcdf.inc ]; then
+		    [ -s /usr/include/netcdf.inc ] && ln -s /usr/include/netcdf.inc
+		    [ -s /sw/include/netcdf.inc  ] && ln -s /sw/include/netcdf.inc 
+		fi
 		make sbbx2nc
 		./sbbx2nc 0
 		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis land ${decor}km" \

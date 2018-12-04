@@ -37,7 +37,7 @@ for oldfile in nhsce_*.nc; do
     fi
 done
 wget -q -N --no-check-certificate $base/$file
-if [ ! -s $file -o snow_rucl.nc -ot $file -o "$force" = force ]; then
+if [ ! -s snow_rucl.nc -o snow_rucl.nc -ot $file -o "$force" = force ]; then
     cdo -r -f nc4 -z zip remapbil,snow_grid.nc $file snow_rucl_week.nc
     cdo -r -f nc4 -z zip intntime,7 snow_rucl_week.nc snow_rucl_day.nc
     # cdo monmean produces last months whenever there is 1 day of data...

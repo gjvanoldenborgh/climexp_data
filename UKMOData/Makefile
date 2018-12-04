@@ -3,14 +3,14 @@
 .f90.o:
 	$(FC) $(FFLAGS)  -c $<
 
-FC=pgf90
-FFLAGS = -O
-###FFLAGS = -g -fbounds-check
+FC=gfortran
+###FFLAGS = -O
+FFLAGS = -g -fbounds-check
 
-LIBS = $(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a \
-	$(HOME)/NINO/Fortran/$(PVM_ARCH)/libnr.a
+LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
+	$(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a -lnetcdff -lnetcdf -lfgsl -lgsl
 
-LDFLAGS = $(FFLAGS) -L/sw/lib -lnetcdff -lnetcdf
+LDFLAGS = $(FFLAGS) -L/sw/lib 
 
 hadslp2grads: hadslp2grads.o
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)

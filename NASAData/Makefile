@@ -7,7 +7,7 @@
 
 FC = gfortran
 FFLAGS = -g -C -I/usr/local/free/include  -I/sw/include/ -fconvert=big-endian -m64 
-LDFLAGS = -L/usr/local/free/lib -L/sw/lib -lnetcdff -lnetcdf
+LDFLAGS = -L/usr/local/free/lib -L/sw/lib -L/usr/lib/x86_64-linux-gnu -lnetcdff -lnetcdf
 
 LIBS =  $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
     $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a

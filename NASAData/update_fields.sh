@@ -67,9 +67,7 @@ do
 		file=giss_temp_both_$decor.nc
 		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
-		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc bhlclim:climexp/NASAData/
-		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc gj@gatotkaca.duckdns.org:climexp/NASAData/
-		rsync -avt giss_temp_land_$decor.nc giss_temp_both_$decor.nc gj@ganesha.xs4all.nl:climexp/NASAData/
+		$HOME/NINO/copyfilesall.sh  giss_temp_land_$decor.nc giss_temp_both_$decor.nc
 	fi
 done
 

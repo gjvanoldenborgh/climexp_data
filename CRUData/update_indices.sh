@@ -3,6 +3,7 @@ force=false
 #
 # global and hemispheric temperatures
 #
+make dat2dat
 for version in 4 4v # 3 3v
 do
   for area in gl sh nh; do

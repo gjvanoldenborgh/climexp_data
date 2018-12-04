@@ -5,6 +5,9 @@ getit="wget --no-check-certificate -N -q "
 
 # GISTEMP
 
+if [ ! -x txt2dat ]; then
+    gfortran -o txt2dat txt2dat.f90 $HOME/climexp_numerical/$PVM_ARCH/climexp.a
+fi
 base=https://data.giss.nasa.gov/gistemp/tabledata_v3/
 for type in Ts Ts+dSST
 do
@@ -46,5 +49,8 @@ base=https://data.giss.nasa.gov/modelforce/strataer
 file=tau.line_2012.12.txt
 $getit $base/$file
 mv tau.line_2012.12.txt tau_line.txt
+if [ ! -x sao2dat ]; then
+    gfortran -o sao2dat sao2dat.f90
+fi
 ./saod2dat
 $HOME/NINO/copyfilesall.sh saod*.dat

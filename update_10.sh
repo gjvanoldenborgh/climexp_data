@@ -25,8 +25,8 @@ echo "@@@ other sea level indices"
 (cd SiegenData; ./update.sh | 2>&1 tee update.log)
 (cd CSIROData; ./update.sh | 2>&1 tee update.log)
 
-echo @@@ LOD
-(ssh zuidzee "cd NINO/IERSData; ./update.sh |& tee update.log")
+###echo @@@ LOD  moved
+###(ssh zuidzee "cd NINO/IERSData; ./update.sh |& tee update.log")
 
 echo @@@ sunspots
 (cd SIDCData; ./update.sh | 2>&1 tee update.log)

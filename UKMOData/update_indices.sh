@@ -160,6 +160,9 @@ done
 #
 # CETs
 #
+make cet2dat
+make dailycet2dat
+
 cp cetml1659on.dat cetml1659on.dat.old
 wget -q -N http://www.metoffice.gov.uk/hadobs/hadcet/cetml1659on.dat
 ./cet2dat cetml1659on.dat > cet.dat
@@ -194,6 +197,7 @@ wget -q -N http://www.metoffice.gov.uk/hadobs/hadcet/cetmaxdly1878on_urbadj4.dat
 $HOME/NINO/copyfiles.sh daily_cet_max.dat
 
 # precipitation
+make dailyprcp2dat
 base=http://www.metoffice.gov.uk/hadobs/hadukp/data
 for region in EWP SEEP SWEP CEP NWEP NEEP SP SSP NSP ESP NIP
 do

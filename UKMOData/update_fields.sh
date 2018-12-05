@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 wget="wget --no-check-certificate -q -N"
 
 export version=4.6.0.0
@@ -38,9 +38,9 @@ base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
 file=HadSST.${version}.median_netcdf.zip
 $wget --header="accept-encoding: gzip" $base/$file
 unzip -o $file
+file=HadSST.${version}.median.nc
 ncatted -a institution,global,a,c,"Met Office Hadley Centre" \
     -a url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadsst3/" $file
-file=HadSST.${version}.median.nc
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfilesall.sh HadSST.${version}.median.nc
 

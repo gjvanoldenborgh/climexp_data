@@ -1,7 +1,7 @@
 #!/bin/sh
 # define a IPO index as the first EOF of detrended SST over 50S-50N, 100-290E.
 
-trend=$HOME/NINO/CDIACData/RCP45_CO2EQ_mo.dat
+trend=$HOME/climexp_data/CDIACData/RCP45_CO2EQ_mo.dat
 trendname="co2eq"
 
 fullensemble=true
@@ -76,7 +76,7 @@ do
 
 	    # get sign correct
 
-		nino34=$HOME/NINO/NCDCData/ersst_nino3.4.dat
+		nino34=$HOME/climexp_data/NCDCData/ersst_nino3.4.dat
 	    [ -f aap.txt ] && rm aap.txt
 	    command="correlate $series file $nino34 mon 1 ave 12 plot aap.txt"
 	    echo $command

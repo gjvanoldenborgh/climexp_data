@@ -13,13 +13,13 @@ LIBS =  $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
     $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a  -lnetcdff -lnetcdf
 
 txt2dat:	txt2dat.o Makefile
-		$(FC) $(FFLAGS) -o txt2dat txt2dat.o $(LIBS)
+		$(FC) $(LDFLAGS) -o txt2dat txt2dat.o $(LIBS)
 
 saod2dat:	saod2dat.o Makefile
-		$(FC) $(FFLAGS) -o saod2dat saod2dat.o $(LIBS)
+		$(FC) $(LDFLAGS) -o saod2dat saod2dat.o $(LIBS)
 
 gacp2grads:	gacp2grads.o Makefile
-		$(FC) $(FFLAGS) -o gacp2grads gacp2grads.o $(LIBS)
+		$(FC) $(LDFLAGS) -o gacp2grads gacp2grads.o $(LIBS)
 
 sbbx2nc:	sbbx2nc.o Makefile
 		$(FC) $(LDFLAGS) -o sbbx2nc sbbx2nc.o $(LIBS)

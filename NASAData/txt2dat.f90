@@ -76,7 +76,7 @@ program txt2dat
         write(i,'(a)') '# references :: Hansen, J., R. Ruedy, M. Sato, and K. Lo, 2010: '// &
             'Global surface temperature change, Rev. Geophys., 48, RG4004, doi:10.1029/2010RG000345'
         write(i,'(a)') trim(line)
-        write(i,'(a)') '# source :: http://data.giss.nasa.gov/gistemp/'
+        write(i,'(a)') '# source_url :: http://data.giss.nasa.gov/gistemp/'
         write(i,'(a)') trim(history)
         write(i,'(a)') '# climexp_url :: https://climexp.knmi.nl/getindices.cgi?NASAData/'//trim(outfile)
     end do

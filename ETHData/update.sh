@@ -12,8 +12,9 @@ for kind in cru era; do
     esac
     vars=`ls $dir`
     for var in $vars; do
+        outfile=
         case $var in
-            RAIN|ET|ETp|SNOW)
+            RAIN|ET|SNOW)
                 outfile=${var}_${kind}_clm.nc
                 fac=86400
                 units="mm/s"
@@ -22,8 +23,18 @@ for kind in cru era; do
                 case $var in
                     RAIN) lvar="atmospheric rain";;
                     ET) lvar="evapotransporation";;
-                    ETp) lvar="potential et (Priestley Taylor)";;
                     SNOW) lvar="atmospheric snow";;
+                    *) echo "$0: error: unknown var $var";exit -1;;
+                esac
+                ;;
+            ETp)
+                outfile=${var}_${kind}_clm.nc
+                fac=0.035
+                units="W/m2"
+                newunits="mm/dy"
+                xdir=.
+                case $var in
+                    ETp) lvar="potential et (Priestley Taylor)";;
                     *) echo "$0: error: unknown var $var";exit -1;;
                 esac
                 ;;

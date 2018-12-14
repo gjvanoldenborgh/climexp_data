@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 [ "$1" = force ] && force=true
 yr=`date -d "last month" +%Y`
 mo=`date -d "last month" +%m`

@@ -1,4 +1,4 @@
-#!/bin/sh
+#1/bin/bash
 . ./update_wwv.sh
 
 yr=`date +%Y`

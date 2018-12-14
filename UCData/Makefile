@@ -5,7 +5,7 @@
 
 FFLAGS = -O
 
-FC = pgf90
+FC = gfortran
 
 LD = $(FC) $(FFLAGS)
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # get CRU TS
 force=false
 if [ "$1" = force ]; then
@@ -33,7 +33,6 @@ do
         echo "recompressing $file"
         cdo -r -f nc4 -z zip selvar,$var $var/$file $file
         cdo -r -f nc4 -z zip selvar,stn $var/$file $sfile
-        ncatted -a missing_value,stn,c,f,-999. $sfile
         rm $var/$file
     fi
     . $HOME/climexp/add_climexp_url_field.cgi

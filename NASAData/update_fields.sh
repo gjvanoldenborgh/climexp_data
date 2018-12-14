@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -x
 if [ "$1" = force ]; then
 	force=true

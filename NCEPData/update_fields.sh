@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # CAMSOPI
 version=v0208
 root=ftp://ftp.cpc.ncep.noaa.gov/precip/data-req/cams_opi_$version

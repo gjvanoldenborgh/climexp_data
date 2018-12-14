@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export PATH=$PATH:/usr/local/free/bin:$HOME/climexp/bin
 if [ `uname` = linux ]; then 
     ulimit -s unlimited

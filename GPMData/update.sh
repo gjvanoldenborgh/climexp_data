@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ -d /usr/local/free/bin ]; then
     export PATH=/usr/local/free/bin:$PATH
 fi

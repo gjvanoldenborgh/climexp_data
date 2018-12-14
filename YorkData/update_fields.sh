@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 base=http://www-users.york.ac.uk/~kdc3/papers/coverage2013
 for file in had4_krig_v2_0_0.nc
 do

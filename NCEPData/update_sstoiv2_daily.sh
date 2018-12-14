@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=`date +%Y`
 mo=`date +%m`
 # will be turned off soon...

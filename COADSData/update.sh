@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 base=ftp://ftp.cdc.noaa.gov/Datasets/coads/2degree/enh
 for var in sst air wspd uwnd vwnd slp cldc wspd3 upstr vpstr
 do

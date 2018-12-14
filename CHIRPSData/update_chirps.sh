@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cdo="cdo -r -f nc4 -z zip"
 for res in 25 # 05

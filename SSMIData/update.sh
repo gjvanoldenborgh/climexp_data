@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 download=true
 if [ "$1" = nodownload ]; then
     download=false

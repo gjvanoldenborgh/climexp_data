@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=`date +%Y`
 mo=`date +%m`
 if [ "$1" != force -a -f downloaded_$yr$mo ]; then

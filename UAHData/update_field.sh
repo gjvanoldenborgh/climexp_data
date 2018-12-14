@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=1979
 version="6.0"
 myversion="60"

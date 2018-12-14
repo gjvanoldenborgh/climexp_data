@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # this assumes Philippe downloads the updates.
 cdo="cdo -r -f nc4 -z zip"
 sourcedir=/net/pc170547/nobackup_2/users/sager/ERA5

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # OLR
 
 yrnow=`date -d "a month ago" +%Y`

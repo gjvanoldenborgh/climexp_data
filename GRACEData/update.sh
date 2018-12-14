@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # See mail form Bert Wouters
 #   land
 base=ftp://podaac.jpl.nasa.gov/allData/tellus/L3/land_mass/RL05/netcdf/

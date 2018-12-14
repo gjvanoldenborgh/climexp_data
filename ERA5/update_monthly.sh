@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # this assumes Philippe downloads the updates.
 [ "$1" = force  ] && force=true 
 cdo="cdo -r -f nc4 -z zip"

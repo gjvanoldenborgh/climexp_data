@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # generate historical potential evaporation files
 #

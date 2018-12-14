@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -x
 if [ $HOST = bvlclim.knmi.nl ]; then
     cleanup=true

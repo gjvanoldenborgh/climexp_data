@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # update the 8-8 precipitation data from the volunteer stations
 force=false
 [ "$1" == force ] && force=true

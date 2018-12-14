@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 root=http://www.metoffice.gov.uk/hadobs/hadnmat2/data/
 version=2.0.1.0
 file=HadNMAT.$version.nc

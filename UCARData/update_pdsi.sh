@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 yr=`date +%Y`
 yr=$((yr-1))

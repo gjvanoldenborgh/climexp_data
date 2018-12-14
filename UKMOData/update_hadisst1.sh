@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 wget="wget --no-check-certificate -q -N"
 cdo="cdo -r -f nc4 -z zip"
 base=http://hadobs.metoffice.gov.uk/hadisst/data/

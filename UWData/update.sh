@@ -38,6 +38,10 @@ fi
 FORM_field=hadsst3
 . $HOME/climexp/queryfield.cgi
 series=`ls -t ~/NINO/UKMOData/hadcrut4*_ns_avg.dat | head -1`
+if [ -z "$series" ]; then
+    echo "$0: error: cannot find ~/NINO/UKMOData/hadcrut4*_ns_avg.dat"
+    exit -1
+fi
 subfieldseries ~/NINO/$file $series ./hadsst3-tglobal.nc
 rm eof1_hadsst.nc
 eof ./hadsst3-tglobal.nc 1 normalize varspace mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 begin 1900 eof1_hadsst.nc

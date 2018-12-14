@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # download GPCC v8
 download=true
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data_2018/

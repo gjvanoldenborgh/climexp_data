@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 wget -q -N --header="accept-encoding: gzip" --no-check-certificate http://www.metoffice.gov.uk/hadobs/hadslp2/data/hadslp2r.asc.gz
 gunzip -c hadslp2r.asc.gz > hadslp2r.asc
 wget -q -N --header="accept-encoding: gzip" --no-check-certificate http://www.metoffice.gov.uk/hadobs/hadslp2/data/hadslp2.0_acts.asc.gz

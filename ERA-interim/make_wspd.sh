@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cdo="cdo -r -R -b 32 -f nc4 -z zip"
 yr=1979
 mo=1

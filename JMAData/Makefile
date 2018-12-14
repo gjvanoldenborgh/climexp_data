@@ -2,7 +2,7 @@ FFLAGS = -O # -m64
 ###FFLAGS = -g -C # -m64
 
 ###FC = g95
-FC = pgf90
+FC = gfortran
 
 LIBS = 	$(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a \
 	$(HOME)/NINO/Fortran/$(PVM_ARCH)/libnr.a

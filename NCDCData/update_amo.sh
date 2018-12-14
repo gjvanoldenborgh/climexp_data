@@ -8,7 +8,7 @@ fi
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
 get_index ersst${version}a.nc -75 -7 25 60 > ersst_natl.dat
-scp bhlclim:climexp/NASAData/giss_al_gl_m.dat .
+wget -N http://climexp.knmi.nl/NASAData/giss_al_gl_m.dat .
 correlate ersst_natl.dat file giss_al_gl_m.dat  mon 1:12 plot aap.txt
 a=`awk '{print -$10}' aap.txt | tr '\n' ':'`
 export FORM_a1=1

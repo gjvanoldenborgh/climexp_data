@@ -5,9 +5,7 @@ getit="wget --no-check-certificate -N -q "
 
 # GISTEMP
 
-if [ ! -x txt2dat ]; then
-    gfortran -o txt2dat txt2dat.f90 $HOME/climexp_numerical/$PVM_ARCH/climexp.a
-fi
+make txt2dat
 base=https://data.giss.nasa.gov/gistemp/tabledata_v3/
 for type in Ts Ts+dSST
 do

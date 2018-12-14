@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ "$1" != debug ]; then
     wget --no-check-certificate -q -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/monthly/
     wget --no-check-certificate -q -N -r -np https://www.ncei.noaa.gov/data/total-solar-irradiance/access/yearly/
@@ -10,7 +10,7 @@ file=`ls -t www.ncei.noaa.gov/data/total-solar-irradiance/access/yearly/*.nc|hea
 myfile=tsi_ncdc_yearly.nc
 if [ ! -s $myfile -o $myfile -ot $file ]; then
     cdo selname,TSI $file $myfile
-    ncatted -a climexp_url,global,a,c,'https://climexp.knmi.nl/getindices.cgi?NCDCData/tsi_ncdc_yearly' $myfile
+    ncatted -h -a climexp_url,global,a,c,'https://climexp.knmi.nl/getindices.cgi?NCDCData/tsi_ncdc_yearly' $myfile
     # note: ncks drags the uncertainty along, which is
     # good but not what I need for my old software
 fi
@@ -55,12 +55,12 @@ done
 if [ $doit = true ]; then
     ###echo "cdo copy $files aap.nc"
     cdo copy $files aap.nc
-    ncatted -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" aap.nc
+    ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" aap.nc
     cdo selname,TSI aap.nc $myfile
     rm aap.nc
     file=$myfile
     . $HOME/climexp/add_geospatial_time.sh
-    ncatted -a climexp_url,global,a,c,'https://climexp.knmi.nl/getindices.cgi?NCDCData/tsi_ncdc_monthly' $file
+    ncatted -h -a climexp_url,global,a,c,'https://climexp.knmi.nl/getindices.cgi?NCDCData/tsi_ncdc_monthly' $file
 fi
 
 $HOME/NINO/copyfilesall.sh tsi_ncdc_*.nc

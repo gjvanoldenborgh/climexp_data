@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+version=2018
+###set -x
 debug=false
 if [ "$1" = debug ]; then
     debug=true
@@ -7,8 +9,10 @@ force=false
 if [ "$1" = force ]; then
     force=true
 fi
-wgetflags="--no-passive-ftp"
-if [ `uname` == Darwin ]; then
+if [ $HOST = bvlclim.knmi.nl ]; then
+    wgetflags="--no-passive-ftp"
+fi
+if [ `uname` = Darwin ]; then
     wgetflags=""
 fi
 thisyr=`date "+%Y"`
@@ -16,7 +20,24 @@ lastyr=$((thisyr-1))
 
 # monthly data
 
-for res in 10 25
+base=ftp://ftp.dwd.de/pub/data/gpcc/full_data_${version}
+for res in 25 10 05 025
+do
+    if [ $force = true -o ! -s downloaded_v${version}_${res} ]; then
+        gpccfile=full_data_monthly_v${version}_${res}.nc
+        wget -q -N $wgetflags $base/$gpccfile.gz
+        gunzip -c $gpccfile.gz > $gpccfile
+        ncatted -h -a doi,global,a,c,"10.5676/DWD_GPCC/FD_M_V${version}_$res" $gpccfile
+        cdo -r -f nc4 -z zip selvar,precip $gpccfile gpcc_$res.nc
+        cdo -r -f nc4 -z zip selvar,numgauge $gpccfile ngpcc_$res.nc
+        cdo -r -f nc4 -z zip ifthen ngpcc_${res}.nc gpcc_${res}.nc gpcc_${res}_n1.nc
+        rm $gpccfile
+        $HOME/NINO/copyfiles.sh gpcc_$res.nc ngpcc_$res.nc gpcc_${res}_n1.nc
+        date > downloaded_v${version}_${res}
+    fi
+done
+
+for res in 25 10
 do
     base=ftp://ftp.dwd.de/pub/data/gpcc/monitoring_v6
     yr=1982
@@ -25,7 +46,7 @@ do
     doit=false
     stillok=true
     echo "Updating the $res monitoring analysis"
-    while [ $yr -le $lastyr ]; do
+    while [ $yr -le $thisyr ]; do
         for mo in 01 02 03 04 05 06 07 08 09 10 11 12; do
             file=monitoring_v6_${res}_${yr}_$mo.nc
     	    if [ $debug = false -o stillok = true ]; then
@@ -41,7 +62,9 @@ do
         	    fi
     	    fi
     	    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
-    	        gunzip -c $file.gz > $file
+    	        gunzip -c $file.gz > tmp$file
+                cdo -r -f nc4 -z zip settaxis,${yr}-${mo}-01,0:00,1mon tmp$file $file
+                rm tmp$file
     	    fi
     	    if [ -s $file ]; then
     	        files="$files $file"
@@ -73,7 +96,9 @@ do
                 		fi
         		    fi
         		    if [ -s $file.gz -a \( ! -s $file -o $file -ot $file.gz \) ]; then
-    			        gunzip -c $file.gz > $file
+    			        gunzip -c $file.gz > tmp$file
+    			        cdo -r -f nc4 -z zip copy tmp$file $file
+    			        rm tmp$file
     			    fi
     			    if [ -s $file ]; then
     			        ffiles="$ffiles $file"
@@ -103,8 +128,8 @@ do
             cdo -r -f nc4 -z zip copy gpcc_${res}_n_mon.nc gpcc_${res}_n_first.nc aap.nc
             mv aap.nc gpcc_${res}_n_mon.nc
         fi
-        ncrename -v p,prcp gpcc_${res}_mon.nc
-        ncrename -v s,n gpcc_${res}_n_mon.nc
+        ncrename -v p,precip gpcc_${res}_mon.nc
+        ncrename -v s,numgauge gpcc_${res}_n_mon.nc
         cdo -r -f nc4 -z zip ifthen gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
         for file in gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc; do
             if [ $res = 10 ]; then
@@ -126,9 +151,9 @@ do
         $HOME/NINO/copyfilesall.sh gpcc_${res}_n_mon.nc gpcc_${res}_mon.nc gpcc_${res}_n1_mon.nc
 	    echo "Making gpcc_${res}_combined.nc"
         cdo -r -f nc4 -z zip seldate,2017-01-01,2100-12-31 gpcc_${res}_mon.nc gpcc_${res}_mon1.nc
-        cdo -r -f nc4 -z zip copy gpcc_V8_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
+        cdo -r -f nc4 -z zip copy gpcc_${res}.nc gpcc_${res}_mon1.nc gpcc_${res}_combined.nc 
         cdo -r -f nc4 -z zip seldate,2017-01-01,2100-12-31 gpcc_${res}_n1_mon.nc gpcc_${res}_n1_mon1.nc
-        cdo -r -f nc4 -z zip copy gpcc_V8_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
+        cdo -r -f nc4 -z zip copy gpcc_${res}.nc gpcc_${res}_n1_mon1.nc gpcc_${res}_n1_combined.nc 
         for file in gpcc_${res}*combined.nc; do
             if [ $res = 10 ]; then
                 ncatted -h -a title,global,a,c," combined with the GPCC monitoring and first guess product" \
@@ -156,7 +181,7 @@ done
 # daily data
 
 echo "Checking for new data in the full dataset"
-root=ftp://ftp-anon.dwd.de/pub/data/gpcc/full_data_daily_V1
+root=ftp://ftp-anon.dwd.de/pub/data/gpcc/full_data_daily_V${version}
 [ "$debug" != true ] && wget -q $wgetflags -N $root/full_data_daily_\*.nc.gz
 for file in full_data_daily_*.nc.gz; do
     f=${file%.gz}
@@ -170,7 +195,7 @@ echo "Updating the first guess dataset"
 root=ftp://ftp-anon.dwd.de/pub/data/gpcc/first_guess_daily
 yr=2014
 while [ $yr -le $thisyr ]; do
-    [ "$debug" != true ] && wget -q $wgetflags -N $root/$yr/*.nc.gz
+    [ "$debug" != true ] && wget -q $wgetflags -N $root/$yr/\*.nc.gz
     yr=$((yr+1))
 done
 for file in first_guess_daily*.nc.gz
@@ -183,31 +208,31 @@ do
     fi
 done
 
+if [ ! -s gpcc_full_daily.nc ]; then
+    doit=true
+else
+    doit=false
+fi
 yr=1988
-file=full_data_daily_$yr.nc
+file=full_data_daily_v${version}_$yr.nc
 files=""
-doit=false
 while [ -s $file ]; do
-    if [ ! -s gpcc_full_daily.nc -o gpcc_full_daily.nc -ot $file ]; then
+    if [ gpcc_full_daily.nc -ot $file ]; then
         doit=true
     fi
     files="$files $file"
     yr=$((yr+1))
-    file=full_data_daily_$yr.nc
+    file=full_data_daily_v${version}_$yr.nc
 done
 if [ $doit = true -o "$force" = true ]; then
     echo "Making gpcc_full_daily.nc"
     cdo -r -f nc4 -z zip copy $files gpcc_full_daily_all.nc
     # cdo does not adjust time_coverage_start/end :-(
     ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" gpcc_full_daily_all.nc
-    cdo -r -f nc4 -z zip selvar,p gpcc_full_daily_all.nc gpcc_full_daily.nc
-    ncatted -h -a long_name,p,m,c,"precipitation" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily.nc
-    cdo -r -f nc4 -z zip selvar,s gpcc_full_daily_all.nc gpcc_full_daily_n.nc
-    ncatted -h -a long_name,s,m,c,"number of gauges per grid box" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n.nc
-    ncrename -v p,prcp gpcc_full_daily.nc
-    ncrename -v s,n gpcc_full_daily_n.nc
+    cdo -r -f nc4 -z zip selvar,precip gpcc_full_daily_all.nc gpcc_full_daily.nc
+    cdo -r -f nc4 -z zip selvar,numgauge gpcc_full_daily_all.nc gpcc_full_daily_n.nc
     cdo -r -f nc4 -z zip ifthen gpcc_full_daily_n.nc gpcc_full_daily.nc gpcc_full_daily_n1.nc
-    ncatted -h -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily version 1.0" gpcc_full_daily_n1.nc
+    ncatted -h -a long_name,prcp,m,c,"precipitation in grid boxes with gauges" -a title,global,m,c,"GPCC full data daily v$version" gpcc_full_daily_n1.nc
 fi
 for file in gpcc_full_daily.nc gpcc_full_daily_n.nc gpcc_full_daily_n1.nc; do
     ncatted -h -a source_url,global,c,c,"ftp://ftp-anon.dwd.de/pub/data/gpcc/html/download_gate.html" $file
@@ -237,16 +262,16 @@ if [ $doit = true -o "$force" = true ]; then
     echo "Making gpcc_combined_daily.nc"
     cdo -r -f nc4 -z zip copy $ffiles gpcc_firstguess_daily_all.nc
     cdo -r -f nc4 -z zip selvar,p gpcc_firstguess_daily_all.nc gpcc_firstguess_daily.nc
+    ncrename -v p,precip gpcc_firstguess_daily.nc
     cdo -r -f nc4 -z zip selvar,s gpcc_firstguess_daily_all.nc gpcc_firstguess_daily_n.nc
-    ncrename -v p,prcp gpcc_firstguess_daily.nc
-    ncrename -v s,n gpcc_firstguess_daily_n.nc
+    ncrename -v s,numgauge gpcc_firstguess_daily_n.nc
     cdo -r -f nc4 -z zip ifthen gpcc_firstguess_daily_n.nc gpcc_firstguess_daily.nc gpcc_firstguess_daily_n1.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily.nc gpcc_firstguess_daily.nc gpcc_combined_daily.nc
-    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily v$version, extended with first guess" gpcc_combined_daily.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n.nc gpcc_firstguess_daily_n.nc gpcc_combined_daily_n.nc
-    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily v$version, extended with first guess" gpcc_combined_daily_n.nc
     cdo -r -f nc4 -z zip copy gpcc_full_daily_n1.nc gpcc_firstguess_daily_n1.nc gpcc_combined_daily_n1.nc
-    ncatted -h -a title,global,m,c,"GPCC full data daily version 1.0, extended with first guess" gpcc_combined_daily_n1.nc
+    ncatted -h -a title,global,m,c,"GPCC full data daily v$version, extended with first guess" gpcc_combined_daily_n1.nc
     for file in gpcc_combined_daily.nc gpcc_combined_daily_n.nc gpcc_combined_daily_n1.nc; do
         # cdo does not adjust these yet, recompute myself
         ncatted -h -a time_coverage_start,global,d,c,"" -a time_coverage_end,global,d,c,"" $file

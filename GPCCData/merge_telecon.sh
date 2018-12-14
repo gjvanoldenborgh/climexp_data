@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ###set -x
 dataset="$1"
 if [ -z "$dataset" ]; then

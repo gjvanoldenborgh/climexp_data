@@ -1,4 +1,4 @@
-FC = pgf90
+FC = gfortran
 
 FFLAGS = -g -fbounds-check
 

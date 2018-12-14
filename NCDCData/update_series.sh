@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=`date +%Y`
 mo=`date +%m`
 force=false
@@ -67,11 +67,13 @@ date=`date`
 export date
 ./fillout_gettemp.sh
 
-rsync -r -e ssh -avt ghcnm bhlclim:climexp/NCDCData/
-scp gettemp gettempall \
-    getmin getminall \
-    getmax getmaxall \
-    bhlclim:climexp/NCDCData/
+if [ $HOST = bvlclim.knmi.nl ]; then
+    rsync -r -e ssh -avt ghcnm bhlclim:climexp/NCDCData/
+    scp gettemp gettempall \
+        getmin getminall \
+        getmax getmaxall \
+        bhlclim:climexp/NCDCData/
+fi
 
 date > downloaded_$yr$mo
 

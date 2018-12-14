@@ -20,6 +20,7 @@ fi
 somethingnew=false
 
 wget -q -N $base/v2.prcp.inv
+wget -q -N $base/zipd/v2.prcp.adj.inv
 wget -q -N $base/v2.country.codes
 for file in \
     v2.prcp_adj.Z v2.prcp.Z # v2.slp.Z no longer exists at NCEI, last update was 2003, but we still offer an old version

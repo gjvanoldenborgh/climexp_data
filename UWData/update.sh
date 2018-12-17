@@ -37,12 +37,12 @@ fi
 
 FORM_field=hadsst3
 . $HOME/climexp/queryfield.cgi
-series=`ls -t ~/NINO/UKMOData/hadcrut4*_ns_avg.dat | head -1`
+series=`ls -t ~/climexp/UKMOData/hadcrut4*_ns_avg.dat | head -1`
 if [ -z "$series" ]; then
-    echo "$0: error: cannot find ~/NINO/UKMOData/hadcrut4*_ns_avg.dat"
+    echo "$0: error: cannot find ~/climexp/UKMOData/hadcrut4*_ns_avg.dat"
     exit -1
 fi
-subfieldseries ~/NINO/$file $series ./hadsst3-tglobal.nc
+subfieldseries ~/climexp/$file $series ./hadsst3-tglobal.nc
 rm eof1_hadsst.nc
 eof ./hadsst3-tglobal.nc 1 normalize varspace mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 begin 1900 eof1_hadsst.nc
 patternfield hadsst3-tglobal.nc eof1_hadsst.nc eof1 1 > aap.dat
@@ -51,8 +51,8 @@ $HOME/NINO/copyfilesall.sh pdo_hadsst3.dat
 
 FORM_field=ersstv5a
 . $HOME/climexp/queryfield.cgi
-extend_series ~/NINO/NCDCData/ncdc_gl.dat > ncdc_gl1.dat
-subfieldseries ~/NINO/$file ncdc_gl1.dat ./ersst-tglobal.nc
+extend_series ~/climexp/NCDCData/ncdc_gl.dat > ncdc_gl1.dat
+subfieldseries ~/climexp/$file ncdc_gl1.dat ./ersst-tglobal.nc
 rm eof1_ersst.nc
 eof ./ersst-tglobal.nc 1 normalize varspace anom mon 1 ave 12 lon1 100 lon2 260 lat1 20 lat2 65 eof1_ersst.nc
 patternfield ersst-tglobal.nc eof1_ersst.nc eof1 1 > aap.dat

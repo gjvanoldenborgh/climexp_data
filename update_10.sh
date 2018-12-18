@@ -62,9 +62,6 @@ echo @@@ GRACE
 echo @@@ MeteoSwiss
 (cd MeteoSwissData; ./update.sh  | 2>&1 tee update.log )
 
-echo @@@ UMainz
-(cd MainzData; ./update.sh  | 2>&1 tee update.log )
-
 echo @@@ WX
 (cd WXData; ./update.sh  | 2>&1 tee update.log )
 
@@ -129,6 +126,9 @@ echo @@@ GHCN
 
 echo @@@ MSU
 (cd UAHData; ./update_field.sh | 2>&1 tee update_field.log)
+
+echo @@@ UMainz
+(cd MainzData; ./update.sh  | 2>&1 tee update.log )
 
 echo @@@ NCEP/NCAR reanalysis indices
 (cd NCEPNCAR40; ./update_indices.sh | 2>&1 tee update_indices.log)

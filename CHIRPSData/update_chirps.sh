@@ -63,6 +63,13 @@ done # res(olution)
 
 res=25
 cenfile=$HOME/climexp/UCSBData/CenTrends_v1_monthly_ce.nc
+if [ ! -s $cenfile ]; then
+    (cd $HOME/climexp/UCSBData/; ./update.sh)
+fi
+if [ ! -s $cenfile ]; then
+    echo "$0: error: cannot find CenTrends data:"
+    exit -1
+fi
 $cdo monsum v2p0chirps_$res.nc v2p0chirps_mo_${res}_tmp.nc
 $cdo settaxis,1981-01-15,0:00,1month v2p0chirps_mo_${res}_tmp.nc v2p0chirps_mo_${res}.nc
 ncatted -a units,pr,m,c,"mm/month" v2p0chirps_mo_$res.nc

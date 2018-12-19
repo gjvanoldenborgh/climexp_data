@@ -16,19 +16,18 @@ do
 	for month in $months
 	do
 		file=o3col$year${month}aver.hdf
-		for satellite in multimission gome2 # toms_n7 sbuv_noaa9 gome toms_ep sciamachy omi
-		do
-			if [ $satellite = multimission ]; then
-				url=$base/$year/$month/$file
-			else
-				url=$base/$satellite/$year/$month/$file
-			fi
-			if [ -s $file ]; then
-				wget -q -N $url
-			else
-				wget -q $url
-			fi
-		done
+        if [ $year -le 2008 ]; then
+            satellite=multimission
+            url=$base/$satellite/$year/$file
+        else
+            satellite=gome2
+            url=$base/$satellite/$year/$month/$file
+        fi
+        if [ -s $file ]; then
+            wget -q -N $url
+        else
+            wget -q $url
+        fi
 		if [ ! -s $file ]; then
 			echo "Found data up to $oldfile"
 			echo "($url did not exist)"
@@ -37,7 +36,6 @@ do
 		fi
 		oldfile=$file
 	done
-done
 done
 # http://www.temis.nl/protocols/o3field/toms_n7/1978/11/o3col197811aver.hdf
 # http://www.temis.nl/protocols/o3field/toms_n7/1978/11/o3col197811aver.hdf

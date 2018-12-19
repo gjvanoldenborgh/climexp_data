@@ -1,0 +1,4 @@
+		Average_O3_std:long_name = "Standard deviation of monthly average ozone column" ;
+		Average_O3_std:units = "Dobson units" ;
+		Average_O3_std:_FillValue = 0s ;
+		Average_O3_std:missing_value = 0s ;

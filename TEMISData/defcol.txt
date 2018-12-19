@@ -1,0 +1,4 @@
+		Average_O3_column:long_name = "Monthly average of ozone column distribution" ;
+		Average_O3_column:units = "Dobson units" ;
+		Average_O3_column:_FillValue = 0s ;
+		Average_O3_column:missing_value = 0s ;

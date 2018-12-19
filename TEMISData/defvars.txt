@@ -1,0 +1,16 @@
+	float longitude(longitude) ;
+		longitude:long_name = "Longitude values" ;
+		longitude:cartesian_axis = "X" ;
+		longitude:units = "degrees_E" ;
+		longitude:ipositive = 1 ;
+	float latitude(latitude) ;
+		latitude:long_name = "Latitudes values" ;
+		latitude:cartesian_axis = "Y" ;
+		latitude:units = "degrees_N" ;
+		latitude:ipositive = 1 ;
+	double time(time) ;
+		time:long_name = "Time coordinate values" ;
+		time:cartesian_axis = "T" ;
+		time:units = "months since 1978-01-15 00:00:00.0" ;
+		time:ipositive = 1 ;
+		time:calendar = "Gregorian" ;

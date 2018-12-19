@@ -4,8 +4,8 @@ version=v0208
 root=ftp://ftp.cpc.ncep.noaa.gov/precip/data-req/cams_opi_$version
 mkdir -p cams_opi_$version
 (cd cams_opi_$version; wget -q -N $root/\*)
-for file in cams_opi_$version/cams_opi_merged.??????.Z; do
-    f=${file%.Z}
+for file in cams_opi_$version/cams_opi_merged.??????.gz; do
+    f=${file%.gz}
     if [ ! -s $f -o $f -ot $file ]; then
         gunzip -c $file > $f
     fi

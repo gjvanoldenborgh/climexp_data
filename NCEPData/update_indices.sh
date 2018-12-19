@@ -28,6 +28,7 @@ echo "# dNINO34 [K] NCEP detrended Nino3.4 index" > nino34_detrended_ncep.dat
 echo "# <a href=http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml>using running 30-yr base periods</a>" >> nino34_detrended_ncep.dat
 fgrep -v YR detrend.nino34.ascii.txt | cut -b 1-8,25-  >> nino34_detrended_ncep.dat
 
+make normalize_wksst ninoweek2daily
 cp wksst8110.for wksst8110.for.old
 wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for
 diff wksst8110.for wksst8110.for.old
@@ -54,6 +55,7 @@ $HOME/NINO/copyfilesall.sh plotninoweek.???
 $HOME/NINO/copyfiles.sh nino?_weekly.dat
 $HOME/NINO/copyfiles.sh nino?_5daily.dat
 
+make makesoi
 cp soi soi.old
 wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/soi
 diff soi soi.old
@@ -66,6 +68,7 @@ else
 fi
 $HOME/NINO/copyfilesall.sh cpc_soi.dat
 
+make tele2dat
 cp tele_index.nh tele_index.nh.old
 wget -q -N ftp://ftp.cpc.ncep.noaa.gov/wd52dg/data/indices/tele_index.nh
 diff tele_index.nh tele_index.nh.old
@@ -78,6 +81,7 @@ else
 fi
 $HOME/NINO/copyfilesall.sh cpc_nao.dat cpc_ea.dat cpc_wp.dat cpc_epnp.dat cpc_pna.dat cpc_ea_wr.dat cpc_sca.dat cpc_tnh.dat cpc_pol.dat cpc_pt.dat
 
+make mjo2dat
 cp proj_norm_order.ascii proj_norm_order.ascii.old
 wget -q -N http://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/proj_norm_order.ascii
 diff proj_norm_order.ascii proj_norm_order.ascii.old

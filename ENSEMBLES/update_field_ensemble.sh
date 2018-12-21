@@ -56,6 +56,10 @@ do
             # truncate the part of the file without data
             get_index aap.nc 5 5 52 52 | tail -1 > aap.lastline
             yr=`cat aap.lastline | cut -b 1-4`
+            of [ -z "$yr" ]; then
+                echo "$0: error: cannot find date of last valid point in "`cat aap.lastline`
+                exit -1
+            fi
             mm=`cat aap.lastline | cut -b 5-6`
             dd=`cat aap.lastline | cut -b 7-8`
             cdo $cdoflags seldate,${endyr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
@@ -106,4 +110,4 @@ do
   done
 done
 
-. ./merge_with_cru.sh
+###. ./merge_with_cru.sh

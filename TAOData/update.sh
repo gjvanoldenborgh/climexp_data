@@ -1,4 +1,4 @@
-#1/bin/bash
+#!/bin/bash
 . ./update_wwv.sh
 
 yr=`date +%Y`
@@ -34,7 +34,7 @@ do
   grads2nc tao$ext.ctl tao$ext.nc
   file=tao$ext.nc
   . $HOME/climexp/add_climexp_url_field.cgi
-  rsync -e ssh tao$ext.nc bhlclim:climexp/TAOData/
+  $HOME/NINO/copyfiles.sh tao$ext.nc
 
   make getdepth
   ./getdepth 20 $ext > getdepth.log
@@ -42,7 +42,7 @@ do
   grads2nc tao_z20$ext.ctl tao_z20$ext.nc
   file=tao_z20$ext.nc
   . $HOME/climexp/add_climexp_url_field.cgi
-  rsync -e ssh tao_z20$ext.nc bhlclim:climexp/TAOData/  
+  $HOME/NINO/copyfiles.sh tao_z20$ext.nc
 
 done
 
@@ -73,7 +73,7 @@ do
     grads2nc tao_$var$ext.ctl tao_$var$ext.nc
     file=tao_$var$ext.nc
     . $HOME/climexp/add_climexp_url_field.cgi
-    rsync -e ssh tao_$var$ext.nc bhlclim:climexp/TAOData/
+    $HOME/NINO/copyfiles.sh tao_$var$ext.nc
   done
 
   make u2tau
@@ -84,7 +84,7 @@ do
     grads2nc $ctlfile $file
     . $HOME/climexp/add_climexp_url_field.cgi
   done
-  rsync -e ssh tao_tau_?$ext.nc bhlclim:climexp/TAOData/
+  $HOME/NINO/copyfiles.sh tao_tau_?$ext.nc
 
 done
 date > downloaded_$yr$mo

@@ -13,7 +13,7 @@
         real xx(nxmax),yy(nymax),zz(nzmax),undef
         character file*256,datfile*256,title*80,vars(nvmax)*10
      +        ,lvars(nvmax)*40,units(nvmax)*20
-        integer iargc,llen,get_endian
+        integer iargc,get_endian
 *
 *       arguments
 *
@@ -40,7 +40,7 @@
 *       
         i = index(datfile,'windu')
         if ( i.eq.0 ) then
-            print *,'expected windu somewhere in ',datfile(1:llen(file))
+            print *,'expected windu somewhere in ',trim(datfile)
             stop
         endif
         datfile(i:i+4) = 'tau_x'
@@ -48,7 +48,7 @@
      +        recl=nx*ny*recfa4)
         i = index(file,'windu')
         if ( i.eq.0 ) then
-            print *,'expected windu somewhere in ',file(1:llen(file))
+            print *,'expected windu somewhere in ',trim(file)
             stop
         endif
         file(i:i+4) = 'tau_x'
@@ -70,7 +70,7 @@
      +        recl=nx*ny*recfa4,status='old')
         i = index(datfile,'windv')
         if ( i.eq.0 ) then
-            print *,'expected windv somewhere in ',datfile(1:llen(file))
+            print *,'expected windv somewhere in ',trim(datfile)
             stop
         endif
         datfile(i:i+4) = 'tau_y'
@@ -78,7 +78,7 @@
      +        recl=nx*ny*recfa4)
         i = index(file,'windv')
         if ( i.eq.0 ) then
-            print *,'expected windv somewhere in ',file(1:llen(file))
+            print *,'expected windv somewhere in ',trim(file)
             stop
         endif
         file(i:i+4) = 'tau_y'

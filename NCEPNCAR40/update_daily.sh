@@ -51,9 +51,11 @@ do
 				done
 				cdo $cdoflags copy $var$level.????.nc $var$level.daily.nc
 				if [ "$band" = true ]; then
+				    make bandpass_variance
     				./bandpass_variance $var$level
+    				grads2nc $var${level}var.ctl $var${level}var.nc
     			fi
-				$HOME/NINO/copyfiles.sh	$var$level.daily.nc $var${level}var.???
+				$HOME/NINO/copyfiles.sh	$var$level.daily.nc $var${level}var.nc
 			done
 		fi
 	fi

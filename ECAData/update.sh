@@ -1,7 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 force=false
 [ "$1" = force ] && force=true
-make txt2dat addyears
+make txt2dat addyears ecadata
+for var in clou snow prcp pres tave tdif temp tmax tmin; do
+    [ ! -L eca$var ] && ln -s ecadata eca$var
+    [ ! -L beca$var ] && ln -s ecadata beca$var 
+done
+wget="wget -q -N --no-check-certificate"
 base=http://eca.knmi.nl/download
 for element in tg tx tn pp rr sd cc
 do
@@ -9,7 +14,7 @@ do
     if [ -f ECA_blend_station_$element.txt ]; then
         cp ECA_blend_station_$element.txt ECA_blend_station_$element.txt.old 
     fi
-    wget -q -N $base/ECA_blend_station_$element.txt
+    $wget $base/ECA_blend_station_$element.txt
     if [ ! -s ECA_blend_station_$element.txt ]; then
         echo "download of ECA_blend_station_$element.txt failed"
         exit -1
@@ -19,7 +24,7 @@ do
     if [ -f ECA_blend_$element.zip ]; then
         cp ECA_blend_$element.zip ECA_blend_$element.zip.old
     fi
-    wget -q -N $base/ECA_blend_$element.zip
+    $wget $base/ECA_blend_$element.zip
     if [ ! -s ECA_blend_$element.zip ]; then
         echo "download of ECA_blend_$element.zip failed"
         exit -1
@@ -27,6 +32,7 @@ do
     cmp ECA_blend_$element.zip ECA_blend_$element.zip.old
     if [ $? != 0 -o $force = true ]; then
         # unpack
+        [ ! -d data ] && mkdir data
         cd data
         unzip -o -q ../ECA_blend_$element.zip
         rm -f sources.txt stations.txt elements.txt

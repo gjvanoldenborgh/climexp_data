@@ -84,7 +84,7 @@ while [ $lastok = true ]; do
     fi
 
     maxfile=radar_max_$yr.nc
-    if [ -s $zipfile -a ! -s $maxfile -o $maxfile -ot $zipfile ]; then
+    if [ -s $zipfile -a \( ! -s $maxfile -o $maxfile -ot $zipfile \) ]; then
         echo "unzipping $zipfile"
         unzip -q -o $zipfile
         month=0
@@ -142,11 +142,11 @@ while [ $lastok = true ]; do
         $cdo copy radar_max_${yr}??.nc $maxfile
         rm radar_max_${yr}??.nc
         rm -rf $yr
-        if [ ! -s ${maxfile%.nc}_latlon.nc -o ${maxfile%.nc}_latlon.nc -ot $maxfile ]; then
-            echo "converting max to latlon grid"
-            ./km2latlon $maxfile aap.nc
-            $cdo selindexbox,225,482,144,466 aap.nc ${maxfile%.nc}_latlon.nc
-        fi
+    fi
+    if [ ! -s ${maxfile%.nc}_latlon.nc -o ${maxfile%.nc}_latlon.nc -ot $maxfile ]; then
+        echo "converting max to latlon grid"
+        ./km2latlon $maxfile aap.nc
+        $cdo selindexbox,225,482,144,466 aap.nc ${maxfile%.nc}_latlon.nc
     fi
 done
 $cdo copy radar_max_20??_latlon.nc aap.nc

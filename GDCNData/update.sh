@@ -5,6 +5,10 @@ if [ -f downloaded_$yr$mo ]; then
   echo "Already downloaded GHCN-D this month"
   exit
 fi
+make gdcndata
+for var in snow snwd prcp prcpall tmax tmin tave; do
+    [ ! -L gdcn$var ] && ln -s gdcndata gdcn$var
+done
 # get data
 base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/daily/
 cp ghcnd-countries.txt ghcnd-countries.txt.old
@@ -52,6 +56,7 @@ make addyears
 
 # copy to climexp
 echo "copy to climexp"
+chmod -R o+r ghcnd
 $HOME/NINO/copyfiles.sh -r ghcnd
 $HOME/NINO/copyfiles.sh ghcnd-countries.txt ghcnd-stations.txt ghcnd2.inv.withyears
 

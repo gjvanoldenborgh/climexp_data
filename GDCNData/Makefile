@@ -9,7 +9,7 @@ FFLAGS = -O -m64
 
 FC=gfortran
 
-LIBS=$(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a
+LIBS=$(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
 
 addyears:	addyears.o
 		$(FC) $(FFLAGS) -o $@ addyears.o $(LIBS)

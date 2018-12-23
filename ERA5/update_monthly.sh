@@ -34,4 +34,5 @@ for var in tmin tmax; do
 done
 if [ -n "$filelist" ]; then
     rsync -v $filelist bhlclim:climexp/ERA5/
+    rsync -v $filelist climexp-64400.climexp-knmi.surf-hosted.nl:climexp/ERA5/
 fi

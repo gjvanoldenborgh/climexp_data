@@ -5,7 +5,7 @@ program km2latlon
     implicit none
     include 'netcdf.inc'
     integer,parameter :: nxmax=700,nymax=765,nzmax=1,ntmax=366*100,nensmax=0,mxmax=600,mymax=666,nvarmax=1
-    real,parameter::  xmin=0.0075,xmax=8.9925,ymin=49.37,ymax=55.355
+    real,parameter :: xmin=0.0075,xmax=8.9925,ymin=49.37,ymax=55.355
     integer :: i,j,ix,iy,iz,it,nx,ny,nz,nt,ncid,ncid1,status,ndims,nvars,ngatts,unlimdimid
     integer :: dimids(nf_max_var_dims),ivars(6,1),jvars(6,1),varid,nperyear,iperyear,ntvars
     integer :: nens1,nens2,ie,itimeaxis(366*100),yrbegin,mobegin,xtype,ntvarid,natts,ndimvar

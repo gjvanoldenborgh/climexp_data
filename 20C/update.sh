@@ -59,9 +59,6 @@ do
     fi
 done
 
-echo "TEMPORARY EXIT"
-exit
-
 # wind speed is a chore - compuyte from 3-hourly U and V winds
 
 base=ftp://ftp.cdc.noaa.gov/Datasets/20thC_ReanV2c/gaussian/monolevel/

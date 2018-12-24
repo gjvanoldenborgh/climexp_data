@@ -56,7 +56,7 @@ do
         climfile=${var}_Daily_LatLong1_clim.nc
         if [ ! -s ${var}_Daily_LatLong1_clim.nc ]; then
             cdo selvar,climatology $file aap.nc
-            ncrename -v lev,time -d lev,time aap.nc
+            ncrename -d day_number,time aap.nc
             cdo -r settaxis,1951-01-01,00:00,1day aap.nc $climfile
 	        rm aap.nc
         fi
@@ -111,7 +111,7 @@ do
         *) echo "$0: unknown var $var"; exit -1;;
     esac
     echo "Computing $var"
-    daily2longerfield Complete_${basevar}_LatLong1.nc 1 $oper minfac 75 berkeley_$var.nc
+    daily2longerfield ${basevar}_Daily_LatLong1_full.nc 1 $oper minfac 75 berkeley_$var.nc
     $HOME/NINO/copyfiles.sh berkeley_$var.nc
 done
 

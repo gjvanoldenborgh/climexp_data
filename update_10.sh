@@ -95,8 +95,8 @@ echo @@@ NCEP
 (cd NCEPData; ./update_fields.sh | 2>&1 tee update_field.log)
 (cd NCEPData; ./update_ghcn_cams.sh | 2>&1 tee update_ghcn_cams.log)
 
-echo @@@ PSMSL
-(cd PSMSLData; ./update.sh | 2>&1 tee update.log)
+###echo @@@ PSMSL
+###(cd PSMSLData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ TAO
 (cd TAOData; ./update.sh | 2>&1 tee update.log)
@@ -107,6 +107,9 @@ echo @@@ BMRC
 echo @@@ NCDC
 (cd NCDCData; ./update_indices.sh | 2>&1 tee update_indices.log)
 (cd NCDCData; ./update_fields.sh | 2>&1 tee update_fields.log)
+
+echo @@@ MBARI
+(cd MBARIData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ UCAR
 (cd UCARData; ./update.sh | 2>&1 tee update.log)

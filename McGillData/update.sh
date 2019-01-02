@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "No longer works"
 for var in crop past
 do
     wget -N http://www.geog.mcgill.ca/landuse/pub/Data/Histlanduse/NetCDF/gl${var}_1700-2007_0.5.nc.zip

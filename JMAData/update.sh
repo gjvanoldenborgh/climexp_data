@@ -15,5 +15,7 @@ do
     yr=$((yr+10))
 done
 
+make dat2grads
 ./dat2grads
-$HOME/NINO/copyfiles.sh heat700_jma.???
+grads2nc heat700_jma.ctl heat700_jma.nc
+$HOME/NINO/copyfiles.sh heat700_jma.nc

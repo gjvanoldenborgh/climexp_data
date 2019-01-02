@@ -1,6 +1,5 @@
 FFLAGS = -g -C
 
-###FC = g95
 FC = gfortran
 
 all: getusrunoff

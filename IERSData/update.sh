@@ -1,8 +1,9 @@
 #!/bin/sh
 mv iers.data iers.data.old
-url=https://datacenter.iers.org/eop/-/somos/5Rgv/latest/213
-wget -N --no-check-certificate $url
-cp `basename $url` iers.data
+base=https://datacenter.iers.org/data/latestVersion/
+file=223_EOP_C04_14.62-NOW.IAU1980223.txt
+wget -N --no-check-certificate $base/$file
+cp $file iers.data
 cat > lod.dat << EOF
 # LOD [s] length of day
 # from <a href="http://www.iers.org/IERS/EN/DataProducts/EarthOrientationData/eop.html" target="_new">IERS</a>

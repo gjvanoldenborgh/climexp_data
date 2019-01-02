@@ -58,7 +58,6 @@ subroutine gdcngetargs(sname,slat,slon,slat1,slon1,n,nn,station  &
                 if ( sname(i:i) == '+' ) sname(i:i) = ' '
                 if ( sname(i:i) == '_' ) sname(i:i) = ' '
             enddo
-            print *,'Looking for stations with substring ',trim(sname)
             n = 0
             if ( command_argument_count() > 1 ) then
                 narg = 2

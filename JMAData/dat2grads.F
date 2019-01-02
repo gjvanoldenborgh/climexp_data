@@ -3,7 +3,8 @@
 !       convert NODC's ASCII format to a griudded file, based on analyse.for
 !
         implicit none
-#include "recfac.h"
+        integer recfa4
+        parameter (recfa4=4)
         integer nx,ny,nz,yrbeg,yrend
         parameter (nx=360, ny=180, nz=33, yrbeg=1950,yrend=2020)
         integer i,j,k,yr,yy,irec

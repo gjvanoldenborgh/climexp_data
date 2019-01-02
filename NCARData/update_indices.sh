@@ -9,7 +9,9 @@ cat > np.dat <<EOF
 # NP Index Data provided by the Climate Analysis Section, NCAR, Boulder, USA, Trenberth and Hurrell (1994).
 # <a href="http://climatedataguide.ucar.edu/guidance/north-pacific-index-npi-trenberth-and-hurrell-monthly-and-winter">source</a>
 # NPI [hPa] North Pacific Index
-# institution :: 
+# institution :: NCAR
+# references :: Trenberth, K.E. & Hurrell, J.W. Climate Dynamics (1994) 9: 303. https://doi.org/10.1007/BF00204745
+# history :: downloaded `date`
 EOF
 tail -n +2 npindex_monthly.txt | sed -e 's/ -999.00/-999.9/g' >> np.dat
 

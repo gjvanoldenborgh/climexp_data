@@ -4,6 +4,7 @@ if [ "$1" = force ]; then
 fi
 
 # new merged dataset
+echo "NCDC merged dataset"
 base=ftp://ftp.ncdc.noaa.gov/pub/data/noaaglobaltemp/operational/gridded/
 ###file=`curl $base | fgrep asc.gz | sed -e 's/.*href="//' -e 's/asc.gz".*$//'`
 file=`curl $base | fgrep asc.gz | sed -e 's/^.* NOAA/NOAA/' -e 's/\.asc\.gz//'`
@@ -26,9 +27,46 @@ if [ $? != 0 -o "$force" = true ]; then
 	$HOME/NINO/copyfiles.sh $file
 fi
 
+# GHCN-M v3 temperature
+echo "GHCN-M v3 temperature"
+base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
+file=grid-mntp-1880-current-v\?.\?.\?
+wget -q -N $base/$file.dat.gz
+# get the highest version number
+file=`ls $file.dat.gz | sort | tail -1`
+file=${file%.dat.gz}
+gzip -t $file.dat.gz
+if [ $? != 0 ]; then
+	echo "Corrupt file $file, trying next one"
+	file=`ls $file.dat.gz | sort | tail -2 | head -1`
+	file=${file%.dat.gz}
+	gzip -t $file.dat.gz
+	if [ $? != 0 ]; then
+		echo "Corrupt file $file, giving up"
+		file=""
+	fi
+fi
+if [ -n "$file" ]; then
+	echo gunzipping $file.dat.gz
+	cp $file.dat $file.dat.old
+	gunzip -c $file.dat.gz > $file.dat
+	cmp $file.dat $file.dat.old
+	if [ $? != 0 -o "$force" = true ]; then
+		make ncdc2grads
+		./ncdc2grads $file.dat
+		grads2nc temp_anom.ctl temp_anom.nc
+        ncatted -h -a institution,global,a,c,"NOAA/NCEI" \
+                -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" temp_anom.nc
+        file=temp_anom.nc
+	    . $HOME/climexp/add_climexp_url_field.cgi 
+		$HOME/NINO/copyfiles.sh temp_anom.nc
+	fi
+fi
+
 # ERSST v4,5
 for version in v5 v4
 do
+    echo "ERSST $version"
     wget -q -N ftp://ftp.ncdc.noaa.gov/pub/data/cmb/ersst/$version/netcdf/ersst.$version.[12]*.nc
     new=true
     if [ $new = true ]; then
@@ -65,41 +103,6 @@ do
         fi
     fi
 done
-
-# GHCN-M v3 temperature
-base=ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3/grid/
-file=grid-mntp-1880-current-v\?.\?.\?
-wget -q -N $base/$file.dat.gz
-# get the highest version number
-file=`ls $file.dat.gz | sort | tail -1`
-file=${file%.dat.gz}
-gzip -t $file.dat.gz
-if [ $? != 0 ]; then
-	echo "Corrupt file $file, trying next one"
-	file=`ls $file.dat.gz | sort | tail -2 | head -1`
-	file=${file%.dat.gz}
-	gzip -t $file.dat.gz
-	if [ $? != 0 ]; then
-		echo "Corrupt file $file, giving up"
-		file=""
-	fi
-fi
-if [ -n "$file" ]; then
-	echo gunzipping $file.dat.gz
-	cp $file.dat $file.dat.old
-	gunzip -c $file.dat.gz > $file.dat
-	cmp $file.dat $file.dat.old
-	if [ $? != 0 -o "$force" = true ]; then
-		make ncdc2grads
-		./ncdc2grads $file.dat
-		grads2nc temp_anom.ctl temp_anom.nc
-        ncatted -h -a institution,global,a,c,"NOAA/NCEI" \
-                -a source_url,global,a,c,"https://www.ncdc.noaa.gov/temp-and-precip/ghcn-gridded-products/" temp_anom.nc
-        file=temp_anom.nc
-	    . $HOME/climexp/add_climexp_url_field.cgi 
-		$HOME/NINO/copyfiles.sh temp_anom.nc
-	fi
-fi
 
 # old merged version, turns out to be uniofficial
 base=http://www1.ncdc.noaa.gov/pub/data/ghcn/blended/

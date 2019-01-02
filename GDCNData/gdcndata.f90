@@ -105,6 +105,9 @@ program gdcndata
         enddo
     endif
 !
+    if ( sname /= ' ' ) then
+        print *,'Looking for stations with substring ',trim(sname)
+    end if
     if ( station(1:1) /= '-' ) then
         print '(2a)','# Searching for GHCND series nr ',station
     endif

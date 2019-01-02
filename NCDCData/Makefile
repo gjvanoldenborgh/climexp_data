@@ -46,8 +46,11 @@ makeyeartempindex: makeyeartempindex.o newsupport.o
 makeyeartempindex_v2: makeyeartempindex_v2.o newsupport.o
 		$(FC) $(FFLAGS) -o $@ $@.o newsupport.o
 
-ncdc2grads:	ncdc2grads.F
-		$(FC) $(FFLAGS) -o $@ ncdc2grads.F $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
+ncdc2grads:	ncdc2grads.o
+		$(FC) $(FFLAGS) -o $@ ncdc2grads.o $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
 
 ncdc2grads4:	ncdc2grads4.f90
 		$(FC) $(FFLAGS) -o $@ ncdc2grads4.f90 $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
+
+convert_regression:	convert_regression.o
+		$(FC) $(FFLAGS) -o $@ $@.o

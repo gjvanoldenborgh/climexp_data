@@ -4,8 +4,8 @@ FFLAGS = -O # -m64
 ###FC = g95
 FC = gfortran
 
-LIBS = 	$(HOME)/NINO/Fortran/$(PVM_ARCH)/climexp.a \
-	$(HOME)/NINO/Fortran/$(PVM_ARCH)/libnr.a
+LIBS = 	$(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
+	$(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
 
 SYSLIBS = -L$(HOME)/lib -L/sw/lib -lnetcdf -lnetcdff
 

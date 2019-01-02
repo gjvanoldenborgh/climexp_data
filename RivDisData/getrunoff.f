@@ -6,19 +6,19 @@
         implicit none
         integer nn
         parameter(nn=2000)
-	double precision pi
-	parameter (pi = 3.1415926535897932384626433832795d0)
+        double precision pi
+        parameter (pi = 3.1415926535897932384626433832795d0)
         integer i,j,k,jj,kk,n,ldir,istation,nmin(0:48),yr,nok,nlist
         integer iwmo(nn),ielev(nn),area(nn),firstyear(nn)
      +        ,lastyear(nn),nyr(nn),ind(nn),list(nn)
         real rlat(nn),rlon(nn),slat,slon,slat1,slon1,dist(nn),dlon
      +        ,runoff(12),rmin,elevmin,elevmax,rlonmin,rlonmax,rlatmin
      +        ,rlatmax
+        logical lwrite
         character name(nn)*20,country(nn)*20,river(nn)*20
         character string*80,sname*20
         character dir*256
-        integer iargc,llen
-        external iargc,getarg,llen
+        integer iargc
 
 c     5 digit RivDis station number
 c     lat,lon,ielev,area
@@ -27,12 +27,13 @@ c     20 Character country name
 c     20 character station name
 c     20 character river name
 *
+        lwrite = .false.
         if ( iargc().lt.1 ) then
             print '(a)','usage: getrunoff [lat lon|name] [min years]'
             print *,'gives stationlist with years of data' 
             print '(a)','       getrunoff station_id'
             print *,'gives historical runoff station_id,'
-            stop
+            call exit(-1)
         endif
         call getgetargs(sname,slat,slon,slat1,slon1,n,nn,istation,1
      +        ,nmin,rmin,elevmin,elevmax,list,nn,nlist)
@@ -57,12 +58,12 @@ c     20 character river name
         endif
         call getenv('DIR',dir)
         if ( dir.ne.' ' ) then
-            ldir = llen(dir)
+            ldir = len_trim(dir)
             dir(ldir+1:) = '/RivDisData/'
         else
             dir = '/usr/people/oldenbor/NINO/RivDisData/'
         endif
-        ldir = llen(dir)
+        ldir = len_trim(dir)
         open(unit=1,file=dir(1:ldir)//'rivdis.index',status='old')
 *
         i = 1
@@ -99,8 +100,8 @@ c     20 character river name
             endif
         elseif ( sname.ne.' ' ) then
 *           look for a station with sname as substring
-            if (  index(name(i),sname(1:llen(sname))).ne.0 .or.
-     +            index(river(i),sname(1:llen(sname))).ne.0 ) then
+            if (  index(name(i),sname(1:len_trim(sname))).ne.0 .or.
+     +            index(river(i),sname(1:len_trim(sname))).ne.0 ) then
                 i = i + 1
                 if ( i.gt.nn ) then
                     print *,'Maximum ',nn,' stations'
@@ -138,7 +139,7 @@ c     20 character river name
             enddo
         else
             print *,'internal error 31459263'
-            call abort
+            call exit(-1)
         endif
         goto 100
 *       
@@ -173,10 +174,10 @@ c     20 character river name
             if ( nok.gt.n ) goto 800
             if ( istation.le.0 ) print '(a)'
      +            ,'=============================================='
-            do k=1,llen(name(jj))
+            do k=1,len_trim(name(jj))
                 if ( name(jj)(k:k).eq.' ' ) name(jj)(k:k) = '_'
             enddo
-            do k=1,llen(river(jj))
+            do k=1,len_trim(river(jj))
                 if ( river(jj)(k:k).eq.' ' ) river(jj)(k:k) = '_'
             enddo
             print '(7a)','# ',name(jj),' on the ',river(jj),' (',
@@ -185,20 +186,21 @@ c     20 character river name
      +           ,rlat(jj),'N, ',rlon(jj),'E, ',ielev(jj)
      +           ,'m, upstream area ',area(jj),'km^2' 
             print '(a,i5.5,4a)','# RivDis station code: ',iwmo(jj)
-     +            ,' ',name(jj)(1:llen(name(jj))),'/',
-     +            river(jj)(1:llen(river(jj)))
+     +            ,' ',name(jj)(1:len_trim(name(jj))),'/',
+     +            river(jj)(1:len_trim(river(jj)))
             if ( istation.le.0 ) then
                 print '(a,i4,a,i4,a,i4)','Found ',nyr(jj)
      +                ,' years of data in ',firstyear(jj),'-'
      +                ,lastyear(jj)
             else
                 write(dir(ldir+1:),'(3a,i5.5,a)') '/data/',
-     +                country(jj)(1:llen(country(jj))),'/',iwmo(jj)
+     +                country(jj)(1:len_trim(country(jj))),'/',iwmo(jj)
      +                ,'/data.txt'
-                ldir = llen(dir)
-***                print *,'opening ',dir(1:ldir)
+                ldir = len_trim(dir)
+                if ( lwrite ) print *,'opening ',dir(1:ldir)
                 open(2,file=dir(1:ldir),status='old',err=940)
 *               read and print (uninterpreted) header
+                read(2,'(a)') string
 ***                print '(a)',string
                 print '(a)','# runoff [m3/s]'
 *               read and print data
@@ -211,7 +213,7 @@ c     20 character river name
                     write(0,*)
      +                    'getrunoff: error: inconsistent station ID:'
      +                    ,iwmo(jj),k
-                    call abort
+                    call exit(-1)
                 endif
                 do k=1,12
                     if ( runoff(k).ge.0 ) goto 610
@@ -229,20 +231,20 @@ c     20 character river name
      +        ,'=============================================='
         goto 999
   900   print *,'please give latitude in degrees N, not ',string
-        call abort
+        call exit(-1)
   901   print *,'please give longitude in degrees E, not ',string
-        call abort
+        call exit(-1)
   902   print *,'error reading country.codes',string
-        call abort
+        call exit(-1)
   903   print *,'please give number of stations to find, not ',string
-        call abort
+        call exit(-1)
   904   print *,'please give station ID or name, not ',string
-        call abort
+        call exit(-1)
   920   print *,'error reading information from line ',string
-        call abort
+        call exit(-1)
   930   print *,'error reading data at/after line ',j,yr,runoff
-        call abort
+        call exit(-1)
   940   print *,'error: cannot locate data file ',dir(1:ldir)
-        call abort
+        call exit(-1)
   999   continue
         end

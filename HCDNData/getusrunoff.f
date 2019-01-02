@@ -20,7 +20,7 @@
         character string*80,sname*20
         character dir*256,program*255
         integer iargc,llen
-        external iargc,getarg,llen
+        external llen
 *
 *
         call getarg(0,program)

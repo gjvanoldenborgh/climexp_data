@@ -1,6 +1,6 @@
 #!/bin/sh
 
-wget -N http://www.eiscat.rl.ac.uk/Members/mike/Open%20solar%20flux%20data/openflux1675to2010.txt
+wget -N --no-check-certificate http://www.eiscat.rl.ac.uk/Members/mike/Open%20solar%20flux%20data/openflux1675to2010.txt
 
 cat > osf.dat << EOF
 # <a href="http://www.eiscat.rl.ac.uk/Members/mike/Open%20solar%20flux%20data/openflux1675to2010.txt">Open solar flux</a> from model and geomagnetic activity data

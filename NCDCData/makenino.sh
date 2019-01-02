@@ -5,6 +5,7 @@ if [ -z "$version" ]; then
 fi
 get_index ersst${version}.nc 0 360 -20 20 > ersst_tropical.dat
 
+make convertregression
 for nino in 12 3 3.4 4
 do
   get_index ersst${version}.nc mask ersst${version}_nino${nino}_mask.nc | sed -e "s/spatial statistic of/Nino$nino index based on/" > ersst_nino${nino}.dat

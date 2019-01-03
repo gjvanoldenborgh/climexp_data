@@ -50,7 +50,7 @@ do
   make $file
 done
 
-for file in gettempall gettmin gettminall getmax getmaxall
+for file in gettempall getmin getminall getmax getmaxall
 do
     rm $file
     ln -s gettemp $file

@@ -10,11 +10,13 @@ def get_from_ecmwf(date,var,type,file,ncfile):
     
     if not os.path.isfile(file) or os.stat(file).st_size == 0:
         print "Retrieving " + file + " " + date
+        dataset = "interim"
         if type == "fc":
-            dataset = "interim"
-            stream = "mnth"
+            if var == "snf":
+                stream = "mdfa"
+            else:
+                stream = "mnth"
         else:
-            dataset = "interim"
             stream = "moda"
         dict = {'dataset' : dataset,
                 'stream'  : stream,
@@ -34,14 +36,22 @@ def get_from_ecmwf(date,var,type,file,ncfile):
                           'grid' : '64' })
         if type == "fc":
             file00 = file + '00'
-            dict.update({ 'step': '12', \
-                          'time' : '00:00:00', \
-                          'target' : file00 })
+            if stream == "mnth":
+                dict.update({ 'step': '12', \
+                              'time' : '00:00:00', \
+                              'target' : file00 })
+            else:
+                dict.update({ 'step': '0-12', \
+                              'target' : file00 })                
             server.retrieve(dict)
             file12 = file + '12'
-            dict.update({ 'step': '12', \
-                          'time' : '12:00:00', \
-                          'target' : file12 })
+            if stream == "mnth":
+                dict.update({ 'step': '12', \
+                              'time' : '12:00:00', \
+                              'target' : file12 })
+            else:
+                dict.update({ 'step': '12-24', \
+                              'target' : file12 })
             server.retrieve(dict)
 
             if os.path.exists(file00) and os.path.getsize(file00) != 0 and os.path.exists(file12) and os.path.getsize(file12) != 0 :
@@ -92,7 +102,7 @@ currentmonth = datetime.now().month
 cdo = "cdo -r -R -b 32 -f nc4 -z zip "
 
 vars = [ "t2m", "ts", "msl", "u10", "v10", "wspd", "ci", "snd", "sst", "vap",
-         "tp", "evap", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
+         "tp", "evap", "snf", "ustrs", "vstrs", "lhtfl", "shtfl", "ssr", "str", 
          "z", "t", "u", "v", "w", "q", "rh" ]
 for var in vars:
     ncfiles = ""
@@ -140,6 +150,12 @@ for var in vars:
         code = "141.128"
         type = "an"
         units = "m"
+    elif var == "snf":
+        long_name = "snowfall"
+        code = "144.128"
+        type = "fc"
+        units = "mm/dy"
+        factor = 1000
     elif var == "sst":
         long_name = "sea surface temperature"
         code = "34.128"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # to be ran on the 10th of each month
 
 if [ $HOST != bvlclim.knmi.nl ]; then

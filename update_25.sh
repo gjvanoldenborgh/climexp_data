@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ $HOST != bvlclim.knmi.nl ]; then
   echo "Are you sure you want to run this script on $HOST?"
   read yesno

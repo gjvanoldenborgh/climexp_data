@@ -387,7 +387,10 @@ do
     ###rsync -e ssh -avt oldenbor@bvlclim:climexp/ERA-interim/erai_${var}_daily.nc .
     echo "cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc"
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
+    echo "daily2longerfield erai_${var}_daily_extended.nc 12 mean erai_${var}_extended.nc"
+    daily2longerfield erai_${var}_daily_extended.nc 12 mean erai_${var}_extended.nc
     echo "copying to bhlclim..."
-    $HOME/NINO/copyfiles.sh erai_${var}_daily_extended.nc &
+    $HOME/NINO/copyfiles.sh erai_${var}_extended.nc erai_${var}_daily_extended.nc &
+    rsync -avt erai_${var}_extended.nc erai_${var}_daily_extended.nc ubuntu@climexp.climexp-knmi.surf-hosted.nl:climexp_data/ERA-interim/ &
 done
 

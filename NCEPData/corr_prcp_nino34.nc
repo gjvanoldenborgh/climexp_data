@@ -1,1 +1,1 @@
-../GPCCData/corr_prcp_nino34.nc
+corr_prcp_nino34_cmorph.nc

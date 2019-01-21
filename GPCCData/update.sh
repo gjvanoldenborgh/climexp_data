@@ -23,11 +23,15 @@ lastyr=$((thisyr-1))
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data_${version}
 for res in 25 10 05 025
 do
+    doi=10.5676/DWD_GPCC/FD_M_V${version}_$res
+    if [ $res != 025 ]; then
+        doi=${doi}0
+    fi
     if [ $force = true -o ! -s downloaded_v${version}_${res} ]; then
         gpccfile=full_data_monthly_v${version}_${res}.nc
         wget -q -N $wgetflags $base/$gpccfile.gz
         gunzip -c $gpccfile.gz > $gpccfile
-        ncatted -h -a doi,global,a,c,"10.5676/DWD_GPCC/FD_M_V${version}_$res" $gpccfile
+        ncatted -h -a doi,global,a,c,"$doi" $gpccfile
         cdo -r -f nc4 -z zip selvar,precip $gpccfile gpcc_$res.nc
         cdo -r -f nc4 -z zip selvar,numgauge $gpccfile ngpcc_$res.nc
         cdo -r -f nc4 -z zip ifthen ngpcc_${res}.nc gpcc_${res}.nc gpcc_${res}_n1.nc

@@ -1,5 +1,6 @@
 #!/bin/bash
 # this assumes Philippe downloads the updates.
+yrnow=`date +%Y -d "2 months ago"`
 [ "$1" = force  ] && force=true 
 cdo="cdo -r -f nc4 -z zip"
 sourcedir=/net/pc170547/nobackup_2/users/sager/ERA5
@@ -10,8 +11,18 @@ for var in $vars; do
         q|rh|t|u|v|w|z) var="3d";;
     esac
     if [ $var != 3d ]; then
-        # leave out 2000-2007 as long as it has not yet been downloaded...
-        sourcefiles="$sourcedir/2???/mon/era5_${var}_*"
+        ###sourcefiles="$sourcedir/????/mon/era5_${var}_*"
+        sourcefiles=""
+        yr=1978
+        while [ $yr -lt $yrnow ]; do
+            ((yr++))
+            onefile=`echo $sourcedir/$yr/mon/era5_${var}_*`
+            if [ -s "$onefile" ]; then
+                sourcefiles="$sourcefiles $onefile"
+            else
+                sourcefiles=""
+            fi
+        done
         lastfile=`ls -t $sourcefiles | head -n 1`
         file=era5_${var}.nc
         if [ $lastfile -nt $file -o -n "$force" ]; then
@@ -34,5 +45,5 @@ for var in tmin tmax; do
 done
 if [ -n "$filelist" ]; then
     rsync -v $filelist bhlclim:climexp/ERA5/
-    rsync -v $filelist climexp-64400.climexp-knmi.surf-hosted.nl:climexp/ERA5/
+    rsync -v $filelist climexp.climexp-knmi.surf-hosted.nl:climexp/ERA5/
 fi

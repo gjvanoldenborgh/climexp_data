@@ -52,8 +52,8 @@ else
   echo "new file is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfilesall.sh plotninoweek.??? 
-$HOME/NINO/copyfiles.sh nino?_weekly.dat
-$HOME/NINO/copyfiles.sh nino?_5daily.dat
+$HOME/NINO/copyfiles.sh nino?_weekly.dat nino??_weekly.dat
+$HOME/NINO/copyfiles.sh nino?_5daily.dat nino??_5daily.dat
 
 make makesoi
 cp soi soi.old

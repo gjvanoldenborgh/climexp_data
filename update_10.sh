@@ -146,6 +146,7 @@ echo @@@ NCEP/NCAR daily
 (cd NCEPNCAR40; ./update_daily.sh | 2>&1 tee update_daily.log)
 
 echo @@@ ERA-interim
+(ssh zuidzee "cd NINO/ERA-interim; ./update_indices.sh |& tee update_indices.log")
 (ssh zuidzee "cd NINO/ERA-interim; ./update.sh |& tee update.log")
 
 echo @@@ ERA5

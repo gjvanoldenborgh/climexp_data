@@ -1,4 +1,5 @@
 #!/bin/sh
+if [ -n "$MEI_UPDATED_AGAIN" ]; then
 cp table.html table.html.old
 url=https://www.esrl.noaa.gov/psd/enso/mei/table.html
 wget -N $url
@@ -25,6 +26,8 @@ done
 sed -e "s/$lastline/$lastline $undef/" mei.dat > aap.dat
 mv aap.dat mei.dat
 $HOME/NINO/copyfiles.sh mei.dat
+
+fi # MEI
 
 cp olr.mon.mean.nc olr.mon.mean.nc.old
 wget -N ftp://ftp.cdc.noaa.gov/Datasets/interp_OLR/olr.mon.mean.nc

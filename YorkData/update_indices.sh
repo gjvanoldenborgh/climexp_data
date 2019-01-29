@@ -3,7 +3,7 @@ base=http://www-users.york.ac.uk/~kdc3/papers/coverage2013
 for file in had4_krig_v2_0_0.txt
 do
     wget -N -q $base/$file
-    f=${file%.txt}.dat
+    f=${file%.txt}_gl.dat
     cat > $f <<EOF
 # <a href="http://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html">Cowtan and Way</a> global mean temperature, HadCRUT4 in-filled with kriging.
 # Tglobal [K] HadCRUT4 global mean T2m/SST in-filled with kriging

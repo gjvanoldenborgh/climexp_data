@@ -46,6 +46,9 @@ tar zxf ghcnd_all.tar.gz
 echo "and compressing all data files again"
 gzip -r -f ghcnd_all
 
+# replace patched series
+cp patched/* ghcnd_all
+
 # swap
 mv ghcnd_all ghcnd
 

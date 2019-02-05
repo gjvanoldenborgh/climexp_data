@@ -47,3 +47,11 @@ if [ -n "$filelist" ]; then
     rsync -v $filelist bhlclim:climexp/ERA5/
     rsync -v $filelist climexp.climexp-knmi.surf-hosted.nl:climexp/ERA5/
 fi
+
+# global means
+
+for  var in t2m
+do
+    file=era5_$var.nc
+    get_index $file 0 360 -90 90 standardunits > era5_${var}_gl.dat
+done

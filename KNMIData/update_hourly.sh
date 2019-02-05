@@ -69,3 +69,4 @@ done
 average_ensemble rx_%%.nc num > rx_num.dat
 $HOME/NINO/copyfiles.sh list_rx.txt list_t[dp].txt rx[^_]??.dat t[dp][^_]??.dat rx[^_]??.gz t[dp][^_]??.gz rx_num.dat
 rsync -e ssh -avt rx_??.nc td_??.nc tp_??.nc oldenbor@bhlclim:climexp/KNMIData/
+rsync -e ssh -avt rx_??.nc td_??.nc tp_??.nc ubuntu@climexp-test.knmi.nl:climexp/KNMIData/

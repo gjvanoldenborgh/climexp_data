@@ -414,58 +414,6 @@ program dat2dat
     enddo                   ! ivar
     goto 300
 400 continue
-
-!   for tn, we can do one day better, as this program runs after
-!   8AM local time (at 9:30 last time I looked).  By this time
-!   todays' minimum temperature is known.  There must be a
-!   better place to get it...
-
-    open(3,file='tabel_opgetreden_extremen.html',status='old',err=850)
-    if ( lwrite ) print *,'opened tabel'
-    811 continue
-    read(3,'(a)',end=850) line
-    if ( index(line,'Nacht') == 0 ) then
-        goto 811
-    endif
-    if ( lwrite ) print *,'found Nacht'
-    i = index(line,'tot') + 4
-    read(line(i:),'(i2,a1,i2)') dy,dum,mo
-    if ( dy /= iarray(3) .or. mo /= iarray(2) ) then
-        write(0,'(a,i2.2,a,i2.2,a,i2.2,a,i2.2)') 'expecting ' &
-            ,iarray(3),'/',iarray(2),' but found ',dy,'/',mo
-        goto 850
-    endif
-    if ( lwrite ) print *,'date OK'
-    812 continue
-    read(3,'(a)',end=850) line
-    if ( stationname == 'De Kooy' ) then
-        altname = 'Den Helder'
-    elseif ( stationname == 'Hoorn Terschelling' ) then
-        altname = 'Terschelling'
-    elseif ( stationname == 'Gilze-Rijen' ) then
-        altname = 'Gilze Rijen'
-    else
-        altname = stationname
-    end if
-    if ( index(line,trim(stationname)) /= 0 .or. &
-         index(line,trim(altname)) /= 0 ) then
-        if ( lwrite ) print *,'found station ',trim(stationname),' ',trim(altname)
-        read(3,'(a)',end=850) line
-        i = index(line,'right">') + 7
-        k = index(line,'</td>') - 1
-        read(line(i:k),*,end=820) s
-        if ( lwrite ) print *,'found Tn ',s
-        do ivar=1,nvars
-            if ( vars(ivar) == 'tn' ) then
-                j = 10+nvars+ivar
-                write(j,'(i5,2i3,f8.1)') iarray(1),iarray(2),iarray(3),s
-                goto 850
-            endif
-        enddo
-    820 continue
-    endif
-    goto 812
-850 continue
     close(3)
 
 !   and ready

@@ -6,8 +6,7 @@ make maunaloa2dat
 cp co2_mm_mlo.txt co2_mm_mlo.txt.old
 wget -N ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt
 diff co2_mm_mlo.txt co2_mm_mlo.txt.old
-make maunaloa2dat
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$1" = force ]; then
    echo "new file differs from old one"
    mv maunaloa.dat maunaloa.dat.old
    ./maunaloa2dat mlo
@@ -22,7 +21,7 @@ $HOME/NINO/copyfilesall.sh maunaloa.dat maunaloa_f.dat maunaloa_log.dat
 cp co2_mm_gl.txt co2_mm_gl.txt.old
 wget -N ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_gl.txt
 diff co2_mm_gl.txt co2_mm_gl.txt.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$1" = force ]; then
    echo "new file differs from old one"
    mv co2.dat co2.dat.old
    ./maunaloa2dat gl

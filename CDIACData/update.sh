@@ -6,6 +6,7 @@ make maunaloa2dat
 cp co2_mm_mlo.txt co2_mm_mlo.txt.old
 wget -N ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt
 diff co2_mm_mlo.txt co2_mm_mlo.txt.old
+make maunaloa2dat
 if [ $? != 0 ]; then
    echo "new file differs from old one"
    mv maunaloa.dat maunaloa.dat.old

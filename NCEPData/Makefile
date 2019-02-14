@@ -35,16 +35,16 @@ tele2dat:	tele2dat.o Makefile
 cmap2dat:	cmap2dat.o Makefile
 		$(FC) $(FFLAGS) -o $@ cmap2dat.o $(LIBS)
 
-ninoweek2daily:	ninoweek2daily.o $(LIBS)
+ninoweek2daily:	ninoweek2daily.o
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
 
-oiv2week2grads:	oiv2week2grads.o $(LIBS)
+oiv2week2grads:	oiv2week2grads.o
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
 
-temp2nino:	temp2nino.o $(LIBS)
+temp2nino:	temp2nino.o
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
 
-mjo2dat:	mjo2dat.o $(LIBS)
+mjo2dat:	mjo2dat.o
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
 
 oiv22grads:	oiv22grads.o

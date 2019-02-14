@@ -12,8 +12,8 @@ else
 fi
 
 echo @@@ GISS
-(cd NINO/NASAData; ./update.sh | 2>&1 tee update.log)
-(cd NINO/NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
+(cd NASAData; ./update.sh | 2>&1 tee update.log)
+(cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
 
 echo "@@@ University of Colorado (sealevel)"
 (cd CUData; ./update_indices.sh | 2>&1 tee update.log)
@@ -26,7 +26,7 @@ echo "@@@ other sea level indices"
 (cd CSIROData; ./update.sh | 2>&1 tee update.log)
 
 ###echo @@@ LOD  moved
-###cd NINO/IERSData; ./update.sh | 2>&1 tee update.log)
+###cd IERSData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ sunspots
 (cd SIDCData; ./update.sh | 2>&1 tee update.log)
@@ -50,8 +50,8 @@ echo @@@ PMOD
 (cd PMODData; ./update_indices.sh | 2>&1 tee update.log)
 
 echo @@@ Rutgers
-(cd NINO/RutgersData; ./update.sh | 2>&1 tee update.log)
-(cd NINO/RutgersData; ./update_fields.sh | 2>&1 tee update.log)
+(cd RutgersData; ./update.sh | 2>&1 tee update.log)
+(cd RutgersData; ./update_fields.sh | 2>&1 tee update.log)
 
 echo @@@ UW
 (cd UWData; ./update.sh | 2>&1 tee update.log)
@@ -145,13 +145,15 @@ echo @@@ NCEP/NCAR reanalysis 3D
 echo @@@ NCEP/NCAR daily
 (cd NCEPNCAR40; ./update_daily.sh | 2>&1 tee update_daily.log)
 
-echo @@@ ERA-interim
-(cd NINO/ERA-interim; ./update_indices.sh | 2>&1 tee update_indices.log)
-(cd NINO/ERA-interim; ./update.sh | 2>&1 tee update.log)
+if [ $HOST = pc160050.knmi.nl ]; then
+    echo @@@ ERA-interim
+    (cd ERA-interim; ./update_indices.sh | 2>&1 tee update_indices.log)
+    (cd ERA-interim; ./update.sh | 2>&1 tee update.log)
 
-echo @@@ ERA5
-(cd NINO/ERA5; ./update_monthly.sh | 2>&1 tee update_monthly.log)
-(cd NINO/ERA5; ./update_daily.sh | 2>&1 tee update_daily.log)
+    echo @@@ ERA5
+    (cd ERA5; ./update_monthly.sh | 2>&1 tee update_monthly.log)
+    (cd ERA5; ./update_daily.sh | 2>&1 tee update_daily.log)
+fi
 
 echo @@@ GHCN-D
 (cd GDCNData; ./update.sh  | 2>&1 tee update.log )
@@ -160,10 +162,10 @@ echo @@@ SSMI
 (cd SSMIData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ NCEP daily SST
-(cd NINO/NCEPData; ./update_sstoiv2_daily.sh | 2>&1 tee update_sstoiv2_daily.log)
+(cd NCEPData; ./update_sstoiv2_daily.sh | 2>&1 tee update_sstoiv2_daily.log)
 
 echo @@@ PRISM
-(cd NINO/PRISMData; ./update.sh | 2>&1 tee update.log)
+(cd PRISMData; ./update.sh | 2>&1 tee update.log)
 
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)

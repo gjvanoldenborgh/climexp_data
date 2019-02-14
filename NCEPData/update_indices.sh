@@ -3,7 +3,7 @@
 for file in ersst4.nino.mth.81-10.ascii sstoi.indices
 do
     cp $file $file.old
-    wget -q -N http://www.cpc.noaa.gov/data/indices/$file
+    wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/$file
     diff $file $file.old
     if [ $? != 0 ]; then
         echo "new $file differs from old one"
@@ -23,17 +23,17 @@ done
 $HOME/NINO/copyfilesall.sh *nino?.dat sstoi.indices
 
 # NCEP detrended
-wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt
+wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/detrend.nino34.ascii.txt
 echo "# dNINO34 [K] NCEP detrended Nino3.4 index" > nino34_detrended_ncep.dat
-echo "# <a href=http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml>using running 30-yr base periods</a>" >> nino34_detrended_ncep.dat
+echo "# <a href=https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_change.shtml>using running 30-yr base periods</a>" >> nino34_detrended_ncep.dat
 fgrep -v YR detrend.nino34.ascii.txt | cut -b 1-8,25-  >> nino34_detrended_ncep.dat
 
 make normalize_wksst ninoweek2daily
 cp wksst8110.for wksst8110.for.old
-wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for
+wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for
 diff wksst8110.for wksst8110.for.old
 if [ $? != 0 ]; then
-  echo "new file differs from old one"
+  echo "new  wksst8110.for differs from old one"
   rm wksst8110.for.old
   ./normalize_wksst wksst8110.for > wksst.myfor
   echo 'y' | gnuplot plotninoweek.gnu
@@ -49,7 +49,7 @@ if [ $? != 0 ]; then
     daily2longer ${index}_weekly.dat 73 mean > ${index}_5daily.dat
   done
 else
-  echo "new file is the same as old one, keeping old one"
+  echo "new wksst8110.for is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfilesall.sh plotninoweek.??? 
 $HOME/NINO/copyfiles.sh nino?_weekly.dat nino??_weekly.dat
@@ -57,14 +57,14 @@ $HOME/NINO/copyfiles.sh nino?_5daily.dat nino??_5daily.dat
 
 make makesoi
 cp soi soi.old
-wget -q -N http://www.cpc.ncep.noaa.gov/data/indices/soi
+wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/soi
 diff soi soi.old
 if [ $? != 0 ]; then
   echo "new file differs from old one"
   rm soi.old
   ./makesoi > cpc_soi.dat
 else
-  echo "new file is the same as old one, keeping old one"
+  echo "new soi is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfilesall.sh cpc_soi.dat
 
@@ -77,13 +77,13 @@ if [ $? != 0 ]; then
   rm tele_index.nh.old
   ./tele2dat
 else
-  echo "new file is the same as old one, keeping old one"
+  echo "new tele_index.nh is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfilesall.sh cpc_nao.dat cpc_ea.dat cpc_wp.dat cpc_epnp.dat cpc_pna.dat cpc_ea_wr.dat cpc_sca.dat cpc_tnh.dat cpc_pol.dat cpc_pt.dat
 
 make mjo2dat
 cp proj_norm_order.ascii proj_norm_order.ascii.old
-wget -q -N http://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/proj_norm_order.ascii
+wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/proj_norm_order.ascii
 diff proj_norm_order.ascii proj_norm_order.ascii.old
 if [ $? != 0 ]; then
   echo "new file differs from old one"
@@ -94,15 +94,15 @@ if [ $? != 0 ]; then
     daily2longer $file 12 mean > `basename $file _daily.dat`_mean12.dat
   done
 else
-  echo "new file is the same as old one, keeping old one"
+  echo "new proj_norm_order.ascii is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfiles.sh cpc_mjo*.dat
 
 cp heat_content_index.txt heat_content_index.txt.old
-wget -q -N http://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
+wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
 diff heat_content_index.txt heat_content_index.txt.old
 if [ $? != 0 ]; then
-  url=http://www.cpc.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
+  url=https://www.cpc.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
   cat > cpc_eq_heat300.dat <<EOF
 # <a href="$url">CPC/NCEP</a> Equatorial Upper 300m temperature Average anomaly based on 1981-2010 Climatology, 130E-80W
 # institution :: NOAA/NCEP/CPC
@@ -112,7 +112,7 @@ if [ $? != 0 ]; then
 EOF
   tail -n +3 heat_content_index.txt | cut -b 1-20 >> cpc_eq_heat300.dat
 else
-  echo "new file is the same as old one, keeping old one"
+  echo "new heat_content_index.txt is the same as old one, keeping old one"
 fi
 $HOME/NINO/copyfiles.sh cpc_eq_heat300.dat
 

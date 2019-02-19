@@ -1,11 +1,12 @@
 #!/bin/sh
+force="$1"
 
 for file in ersst4.nino.mth.81-10.ascii sstoi.indices
 do
     cp $file $file.old
     wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/$file
     diff $file $file.old
-    if [ $? != 0 ]; then
+    if [ $? != 0 -o "$force" = force ]; then
         echo "new $file differs from old one"
         rm $file.old
         sstoi2dat $file
@@ -32,7 +33,7 @@ make normalize_wksst ninoweek2daily
 cp wksst8110.for wksst8110.for.old
 wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for
 diff wksst8110.for wksst8110.for.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = force ]; then
   echo "new  wksst8110.for differs from old one"
   rm wksst8110.for.old
   ./normalize_wksst wksst8110.for > wksst.myfor
@@ -59,7 +60,7 @@ make makesoi
 cp soi soi.old
 wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/data/indices/soi
 diff soi soi.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = force ]; then
   echo "new file differs from old one"
   rm soi.old
   ./makesoi > cpc_soi.dat
@@ -72,7 +73,7 @@ make tele2dat
 cp tele_index.nh tele_index.nh.old
 wget -q -N ftp://ftp.cpc.ncep.noaa.gov/wd52dg/data/indices/tele_index.nh
 diff tele_index.nh tele_index.nh.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = force ]; then
   echo "new file differs from old one"
   rm tele_index.nh.old
   ./tele2dat
@@ -85,7 +86,7 @@ make mjo2dat
 cp proj_norm_order.ascii proj_norm_order.ascii.old
 wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_mjo_index/proj_norm_order.ascii
 diff proj_norm_order.ascii proj_norm_order.ascii.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = force ]; then
   echo "new file differs from old one"
   rm proj_norm_order.ascii.old
     ./mjo2dat
@@ -101,7 +102,7 @@ $HOME/NINO/copyfiles.sh cpc_mjo*.dat
 cp heat_content_index.txt heat_content_index.txt.old
 wget -q -N --no-check-certificate https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
 diff heat_content_index.txt heat_content_index.txt.old
-if [ $? != 0 ]; then
+if [ $? != 0 -o "$force" = force ]; then
   url=https://www.cpc.noaa.gov/products/analysis_monitoring/ocean/index/heat_content_index.txt
   cat > cpc_eq_heat300.dat <<EOF
 # <a href="$url">CPC/NCEP</a> Equatorial Upper 300m temperature Average anomaly based on 1981-2010 Climatology, 130E-80W

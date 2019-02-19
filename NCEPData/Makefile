@@ -4,24 +4,15 @@
 		$(FC) $(FFLAGS)  -c $<
 
 ###FFLAGS = -g -C
-FFLAGS = -O
+FFLAGS = -O 
+SYSLIBS=-L$(HOME)/lib -L$(HOME)/lib/$(PVM_ARCH) -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib64/atlas
 
 FC = gfortran
 
 LIBS =  $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
-	$(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a -lfgsl -lgsl
+	$(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a $(SYSLIBS)
 
-update:	nino2.dat nino2_daily.dat nino2_5daily.dat
-	scp nino*.dat oldenbor@climexp.knmi.nl:climexp/NCEPData/
-
-nino2.dat:	sstoi.indices
-		sstoi2dat
-
-nino2_daily.dat:	wksst.for ./ninoweek2daily
-		./ninoweek2daily
-
-nino2_5daily.dat:	nino2_daily.dat ./make5daily.sh
-		./make5daily.sh
+all: makesoi tele2dat cmap2dat ninoweek2daily mjo2dat
 
 makesoi:	makesoi.o
 		$(FC) $(FFLAGS) -o $@ $@.o

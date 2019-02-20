@@ -9,13 +9,16 @@ fi
 # GISS requires HTTP/1.1, which wget does not have at the server but curl does...
 getit="wget --no-check-certificate -N -q "
 
-base=ftp://data.giss.nasa.gov/pub/gistemp/download_v3/
-base=http://data.giss.nasa.gov/gistemp/sbbx/
-base=https://data.giss.nasa.gov/pub/gistemp/
-for file in SBBX.ERSST SBBX1880.Ts.GHCN.CL.PA.1200 SBBX1880.Ts.GHCN.CL.PA.250 # SBBX.Tsurf1200 SBBX.ERSST # SBBX.SSTHadR2
+oceanbase=https://data.giss.nasa.gov/pub/gistemp
+base=https://data.giss.nasa.gov/pub/gistemp/GHCNv3
+for file in SBBX.ERSSTv5 SBBX1880.Ts.GHCN.CL.PA.1200 SBBX1880.Ts.GHCN.CL.PA.250 # SBBX.Tsurf1200 SBBX.ERSSTv5 # SBBX.SSTHadR2
 do
   cp $file $file.old
-  $getit $base/$file.gz
+  if [ $file = SBBX.ERSSTv5 ]; then
+    $getit $oceanbase/$file.gz
+  else
+    $getit $base/$file.gz
+  fi
   if [ -s $file.gz ]; then
     gunzip -c $file.gz > $file
     touch -r $file.gz $file
@@ -36,7 +39,7 @@ do
 		rm TS_DATA
 		ln -s SBBX1880.Ts.GHCN.CL.PA.$decor TS_DATA
 		rm SST_DATA
-		ln -s SBBX.ERSST SST_DATA
+		ln -s SBBX.ERSSTv5 SST_DATA
 		yr=`date -d "last month" "+%Y"`
 		sed -e "s/CURRENTYEAR/$yr/" sbbx2nc.in > sbbx2nc.f
 		if [ ! -L netcdf.inc ]; then
@@ -46,23 +49,23 @@ do
 		make sbbx2nc
 		./sbbx2nc 0
 		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis land ${decor}km" \
-		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSSTv5" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_land_$decor.nc
 		file=giss_temp_land_$decor.nc
 		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
 		./sbbx2nc 1
-		[ ! -L SST_DATA ] && rm SBBX.ERSST
-		[ ! -s SBBX.ERSST ] && exit -1
+		[ ! -L SST_DATA ] && rm SBBX.ERSSTv5
+		[ ! -s SBBX.ERSSTv5 ] && exit -1
 		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis sea ${decor}km" \
-		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSSTv5" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_sea_$decor.nc
 		file=giss_temp_sea_$decor.nc
 		. $HOME/climexp/add_climexp_url_field.cgi
 		rm gistemp.nc
 		./sbbx2nc 2
 		ncatted -h -a title,global,m,c,"GISTEMP Surface Temperature Analysis land/sea ${decor}km" \
-		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSST" gistemp.nc
+		        -a history,global,a,c,"Created `date` by sbbx2nc SBBX1880.Ts.GHCN.CL.PA.$decor SBBX.ERSSTv5" gistemp.nc
 		cdo -r -f nc4 -z zip copy gistemp.nc giss_temp_both_$decor.nc
 		file=giss_temp_both_$decor.nc
 		. $HOME/climexp/add_climexp_url_field.cgi

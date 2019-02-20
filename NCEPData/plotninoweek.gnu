@@ -1,3 +1,4 @@
+set colors classic
 set size 1,0.6
 set xtics 1
 set mxtics 12

@@ -1,5 +1,7 @@
 #!/bin/sh
-sudo mount /data/web/www2
+if [ $HOST = pc160050.knmi.nl ]; then
+    sudo mount /data/web/www2
+fi
 export PATH=$PATH:$HOME/climexp/bin/
 if [ `uname` = linux ]; then 
     sudo mount /data/web/www2

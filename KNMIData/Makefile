@@ -13,19 +13,7 @@ LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
 
 SYSLIBS=-L/sw/lib -L/usr/local/lib -lfgsl -lgsl -lnetcdff -lnetcdf
 
-export:	dd260.gz rd009.dat
-	scp ?????.gz rd??????.gz precip13stations.dat list_??.txt climexp:KNMIData/
-	./labrijn2dat > labrijn.dat
-	scp labrijn.dat climexp:KNMIData/
-	touch export
-
-dd260.gz:	dat2dat etmgeg_260_2001.dat
-	./dat2dat
-	./maketxt.sh
-
-rd009.dat:	regen2dat daggegrd_009_1906.zip
-	./regen2dat
-	./maketxt_rd.sh
+all: dat2dat_all_new makecnt add_pluim neerslag2dat compute_wetbulb fix_manual_gauges makehom_sd txt2dat_potwind
 
 merge_hom:      merge_hom.o
 	$(FC) $(SYSLIBS) $(FFLAGS) -o $@ $@.o $(LIBS)

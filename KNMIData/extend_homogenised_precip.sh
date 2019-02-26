@@ -32,4 +32,4 @@ averageseries const precip???hom1951.nc \
           -e 's@getdutchpreciphom1951.cgi?WMO=0..@getindices.cgi?WMO=KNMIData/precip_hom1910_ave&STATION=pr_hom1951_ave@' \
 > precip_hom1951_ave.dat
 rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat bhlclim:climexp/KNMIData/
-rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat ubuntu@climexp-test.knmi.nl:climexp/KNMIData/
+rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat oldenbor@climexp-test.knmi.nl:climexp/KNMIData/

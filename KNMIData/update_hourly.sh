@@ -16,9 +16,7 @@ if [ $method  = 'old' ]; then
     done
     curl "$base/getdata_uur.cgi?$args" > KNMI_${yr}_hourly.txt
     echo $yrnow > yr_hourly.txt
-    if [ ! -f hourly2maxdaily -o hourly2maxdaily -ot hourly2maxdaily.f ]; then
-        gfortran -o hourly2maxdaily hourly2maxdaily.f
-    fi
+    make hourly2maxdaily
     if [ ! -f rx260.dat -o rx260.dat -ot KNMI_${yr}_hourly.txt ]; then
         ./hourly2maxdaily KNMI_1???s_hourly.txt KNMI_2???_hourly.txt
     fi
@@ -69,4 +67,4 @@ done
 average_ensemble rx_%%.nc num > rx_num.dat
 $HOME/NINO/copyfiles.sh list_rx.txt list_t[dp].txt rx[^_]??.dat t[dp][^_]??.dat rx[^_]??.gz t[dp][^_]??.gz rx_num.dat
 rsync -e ssh -avt rx_??.nc td_??.nc tp_??.nc oldenbor@bhlclim:climexp/KNMIData/
-rsync -e ssh -avt rx_??.nc td_??.nc tp_??.nc ubuntu@climexp-test.knmi.nl:climexp/KNMIData/
+rsync -e ssh -avt list_rx.txt list_td.txt list_tp.txt rx???.nc td???.nc tp???.nc oldenbor@climexp-test.knmi.nl:climexp/KNMIData/

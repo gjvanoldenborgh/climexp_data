@@ -13,7 +13,7 @@ LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
 
 SYSLIBS=-L/sw/lib -L/usr/local/lib -lfgsl -lgsl -lnetcdff -lnetcdf
 
-all: dat2dat_all_new makecnt add_pluim neerslag2dat compute_wetbulb fix_manual_gauges makehom_sd txt2dat_potwind
+all: dat2dat_all_new makecnt hourly2maxdaily dd_pluim neerslag2dat compute_wetbulb fix_manual_gauges makehom_sd txt2dat_potwind
 
 merge_hom:      merge_hom.o
 	$(FC) $(SYSLIBS) $(FFLAGS) -o $@ $@.o $(LIBS)
@@ -71,3 +71,6 @@ makehom_sd: makehom_sd.o $(LIBS)
 
 txt2dat_potwind: txt2dat_potwind.o $(LIBS)
 		$(FC) $(FFLAGS) $(SYSLIBS) -o $@ $@.o $(LIBS)
+
+hourly2maxdaily: hourly2maxdaily.o
+		$(FC) $(FFLAGS) -o $@ $@.o

@@ -66,9 +66,11 @@ done
 ./add_pluim.sh
 ###./maketxt.sh
 $HOME/NINO/copyfiles.sh ?????.gz ?????.dat rd??????.gz list_??.txt
+rsync -avt ?????.gz ?????.dat rd??????.gz list_??.txt oldenbor@climexp-test.knmi.nl:climexp_data/KNMIData/
 
 ./update_neerslag.sh
 ./labrijn2dat.sh > labrijn.dat
 ./makecnt.sh
 $HOME/NINO/copyfilesall.sh precip13stations.dat labrijn.dat tg260_mean12.dat
+rsync -avt precip13stations.dat labrijn.dat tg260_mean12.dat oldenbor@climexp-test.knmi.nl:climexp_data/KNMIData/
 ./extend_homogenised_precip.sh

@@ -119,9 +119,11 @@ EOF
     average_ensemble rr_%%%.nc num > rr_num.dat
     average_ensemble rrr_%%%.nc num > rrr_num.dat
     $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
+    rsync -avt list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
     $HOME/NINO/copyfiles.sh list_sd.txt sd???.??
+    rsync -avt list_sd.txt sd???.?? oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
     rsync -avt rr_???.nc bhlclim:climexp/KNMIData/
-    rsync -avt rr_???.nc ubuntu@climexp-test.knmi.nl:climexp/KNMIData/
+    rsync -avt rr_???.nc oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
     
     ./make_p13.sh
 fi

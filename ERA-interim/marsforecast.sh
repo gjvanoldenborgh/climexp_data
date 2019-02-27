@@ -88,7 +88,7 @@
 # setting environment variables 
 #------------------------------- 
 
-export PATH=/usr/local/bin:/bin:/usr/bin:.:.:/usr/local/apps/grib_api/1.12.3/bin            
+export PATH=/usr/local/bin:/bin:/usr/bin:.:.:/usr/local/apps/eccodes/2.9.2/GNU/6.3.0/bin/
                                 # Allows you to run any of your programs or 
                                 # scripts held in the current directory (not  
                                 # required if already done in your .user_profile  
@@ -119,6 +119,7 @@ do
     file=$SCRATCH/forecast_$var$date.grb
     if [ ! -s $file ]; then
         levtype=sfc
+        levelist=""
         case $var in
 	        t2m)  par=167.128;;
             ts)   par=139.128;;

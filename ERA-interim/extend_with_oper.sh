@@ -243,7 +243,7 @@ do
         done
         wetbulb_field oper_tmax${yr}${mo}.nc \
             oper_tdew${yr}${mo}.nc \
-            oper_sp_${yr}${mo}.nc \
+            oper_sp${yr}${mo}.nc \
             oper_twetbub${yr}${mo}.nc
 
         if [ $completemonth = true ]; then
@@ -275,7 +275,9 @@ if [ "$forecast" != false ]; then
         netcdffile=${gribfile%.grb}.nc
         if [ ! -f $netcdffile ]; then
             echo ecaccess-file-get scratch:$netcdffile
-            while [ ! -s $netcdffile ]; do
+            i=0
+            while [ ! -s $netcdffile -a $i -lt 10 ]; do
+                ((i++))
                 ecaccess-file-get scratch:$netcdffile
                 [ ! -s $netcdffile ] && sleep 60
             done
@@ -283,6 +285,8 @@ if [ "$forecast" != false ]; then
             ecaccess-file-delete scratch:$gribfile
             ecaccess-file-delete scratch:$netcdffile
         fi
+        # DEBUG
+        cp $netcdffile ${netcdffile%.nc}_ecmwf.nc
         mv $netcdffile extend_tmp$$.nc
         # shift time so that the 00, 06, 12 and 18 analyses are averaged
         cdo $cdoflags shifttime,3hour extend_tmp$$.nc extend_tmp1_$$.nc
@@ -305,7 +309,7 @@ if [ "$forecast" != false ]; then
             mv extend_tmp$$.nc $netcdffile
         fi
         [ -f extend_tmp$$.nc ] && rm extend_tmp$$.nc
-    done 
+    done
 
     cfvars=`fgrep "for var in tp" marsforecast.sh | sed -e "s/for var in //"`
     for var in $cfvars

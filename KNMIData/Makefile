@@ -11,9 +11,9 @@ FC = gfortran
 LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
        $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
 
-SYSLIBS=-L/sw/lib -L/usr/local/lib -lfgsl -lgsl -lnetcdff -lnetcdf
+SYSLIBS = -L/sw/lib -L/usr/local/lib -L$(HOME)/lib -lfgsl -lgsl -lnetcdff -lnetcdf
 
-all: dat2dat_all_new makecnt hourly2maxdaily dd_pluim neerslag2dat compute_wetbulb fix_manual_gauges makehom_sd txt2dat_potwind
+all: dat2dat_all_new makecnt hourly2maxdaily add_pluim neerslag2dat compute_wetbulb fix_manual_gauges makehom_sd txt2dat_potwind
 
 merge_hom:      merge_hom.o
 	$(FC) $(SYSLIBS) $(FFLAGS) -o $@ $@.o $(LIBS)
@@ -34,10 +34,10 @@ dat2dat_all:	dat2dat_all.o
 	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
 
 dat2dat_all_new:	dat2dat_all_new.o
-	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)
+	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS) $(SYSLIBS)
 
 makecnt:	makecnt.o
-	$(FC) $(FFLAGS) $(SYSLIBS) -o $@ $@.o $(LIBS)
+	$(FC) $(FFLAGS) -o $@ $@.o $(LIBS) $(SYSLIBS)
 
 T10hom2dat:	T10hom2dat.o
 	$(FC) $(FFLAGS) $(SYSLIBS) -o $@ $@.o $(LIBS)

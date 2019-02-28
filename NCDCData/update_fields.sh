@@ -8,11 +8,11 @@ echo "NCDC merged dataset"
 base=ftp://ftp.ncdc.noaa.gov/pub/data/noaaglobaltemp/operational/gridded/
 ###file=`curl $base | fgrep asc.gz | sed -e 's/.*href="//' -e 's/asc.gz".*$//'`
 curl $base > index.html
-file=`cat index.html | fgrep asc | sed -e 's/^.* NOAA/NOAA/' -e 's/\.asc//'`
-[ -f $file ] && cp $file.asc $file.asc.old
-echo "wget -q -N --no-check-certificate $base/$file.asc"
-wget -q -N --no-check-certificate $base/$file.asc
-###gunzip -c $file.asc.gz > $file.asc
+file=`cat index.html | fgrep asc | sed -e 's/^.* NOAA/NOAA/' -e 's/\.asc.gz//'`
+[ -f $file.asc ] && cp $file.asc $file.asc.old
+echo "wget -q -N --no-check-certificate $base/$file.asc.gz"
+wget -q -N --no-check-certificate $base/$file.asc.gz
+gunzip -c $file.asc.gz > $file.asc
 cmp $file.asc $file.asc.old
 if [ $? != 0 -o "$force" = true ]; then
     make ncdc2grads4

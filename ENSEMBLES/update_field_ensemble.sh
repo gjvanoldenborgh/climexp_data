@@ -9,7 +9,7 @@ force=false # true
 update=true # false
 
 # adjust with each version
-version=v17.0e
+version=v19.0e
 # end date of official file if in the same year as the year of last month
 enddate="" # "2017-08-31" # keep empty when shortening is not needed "2013-12-31"
 # begin date of annual additions when in the previous year
@@ -56,7 +56,7 @@ do
             # truncate the part of the file without data
             get_index aap.nc 5 5 52 52 | tail -1 > aap.lastline
             yr=`cat aap.lastline | cut -b 1-4`
-            of [ -z "$yr" ]; then
+            if [ -z "$yr" ]; then
                 echo "$0: error: cannot find date of last valid point in "`cat aap.lastline`
                 exit -1
             fi

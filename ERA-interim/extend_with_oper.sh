@@ -395,6 +395,6 @@ do
     daily2longerfield erai_${var}_daily_extended.nc 12 mean erai_${var}_extended.nc
     echo "copying to bhlclim..."
     $HOME/NINO/copyfiles.sh erai_${var}_extended.nc erai_${var}_daily_extended.nc &
-    rsync -avt erai_${var}_extended.nc erai_${var}_daily_extended.nc ubuntu@climexp.climexp-knmi.surf-hosted.nl:climexp_data/ERA-interim/ &
+    rsync -avt erai_${var}_extended.nc erai_${var}_daily_extended.nc oldenbor@climexp.climexp-knmi.surf-hosted.nl:climexp_data/ERA-interim/ &
 done
 

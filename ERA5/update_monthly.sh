@@ -55,5 +55,5 @@ do
     file=era5_$var.nc
     get_index $file 0 360 -90 90 standardunits > era5_${var}_gl.dat
     rsync -v $file bhlclim:climexp/ERA5/
-    rsync -v $file ubuntu@climexp-test.knmi.nl:climexp/ERA5/
+    rsync -v $file oldenbor@climexp-test.knmi.nl:climexp/ERA5/
 done

@@ -1,7 +1,6 @@
 #!/bin/sh
 for var in t2m sst t2msst 
 do
-
 	if [ $var = t2msst ]; then
 		if [ \( ! -s erai_t2msst.nc \) -o erai_t2msst.nc -ot erai_t2m.nc ]; then
 			grads -b -l <<EOF
@@ -51,14 +50,14 @@ EOF
 			get_index erai_${var}.nc 0 360 $lats lsmask lsmask07.nc $landsea standardunits > $series
 			if [ $? != 0 -o ! -s $series ]; then
 				rm $series
-				echo "%0: error: something went wrong"
+				echo "$0: error: something went wrong"
 				exit -1
 			fi
 			plotdat anom 1981 2010 $series > aap.dat
 			mv aap.dat $series
 			if [ $? != 0 -o ! -s $series ]; then
 				rm $series
-				echo "%0: error: something went wrong"
+				echo "$0: error: something went wrong"
 				exit -1
 			fi
 		fi
@@ -67,7 +66,7 @@ EOF
 			get_index nonmissing_erai_${var}.nc 0 360 $lats lsmask lsmask07.nc $landsea standardunits > nonmissing_$series
 			if [ $? != 0 -o ! -s nonmissing_$series ]; then
 				rm nonmissing_$series
-				echo "%0: error: something went wrong"
+				echo "$0: error: something went wrong"
 				exit -1
 			fi
 			plotdat anom 1981 2010 nonmissing_$series > aap.dat

@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ $HOST = pc160050.knmi.nl ]; then
+if [ `hostname` = pc160050.knmi.nl ]; then
     sudo mount /data/web/www2
 fi
 export PATH=$PATH:$HOME/climexp/bin/
@@ -35,7 +35,6 @@ do
 done
 
 ###make dat2dat_all_new
-curl http://www.knmi.nl/nederland-nu/weer/actueel-weer/extremen > tabel_opgetreden_extremen.html
 ./dat2dat_all_new
 # remove empty files
 for var in $varlist; do

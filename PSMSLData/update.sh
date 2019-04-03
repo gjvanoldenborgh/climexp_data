@@ -7,19 +7,10 @@ wget -q -N --no-check-certificate https://www.psmsl.org/data/obtaining/nucat.dat
 ###wget -q -N --no-check-certificate https://www.psmsl.org/data/obtaining/catalogue.dat
 wget -q -N --no-check-certificate https://www.psmsl.org/data/obtaining/psmsl.hel
 
-exit
+rm -rf rlr_monthly
+unzip rlr_monthly.zip
+make getsealev
 
-make dat2mydat
-mv psmsl.mydat psmsl.mydat.old
-./dat2mydat
-
-nrec_slv=`wc -l < psmsl.mydat`
-nstat_slv=`tail -1 psmsl.mydat | cut -b 1-6`
-sed -e "s/NREC_SLV/$nrec_slv/" \
- -e "s/NSTAT_SLV/$nstat_slv/" \
-  support_in.f > support.f
-make getsealev 
-
-$HOME/NINO/copyfiles.sh nucat.dat psmsl.mydat
-scp getsealev bhlclim:climexp/bin/
+###$HOME/NINO/copyfiles.sh nucat.dat
+###scp getsealev bhlclim:climexp/bin/
 

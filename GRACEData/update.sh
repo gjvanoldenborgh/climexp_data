@@ -1,4 +1,25 @@
 #!/bin/bash
+#
+#   time series
+#
+make tenday2month
+base=ftp://podaac-ftp.jpl.nasa.gov/allData/tellus/L3/mascon/RL05/JPL/CRI/mass_variability_time_series/
+
+file=antarctica_mass_\*.txt
+wget -q -N "$base/$file"
+thisfile=`ls -t $file | head -1`
+./tenday2month $thisfile > antarctica_mass.dat
+
+file=greenland_mass_\*.txt
+wget -q -N "$base/$file"
+thisfile=`ls -t $file | head -1`
+./tenday2month $thisfile > greenland_mass.dat
+
+file=ocean_mass_\*.txt
+wget -q -N "$base/$file"
+thisfile=`ls -t $file | head -1`
+./tenday2month $thisfile > ocean_mass.dat
+
 # See mail form Bert Wouters
 #   land
 base=ftp://podaac.jpl.nasa.gov/allData/tellus/L3/land_mass/RL05/netcdf/

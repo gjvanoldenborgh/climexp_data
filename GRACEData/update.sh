@@ -20,6 +20,8 @@ wget -q -N "$base/$file"
 thisfile=`ls -t $file | head -1`
 ./tenday2month $thisfile > ocean_mass.dat
 
+$HOME/NINO/copyfiles.sh *_mass.dat
+
 # See mail form Bert Wouters
 #   land
 base=ftp://podaac.jpl.nasa.gov/allData/tellus/L3/land_mass/RL05/netcdf/

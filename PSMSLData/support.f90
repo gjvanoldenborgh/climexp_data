@@ -30,21 +30,11 @@
     lsum = 1
 
     call get_command_argument(1,string)
-    if ( command_argument_count() == 1 ) then
-        if ( ichar(string(1:1)) >= ichar('0') .and. &
-        ichar(string(1:1)) <= ichar('9') ) then
-            call readstation(string,istation,ifac)
-            n = 1
-        else
-            sname = string
-            istation = -1
-            do i=1,len_trim(sname)
-                if ( sname(i:i) == '+' ) sname(i:i) = ' '
-            enddo
-            print *,'Looking for stations with substring ' &
-            ,trim(sname)
-            n = 0
-        endif
+    if ( command_argument_count() == 1 .and.  &
+         ichar(string(1:1)) >= ichar('0') .and. &
+         ichar(string(1:1)) <= ichar('9') ) then
+        call readstation(string,istation,ifac)
+        n = 1
     elseif ( string(1:4) == 'list' ) then
         call get_command_argument(2,string)
         print '(2a)','Reading stationlist from file ',trim(string)
@@ -74,6 +64,16 @@
             print *,'could not locate any stations'
             call exit(0)
         endif
+    else if ( ichar(string(1:1)) >= ichar('A') .and. ichar(string(1:1)) <= ichar('Z') .or. &
+              ichar(string(1:1)) >= ichar('a') .and. ichar(string(1:1)) <= ichar('z') ) then
+        sname = string
+        istation = -1
+        do i=1,len_trim(sname)
+            if ( sname(i:i) == '+' ) sname(i:i) = ' '
+        enddo
+        call toupper(sname)
+        print *,'Looking for stations with substring ',trim(sname)
+        n = 0
     else
         istation = 0
         n = 10
@@ -122,7 +122,7 @@
             else
                 i = 3
             endif
-            100 continue
+        100 continue
             if ( command_argument_count() >= i+1 ) then
                 call get_command_argument(i,string)
                 if ( index(string,'elevmin') /= 0 ) then
@@ -189,36 +189,28 @@
         if ( n > 1 .or. slat1 < 1e33 ) then
             if ( slat1 > 1e33 ) then
                 print '(a,f6.2,a,f7.2,a)' &
-                ,'Searching for stations near ',slat,'N, ' &
-                ,slon,'E'
+                    ,'Searching for stations near ',slat,'N, ',slon,'E'
             else
                 print '(a,f6.2,a,f6.2,a,f7.2,a,f7.2,a)' &
-                ,'Searching for stations in ',slat,'N:',slat1, &
-                'N, ',slon,'E:',slon1,'E'
+                    ,'Searching for stations in ',slat,'N:',slat1,'N, ',slon,'E:',slon1,'E'
             endif
             if ( elevmin > -1e33 ) then
-                print '(a,f8.2,a)' &
-                ,'Searching for stations higher than ',elevmin &
-                ,'m'
+                print '(a,f8.2,a)','Searching for stations higher than ',elevmin,'m'
             endif
             if ( elevmax < +1e33 ) then
-                print '(a,f8.2,a)' &
-                ,'Searching for stations lower than ',elevmax &
-                ,'m'
+                print '(a,f8.2,a)','Searching for stations lower than ',elevmax,'m'
             endif
             if ( mon == -1 ) then
                 if ( nmin(0) > 0 ) print '(a,i4,a)', &
-                'Requiring at least ',nmin(0), &
-                ' years with data'
+                    'Requiring at least ',nmin(0),' years with data'
             elseif ( mon == 0 ) then
                 if ( lsum == 1 ) then
-                    print '(a,i4,a)','Requiring at least ', &
-                    nmin(1),' years with data in all months'
+                    print '(a,i4,a)','Requiring at least ',nmin(1),' years with data in all months'
                 else
                     print '(a,i4,a,i1,a)','Requiring at least ', &
-                    nmin(1+(lsum-1)*12), &
-                    ' years with data in all ',lsum &
-                    ,'-month seasons'
+                        nmin(1+(lsum-1)*12), &
+                        ' years with data in all ',lsum &
+                        ,'-month seasons'
                 endif
             elseif ( mon > 0 ) then
                 if ( lsum == 1 ) then
@@ -292,6 +284,7 @@ subroutine getdata(type,iu,ii,n,nyr)
     call getenv('DIR',dir)
     if ( dir == ' ' ) dir = '.'
     print '(a,'//format//',a)','# station_information :: http://www.psmsl.org/data/obtaining/stations/',ii,'.php'
+    print '(a,'//format//',a)','# <a href="http://www.psmsl.org/data/obtaining/stations/',ii,'.php">station information</a>'
     write(file,'(2a,'//format//'a)') trim(dir),'/PSMSLData/rlr_monthly/data/',ii,'.rlrdata'
     open(iu,file=trim(file),status='old',err=901)
     do

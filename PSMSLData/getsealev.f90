@@ -187,7 +187,7 @@ program getsealev
         if ( istation <= 0 ) then
             print '(5a)','# ',name(jj),' (',trim(country(ii(jj))),')'
             print '(a,f6.2,a,f7.2,a)','# coordinates: ',rlat(jj),'N, ',rlon(jj),'E'
-            print '(a,i6,2a)','# Station code: ',ii(jj),' ',name(jj)
+            print '(a,i6,2a)','# Station code: ',ii(jj),' ',trim(name(jj))
             print '(a,i4,a,i4,a,i4,a,f5.1,a)','Found ',nyr(jj), &
                 ' years with data in ',yr1(jj),'-',yr2(jj),' (' &
                 ,fmiss(jj),'% complete)'

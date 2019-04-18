@@ -1,37 +1,52 @@
-program syse2nc
+program sysu2nc
 !
-!	convert SYSE homogenised temperature dataset to netcdf format
+!	convert SYSU homogenised temperature dataset to netcdf format
 !
 	implicit none
     include 'netcdf.inc'
 	integer,parameter :: yrbeg=1900,yrend=2025,ntmax=12*(yrend-yrbeg+1)
 	integer :: month,year,mo,yr,i,j,k,ifile,yr1,yr2,irec,version,nx,ny,nz,itimeaxis(ntmax), &
-	    nt,nperyear,ncid,iret,moend,nvars,ntvarid,ivars(2,1),it,ivar
+	    nt,nperyear,ncid,iret,moend,nvars,ntvarid,ivars(2,1),it,ivar,ntypevars
 	real :: t(72,36,12,yrbeg:yrend),xx(72),yy(36),zz(1),undef
 	character :: outfile*19,infile*255,history*1000,metadata(2,100)*1000,lz(3)*20, &
-	    vars(1)*40,lvars(1)*80,svars(1)*80,units(1)*80,cell_methods(1)*80,ltime*20,title*200
+	    vars(1)*40,lvars(1)*80,svars(1)*80,units(1)*80,cell_methods(1)*80,ltime*20,title*200, &
+	    dir*20,type*8
 
     yr1 = yrbeg
     yr2 = yrend
     t = 3e33
     version = 20180101
+    call getarg(1,type)
+    if ( type(1:5) == 'CLSAT' ) then
+        dir = 'CLSAT-Grid-5x5/'
+        ntypevars = 3
+    else if ( type(1:4) == 'CMST' ) then
+        dir = 'CMST/'
+        ntypevars = 1
+    else
+        write(0,*) 'usage: sysu2nc CLSAT | CMST'
+        call exit(-1)
+    end if
 !
 !	read data
 !
-    do ivar=1,3
+    do ivar=1,ntypevars
         if ( ivar == 1 ) then
-            vars(1) = 'tavg'
+            if ( type(1:4) == 'CMST' ) then
+                vars(1) = 'data'
+            else
+                vars(1) = 'tavg'
+            end if
         else if ( ivar == 2 ) then
             vars(1) = 'tmin'
         else if ( ivar == 3 ) then
             vars(1) = 'tmax'
-            
         end if
-    
+
         do yr=yr1,yr2
             do mo=1,12
                 write(infile,'(3a,i4.4,a,i4.4,i2.2,a)') &
-                    'CLSAT-Grid-5x5/',trim(vars(1)),'/',yr,'/',yr,mo,'.txt'
+                    trim(dir),trim(vars(1)),'/',yr,'/',yr,mo,'.txt'
                 open(1,file=trim(infile),status='old',err=800)
                 do j=1,36
                     read(1,*,end=800) (t(i,j,mo,yr),i=1,72)
@@ -52,7 +67,18 @@ program syse2nc
 !
 !	    write data
 !
-        outfile='CLSAT_13_'//trim(vars(1))//'.nc'
+        if ( vars(1) /= 'data' ) then
+            outfile = 'CLSAT_13_'//trim(vars(1))//'.nc'
+            title = 'C-LSAT 1.3: integrated and homogenized global monthly land surface air temperature'
+            lvars(1) = 'near-surface air temperature anomaly'
+            svars(1) = 'air_temperature_anomaly'
+        else
+            outfile = 'CMST.nc'
+            vars(1) = 'T2mSST'
+            title = 'CMST: integrated and homogenized global monthly land surface air temperature combined with ERSST v5'
+            lvars(1) = 'near-surface air temperature anomaly / sea surface temperature'
+            svars(1) = ' '
+        end if
         nx = 72
         do i=1,nx
             xx(i) = 5*i - 2.5
@@ -70,23 +96,20 @@ program syse2nc
         nperyear = 12
         ltime = 'time'
         undef = 3e33
-        title = 'C-LSAT 1.3: integrated and homogenized global monthly land surface air temperature'
         history = 'received data by email'
         nvars = 1
         ivars(1,1) = 2
         vars(1) = trim(vars(1))//'_anomaly'
         if ( ivar == 1 ) then
-            lvars(1) = 'near-surface air temperature anomaly'
-            svars(1) = 'air_temperature_anomaly'
-        cell_methods(1) = 'monthly mean of daily mean'
+            cell_methods(1) = 'monthly mean of daily mean'
         else if ( ivar == 2 ) then
             lvars(1) = 'daily minimum of near-surface air temperature anomaly'
             svars(1) = 'minimum_air_temperature_anomaly' ! not really standard
-        cell_methods(1) = 'monthly mean of daily min'
+            cell_methods(1) = 'monthly mean of daily min'
         else if ( ivar == 3 ) then
             lvars(1) = 'daily maximum of near-surface air temperature anomaly'
             svars(1) = 'maximum_air_temperature_anomaly' ! not really standard
-        cell_methods(1) = 'monthly mean of daily max'
+            cell_methods(1) = 'monthly mean of daily max'
         else
             write(0,*) 'error bvgfdsaqs'
             call exit(-1)
@@ -122,4 +145,4 @@ program syse2nc
         end do
         iret = nf_close(ncid) ! do not forget
     end do ! variables
-end program syse2nc
+end program sysu2nc

@@ -8,5 +8,5 @@ cwd=`pwd`
 dir=`basename $cwd`
 [ -z "$HOST" ] && HOST=`hostname`
 if [ $HOST = pc160050.knmi.nl -o $HOST = bvlclim.knmi.nl ]; then
-  rsync --copy-links -e ssh "$@" bhlclim:climexp/$dir/
+  rsync --copy-links -e ssh "$@" climexp.knmi.nl:climexp/$dir/
 fi

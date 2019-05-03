@@ -167,6 +167,9 @@ echo @@@ NCEP daily SST
 echo @@@ PRISM
 (cd PRISMData; ./update.sh | 2>&1 tee update.log)
 
+echo @@@ Copernicus
+(cd CDSData; ./update.sh | 2>&1 tee update.log)
+
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)
 

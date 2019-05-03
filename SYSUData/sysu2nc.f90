@@ -12,13 +12,10 @@ program sysu2nc
 	    vars(1)*40,lvars(1)*80,svars(1)*80,units(1)*80,cell_methods(1)*80,ltime*20,title*200, &
 	    dir*20,type*8
 
-    yr1 = yrbeg
-    yr2 = yrend
-    t = 3e33
-    version = 20180101
+    version = 20190101
     call getarg(1,type)
     if ( type(1:5) == 'CLSAT' ) then
-        dir = 'CLSAT-Grid-5x5/'
+        dir = './'
         ntypevars = 3
     else if ( type(1:4) == 'CMST' ) then
         dir = 'CMST/'
@@ -31,6 +28,9 @@ program sysu2nc
 !	read data
 !
     do ivar=1,ntypevars
+        yr1 = yrbeg
+        yr2 = yrend
+        t = 3e33
         if ( ivar == 1 ) then
             if ( type(1:4) == 'CMST' ) then
                 vars(1) = 'data'
@@ -47,13 +47,18 @@ program sysu2nc
             do mo=1,12
                 write(infile,'(3a,i4.4,a,i4.4,i2.2,a)') &
                     trim(dir),trim(vars(1)),'/',yr,'/',yr,mo,'.txt'
+                if ( yr >= 2018 ) print *,'opening ',trim(infile)
                 open(1,file=trim(infile),status='old',err=800)
                 do j=1,36
-                    read(1,*,end=800) (t(i,j,mo,yr),i=1,72)
+                    read(1,*,end=702) (t(i,j,mo,yr),i=1,72)
                     do i=1,72   
                         if ( t(i,j,mo,yr) == 999.99 ) t(i,j,mo,yr) = 3e33
                     end do
                 end do
+                goto 701
+            702 continue
+                print *,'error reading from ',trim(infile),' j = ',j
+            701 continue
                 close(1)
             end do
         end do
@@ -118,15 +123,22 @@ program sysu2nc
         metadata = ' '
         metadata(1,1) = 'institution'
         metadata(2,1) = 'Sun Yat-Sen University, School of Atmospheric Sciences'
-        metadata(1,2) = 'references'
-        metadata(2,2) = 'Wenhui Xu, Qingxiang Li, Phil Jones, Xiaolan L. Wang, Blair Trewin, '// &
+        metadata(1,2) = 'contact'
+        metadata(2,2) = 'Qingxiang Li, liqingx5@mail.sysu.edu.cn'
+        metadata(1,3) = 'references'
+        metadata(2,3) = 'Wenhui Xu, Qingxiang Li, Phil Jones, Xiaolan L. Wang, Blair Trewin, '// &
             'Su Yang, Chen Zhu, Panmao Zhai, Jinfeng Wang, Lucie Vincent, Aiguo Dai, Yun Gao, '// &
             'Yihui Ding, 2018. A new integrated and homogenized global monthly land surface '// &
             'air temperature dataset for the period since 1900, Clim. Dyn.50, 2513-2536. '// &
             'doi:10.1007/s00382-017-3755-1'
-        metadata(1,3) = 'contact'
-        metadata(2,3) = 'Qingxiang Li, liqingx5@mail.sysu.edu.cn'    
-    
+        if ( type(1:4) == 'CMST' ) then
+            metadata(2,3) = trim(metadata(2,3)) // '; Huang, B., Peter W. Thorne, Viva F. Banzon, Tim Boyer, '// &
+                'Gennady Chepurin, Jay H. Lawrimore, Matthew J. Menne, Thomas M. Smith, '// &
+                'Russell S. Vose, and Huai-Min Zhang, 2017, Extended Reconstructed Sea '// &
+                'Surface Temperature version 5 (ERSSTv5), Upgrades, validations, and '// &
+                'intercomparisons. J. Climate, 30, 8179-8205, doi:10.1175/JCLI-D-16-0836.1'
+        end if
+
         call enswritenc(outfile,ncid,ntvarid,itimeaxis,ntmax,nx,xx,ny &
             ,yy,nz,zz,lz,nt,nperyear,yr1,1,ltime,undef,title &
             ,history,nvars,vars,ivars,lvars,svars,units,cell_methods &

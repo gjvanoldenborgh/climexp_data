@@ -25,6 +25,8 @@ echo @@@ JAMSTEC
 echo @@@ Rutgers
 (cd RutgersData; ./update.sh | 2>&1 tee update.log)
 (cd RutgersData; ./update_fields.sh | 2>&1 tee update.log)
+echo "@@@ PSMSL on climexp.knmi.nl"
+(ssh climexp.knmi.nl 'cd climexp_data/PSMSLData; ./update.sh | 2>&1 update.log')
 echo @@@ MERRA
 (cd MERRA; ./update_fields.sh | 2>&1 tee update_fields.log)
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+###set -x
 if [ "$1" = force ]; then
 	force=true
 else

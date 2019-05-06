@@ -57,14 +57,15 @@ for var in sla adt ugos vgos; do
         -a time_coverage_end,global,d,, \
         -a time_coverage_duration,global,d,, $file
     . ~/climexp/add_climexp_url_field.cgi
+    dayfile=$file
     monfile=${file%_daily.nc}.nc
-    daily2longerfield $file 12 mean $monfile
+    $cdo monavg $dayfile $monfile
     file=$monfile
-    ncatted -a -h time_coverage_resolution,global,d,, $file
+    ncatted -a -h time_coverage_resolution,global,d,c, $file
     . ~/climexp/add_climexp_url_field.cgi
     series=global_${file%.nc}.dat
-    get_index $file 0 360 -90 90 > $series
-    $HOME/NINO/copyfiles.sh $file
+    get_index $monfile 0 360 -90 90 > $series
+    $HOME/NINO/copyfiles.sh $dayfile $monfile
     $HOME/NINO/copyfilesall.sh $series
 done
 date > downloaded_$yrnow$monow

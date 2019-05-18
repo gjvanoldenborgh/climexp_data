@@ -31,12 +31,12 @@ program day2mon
                 if ( lwrite ) print *,'searching for monthly file ',yr,mo
                 do k=20,1,-1
                     write(file,'(a,i4,i2.2,a,i2.2,a,a,a)') &
- &                       'nt_',yr,mo,'_n',k,'_v01_',csn(isn),'.bin'
+ &                       'nt_',yr,mo,'_n',k,'_v1.1_',csn(isn),'.bin'
                     if ( lwrite ) print *,'trying ',trim(file)
                     inquire(file=file,exist=lexist)
                     if ( lexist ) exit
                     write(file,'(a,i4,i2.2,a,i2.2,a,a,a)') &
- &                       'nt_',yr,mo,'_f',k,'_v01_',csn(isn),'.bin'
+ &                       'nt_',yr,mo,'_f',k,'_v1.1_',csn(isn),'.bin'
                     if ( lwrite ) print *,'trying ',trim(file)
                     inquire(file=file,exist=lexist)
                     if ( lexist ) exit

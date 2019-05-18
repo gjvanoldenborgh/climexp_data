@@ -119,11 +119,6 @@ program oi2grads
     write(1,'(a)') 'DSET ^iceoi_v2.dat'
     write(1,'(a)') 'TITLE Reynolds OI SST'
     write(1,'(a)') 'UNDEF 3e33'
-!**#if defined(sun) || defined(__sun__) || defined (__NeXT__) || defined (__sgi)
-    write(1,'(a)') 'OPTIONS BIG_ENDIAN'
-!**#elif defined(__alpha) || defined(linux)
-!**        write(1,'(a)') 'OPTIONS LITTLE_ENDIAN'
-!**#endif
     write(1,'(a)') 'XDEF 360 LINEAR 0.5 1'
     write(1,'(a)') 'YDEF 180 LINEAR -89.5 1'
     write(1,'(a)') 'ZDEF 1 LINEAR 0 1'

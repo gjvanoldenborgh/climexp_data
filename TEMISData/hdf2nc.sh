@@ -2,7 +2,7 @@
 if [ -x /usr/bin/ncdump-hdf ]; then
     hdf_ncdump=ncdump-hdf
 else
-    hdf_ncdump=hdf_ncdump
+    hdf_ncdump=ncdump
 fi
 yr=1978
 mo=11

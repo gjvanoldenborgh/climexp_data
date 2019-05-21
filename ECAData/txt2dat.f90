@@ -16,7 +16,7 @@ program txt2dat
         stop
     endif
     call getarg(1,infile)
-    open(1,file=infile,status='old')
+    open(1,file=trim(infile),status='old')
     i = index(infile,'_')
     j = index(infile,'.')
 !   changed 27-oct-2004 to TX_LOCIDnnnnnn.txt ...

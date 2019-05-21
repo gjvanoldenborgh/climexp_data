@@ -48,6 +48,7 @@ for var in mean_temperature heat_content; do
                 esac
                 seriesfile=$myvar${depth}_$mybasin
                 ncks -O -v ${seriesvar}_$basin $ncfile seas_$seriesfile.nc
+                ncrename -v ${seriesvar}_$basin,$myvar seas_$seriesfile.nc
                 yearly2shorter seas_$seriesfile.nc 12 > offset_$seriesfile.dat
                 timeshift offset_$seriesfile.dat 1 > $seriesfile.dat
                 ###rm seas_$seriesfile.nc offset_$seriesfile.dat

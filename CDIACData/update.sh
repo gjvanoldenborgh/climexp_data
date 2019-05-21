@@ -18,6 +18,14 @@ operate log maunaloa_f.dat > maunaloa_ln.dat
 scaleseries 2.30258509299405 maunaloa_ln.dat > maunaloa_log.dat
 $HOME/NINO/copyfilesall.sh maunaloa.dat maunaloa_f.dat maunaloa_log.dat
 
+daily2longer maunaloa_f.dat 1 mean add_trend > maunaloa_f_mean1.dat
+diffdat maunaloa_f_mean1.dat 2 > diff_maunaloa_mean1.dat
+diffdat co2_annual.dat 2 > diff_co2_annual.dat
+for scen in RCP3PD RCP45 RCP6 RCP85
+do
+    [ ! -s diff${scen}_CO2.dat ] && diffdat ${scen}_CO2.dat 2 > diff_${scen}_CO2.dat
+done
+
 cp co2_mm_gl.txt co2_mm_gl.txt.old
 wget -N ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_gl.txt
 diff co2_mm_gl.txt co2_mm_gl.txt.old

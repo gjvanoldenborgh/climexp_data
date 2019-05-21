@@ -1,4 +1,5 @@
 #!/bin/bash
+###set -x
 force=false
 [ "$1" = force ] && force=true
 make txt2dat addyears ecadata
@@ -33,6 +34,7 @@ do
     if [ $? != 0 -o $force = true ]; then
         # unpack
         [ ! -d data ] && mkdir data
+        rm data/??_STAID*.txt
         cd data
         unzip -o -q ../ECA_blend_$element.zip
         rm -f sources.txt stations.txt elements.txt

@@ -1,12 +1,14 @@
 #!/bin/bash
-set -x
-if [ $HOST = bvlclim.knmi.nl ]; then
-    cleanup=true
-else
-    cleanup=false
+###set -x
+cleanup=false
+force=false
+if [ "$1" = force ]; then
+    force=true
 fi
-force=false # true
-update=true # false
+update=true
+if [ "$1" = noupdate ]; then
+    update=false # this means that only the official E-OBS file is downloaded, without the monthly updates
+fi
 
 # adjust with each version
 version=v19.0e
@@ -19,17 +21,17 @@ cdoflags="-r -f nc4 -z zip"
 wgetflags="-N --no-check-certificate"
 
 yr=`date -d "last month" "+%Y"`
-for var in rr tg tn tx pp # rr tg tn tx pp # tg tn tx pp
+for var in rr tg tn tx pp
 do
   for res in 0.25 # 0.1 too big for my computers
   do
     base=http://www.ecad.eu/download/ensembles/data/Grid_${res}deg_reg_ensemble/
     file=${var}_ens_mean_${res}deg_reg_$version.nc
-    wget $wgetflags -N $base/$file
+    wget $wgetflags $base/$file
     ubase=http://www.ecad.eu/download/ensembles/data/months/ens
     if [ -n "$nextdate" ]; then
         ufile1=${var}_${res}deg_day_$((yr-1))_grid_ensmean.nc
-        wget $wgetflags -N $ubase/$ufile1
+        wget $wgetflags $ubase/$ufile1
     fi
     ufile=${var}_${res}deg_day_${yr}_grid_ensmean.nc
     [ $update = true ] && wget $wgetflags -N $ubase/$ufile
@@ -65,7 +67,6 @@ do
             cdo $cdoflags seldate,${endyr}-01-01,${yr}-${mm}-${dd} aap.nc ${var}_${res}deg_reg_$yr.nc
 
             rm -f $outfile
-            use_python=false
             if [ -n "$nextdate" ]; then
                 cdo $cdoflags copy $file ${var}_${res}deg_reg_$((yr-1)).nc ${var}_${res}deg_reg_$yr.nc $outfile
                 [ $? != 0 ] && echo "something went wrong" && exit -1
@@ -73,9 +74,10 @@ do
                 cdo $cdoflags copy $file ${var}_${res}deg_reg_$yr.nc $outfile
                 [ $? != 0 ] && echo "something went wrong" && exit -1
             fi
+            # set missing value to 3e33 to speed up reading in the Climate Explorer
             if [ $res = 0.25 ]; then # reduce size under 2^31 elements (up to 2018)
-            	cdo $cdoflags selindexbox,41,464,1,201 $outfile aap.nc
-            	mv aap.nc $outfile
+                cdo $cdoflags selindexbox,41,464,1,201 $outfile tmp$outfile
+                mv tmp$outfile $outfile
             fi
         else
             ln -s  ${var}_${res}deg_reg_${version}.nc $outfile

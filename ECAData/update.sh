@@ -63,8 +63,8 @@ do
         done
         cd ..
         ./addyears $element
-        rsync data/${element}*.dat.gz bhlclim:climexp/ECAData/data/ &
-        rsync data/b${element}*.dat.gz bhlclim:climexp/ECAData/data/ &
+        rsync data/${element}*.dat.gz climexp.knmi.nl:climexp/ECAData/data/ &
+        rsync data/b${element}*.dat.gz climexp.knmi.nl:climexp/ECAData/data/ &
         $HOME/NINO/copyfiles.sh ECA_blend_station_$element.txt.withyears
         $HOME/NINO/copyfiles.sh ECA_nonblend_station_$element.txt.withyears
     fi

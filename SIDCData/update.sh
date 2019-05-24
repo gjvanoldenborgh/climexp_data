@@ -1,7 +1,13 @@
 #!/bin/sh
 cp monthssn.dat monthssn.dat.old
 ###wget -N http://sidc.oma.be/silso/DATA/monthssn.dat
-wget -N http://sidc.oma.be/silso/DATA/SN_m_tot_V2.0.txt
+file=SN_m_tot_V2.0.txt
+wget -N http://sidc.oma.be/silso/DATA/$file
+c=`file $file | fgrep -c gzip`
+if [ $c = 1 ]; then
+    mv $file $file.gz
+    gunzip $file.gz
+fi
 mv sunspots.dat sunspots.dat.old
 make convert
 ./convert
@@ -10,7 +16,13 @@ $HOME/NINO/copyfilesall.sh sunspots.dat
 ###./sunspots2double > sunspots2.dat
 ###$HOME/NINO/copyfilesall.sh sunspots2.dat
 
-wget -N http://sidc.oma.be/silso/DATA/SN_d_tot_V2.0.txt
+file=SN_d_tot_V2.0.txt
+wget -N http://sidc.oma.be/silso/DATA/$file
+c=`file $file | fgrep -c gzip`
+if [ $c = 1 ]; then
+    mv $file $file.gz
+    gunzip $file.gz
+fi
 echo "updating sunspots_daily.dat"
 cat <<EOF > sunspots_daily.dat
 # sunspot [1] daily sunspot numbers

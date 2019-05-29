@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ###set -x
 if [ "$1" = force ]; then
     force=true
@@ -54,7 +54,7 @@ do
         str) eosvar=LWGNT;type=2D;levtype=rad;;
         *) echo "$0: error: cannot handle var $var yet"; exit -1;;
     esac
-    
+
     yr=1980
     m=1
     yrnow=`date "+%Y"`

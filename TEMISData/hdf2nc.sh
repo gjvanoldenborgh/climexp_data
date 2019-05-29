@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ -x /usr/bin/ncdump-hdf ]; then
     hdf_ncdump=ncdump-hdf
 else

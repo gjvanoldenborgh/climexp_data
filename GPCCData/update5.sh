@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # download GPCC v5
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data/
 yr=1901

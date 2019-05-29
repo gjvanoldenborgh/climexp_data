@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 file=QBO_1500_2300.txt
 levels=`fgrep YEAR $file | cut -f 3- | tr -d '\r'`
 i=0

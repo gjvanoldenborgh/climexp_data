@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yrnow=`date +%Y`
 yr=1981
 while [ $yr -lt $yrnow ]

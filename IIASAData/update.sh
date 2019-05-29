@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 base=ftp://ftp-ipcc.fz-juelich.de/pub/emissions/gridded_netcdf
 ###wget -r -N $base/IPCC_species
 
 # now it's time to a) add a lot of contributions and b) interpolate in time
 # they are given on a 0.5\dg grid (720x360)
 #
-# 
+#
 for rcp in "" RCP26 RCP45 RCP85
 do
   case $rcp in

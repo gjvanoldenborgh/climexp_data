@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=`date -d "last month" "+%Y"`
 yr1=$((yr-1))
 mm1=`date -d "last month" "+%m" | sed -e 's/^0//'`

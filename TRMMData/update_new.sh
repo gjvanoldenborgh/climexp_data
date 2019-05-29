@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 for dataset in 3A12 3B43
 do
     echo $dataset
-    
+
     lag=0
     urls=""
     while [ $lag -lt 12 ]; do

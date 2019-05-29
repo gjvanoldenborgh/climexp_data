@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ftp=ftp://ftp.cls.fr
 dir=/pub/oceano/AVISO/NRT-SLA/maps/oer/merged/h
 julday=`cat julday.txt`

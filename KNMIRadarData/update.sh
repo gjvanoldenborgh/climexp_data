@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cdo="cdo -r -b 32 -f nc4 -z zip"
 
 # first the daily sums, we take the 0-24 UTC sum.

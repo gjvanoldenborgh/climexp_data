@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # copy the files from Karin's directory to here in a Climate-Explorer-friendly format
 
 for exp in present future2C
@@ -18,7 +18,7 @@ do
         fi
         outdir=$time/$svar
         mkdir -p $outdir
-        
+
         iens=0
         ens=`printf %03i $iens`
         s=0

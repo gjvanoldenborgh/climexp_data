@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 for levmax in 250 1000
 do
     case $levmax in

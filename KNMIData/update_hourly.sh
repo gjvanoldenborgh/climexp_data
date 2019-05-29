@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 method=old
 if [ $method  = 'old' ]; then
     # from the source code of http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi

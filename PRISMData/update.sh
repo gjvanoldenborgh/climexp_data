@@ -6,7 +6,7 @@ if [ "$1" != force -a -f downloaded_$yr$mo ]; then
   exit
 fi
 
-vars="ppt tmax tmin tmean tdmean vpdmax" #  vpdmin vpr 
+vars="ppt tmax tmin tmean tdmean vpdmax" #  vpdmin vpr
 for var in $vars; do
     yrnow=`date +%Y`
     yr=1895 # 2014
@@ -87,8 +87,7 @@ for var in $vars; do
                     -a contact,global,c,c,"prism-questions@nacse.org" $file
             . $HOME/climexp/add_climexp_url_field.cgi
         done
-        ###$HOME/NINO/copyfiles.sh ${var}_prism${version}_25.nc ${var}_prism${version}.nc
-        rsync ${var}_prism${version}_25.nc ${var}_prism${version}.nc bhlclim:climexp/PRISMData/
+        $HOME/NINO/copyfiles.sh ${var}_prism${version}_25.nc ${var}_prism${version}.nc
     fi
 
 done # vars

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# attach real-time data from the 8-8 network to Adri's homogenised precipitation dataset 
+# attach real-time data from the 8-8 network to Adri's homogenised precipitation dataset
 # that only runs up to 2009.
 #
 for file in precip???_hom_1910-2009.dat.gz precip???_hom_1951-2009.dat.gz
@@ -31,5 +31,4 @@ averageseries const precip???hom1951.nc \
           -e '/station.*::/d' -e '/longitude ::/d' -e '/latitude :: /d' \
           -e 's@getdutchpreciphom1951.cgi?WMO=0..@getindices.cgi?WMO=KNMIData/precip_hom1910_ave&STATION=pr_hom1951_ave@' \
 > precip_hom1951_ave.dat
-rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat bhlclim:climexp/KNMIData/
-rsync precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
+$HOME/NINO/copyfiles.sh precip???hom19??.dat.gz precip???hom19??.nc precip_hom19??_ave.dat

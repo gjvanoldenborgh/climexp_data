@@ -95,8 +95,8 @@ echo @@@ NCEP
 (cd NCEPData; ./update_fields.sh | 2>&1 tee update_field.log)
 (cd NCEPData; ./update_ghcn_cams.sh | 2>&1 tee update_ghcn_cams.log)
 
-###echo @@@ PSMSL
-###(cd PSMSLData; ./update.sh | 2>&1 tee update.log)
+echo @@@ PSMSL
+(ssh climexp.knmi.nl "cd climexp_data/PSMSLData; ./update.sh | 2>&1 tee update.log")
 
 echo @@@ TAO
 (cd TAOData; ./update.sh | 2>&1 tee update.log)
@@ -124,8 +124,8 @@ echo @@@ E-OBS
 (cd ENSEMBLES; ./update_field_ensemble.sh | 2>&1 tee update.log)
 
 echo @@@ GHCN
-(cd NCDCData; ./update_series_v2.sh | 2>&1 tee update_series.log)
-(cd NCDCData; ./update_series.sh | 2>&1 tee update_series.log)
+(ssh climexp.knmi.nl "cd climexp_data/NCDCData; ./update_series_v2.sh | 2>&1 tee update_series.log")
+(ssh climexp.knmi.nl "cd climexp_data/NCDCData; ./update_series.sh | 2>&1 tee update_series.log")
 
 echo @@@ MSU
 (cd UAHData; ./update_field.sh | 2>&1 tee update_field.log)

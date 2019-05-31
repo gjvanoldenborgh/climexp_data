@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=1950
 yrnow=`date +%Y`
 

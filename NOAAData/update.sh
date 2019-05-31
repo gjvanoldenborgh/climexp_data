@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ -n "$MEI_UPDATED_AGAIN" ]; then
 cp table.html table.html.old
 url=https://www.esrl.noaa.gov/psd/enso/mei/table.html

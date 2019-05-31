@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 base=http://www.metoffice.gov.uk/hadobs/hadex2/data/
 for var in TXx TNx TXn TNn TN10p TX10p TN90p TX90p Rx1day Rx5day R95p R99p

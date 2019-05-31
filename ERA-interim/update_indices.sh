@@ -6,12 +6,12 @@ mo1=`date +%m -d '1 month ago'`
 yr2=`date +%Y -d '2 months ago'`
 mo2=`date +%m -d '2 months ago'`
 base=https://climate.copernicus.eu/sites/default/files/${yr}-${mo}/
-file=ts_1month_anomaly_Global_ei_2T_${yr1}${mo1}.csv
+file=ts_1month_anomaly_Global_ea_2T_${yr1}${mo1}.csv
 wget --no-check-certificate -N $base/$file
 if [ ! -s $file ]; then
     file1=$file
     base=https://climate.copernicus.eu/sites/default/files/${yr1}-${mo1}/
-    file=ts_1month_anomaly_Global_ei_2T_${yr2}${mo2}.csv
+    file=ts_1month_anomaly_Global_ea_2T_${yr2}${mo2}.csv
     wget --no-check-certificate -N $base/$file
     if [ ! -s $file ]; then
         echo "$0: error: cannot find $file1 or $file"

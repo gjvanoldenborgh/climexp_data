@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cwd=`pwd`
 domain=EUR-11
 case $domain in
@@ -49,10 +49,10 @@ do
         gcms="$gcms $file"
     done
     ###echo "gcms = $gcms"
-    
+
     for gcm in $gcms
     do
-    
+
         list=`ls ethz/$domain/$exp/$timescale/$var/$institute/$gcm/`
         rcms=""
         for dir in $list
@@ -61,7 +61,7 @@ do
             rcms="$rcms $file"
         done
         ###echo "rcms = $rcms"
-    
+
         for rcm in $rcms
         do
 #
@@ -75,7 +75,7 @@ do
                 rips="$rips $file"
             done
             ###echo "rips = $rips"
-    
+
             for rip in $rips
             do
                 echo "$domain/$exp/$timescale/$var/$institute/$gcm/$rcm/$rip"
@@ -146,11 +146,11 @@ do
                         c1=`echo $firstdate | wc -c`
                     fi
                     if [ $expect = 7 -a $c2 = 9 ]; then
-                        lastdate=${lastdate%3?} 
+                        lastdate=${lastdate%3?}
                         c2=`echo $lastdate | wc -c`
                     fi
                     if [ $expect = 9 -a $c2 = 11 ]; then
-                        lastdate=${lastdate%??} 
+                        lastdate=${lastdate%??}
                         c2=`echo $lastdate | wc -c`
                     fi
                 fi
@@ -384,9 +384,9 @@ do
                     ensfiles="$ensfiles $latlonfile"
                 fi
             done # rip
-            
+
             # fixed files
-            
+
             mkdir -p $domain/fx
             lsmask=$domain/fx/sftlf_${domain}_${gcm}_${exp}_r0i0p0_${rcm}_${version}_fx.nc
             latlonmask=${lsmask%.nc}_latlon.nc

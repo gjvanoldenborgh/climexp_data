@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # make annual derived data such as RXnday from the EC-Earth daily data
 vars="rx1day rx3day rx5day txx tx3x txn tnx tnn"
 for var in $vars; do
@@ -37,7 +37,7 @@ while [ $r -lt 16 ]; do
                 fi
             fi
         done
-        echo "cdo -r -f nc4 -z zip copy $outfiles $varfile" 
+        echo "cdo -r -f nc4 -z zip copy $outfiles $varfile"
         cdo -r -f nc4 -z zip copy $outfiles $varfile
         rm $outfiles
     fi

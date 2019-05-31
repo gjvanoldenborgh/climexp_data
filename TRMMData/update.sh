@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 for dataset in 3A12 3B43
 do
   echo $dataset

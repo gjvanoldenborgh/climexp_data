@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 [ -z "$HOST" ] && HOST=`hostname`
 if [ "$1" = force ]; then
 	force=true
@@ -96,7 +96,7 @@ do
 	        echo "submit MARS job to retrieve operational fields"
 	        sed -e "s@LIST@$list@" -e "s/DATE/$yr$mo/" marsoper.sh > marsoper$yr$mo.sh
 	        ecaccess-job-submit marsoper$yr$mo.sh
-	
+
 	        c=1
 	        while [ $c = 1 ]
 	        do
@@ -393,8 +393,7 @@ do
     cdo $cdoflags copy erai_${var}_daily.nc $files erai_${var}_daily_extended.nc
     echo "daily2longerfield erai_${var}_daily_extended.nc 12 mean erai_${var}_extended.nc"
     daily2longerfield erai_${var}_daily_extended.nc 12 mean erai_${var}_extended.nc
-    echo "copying to bhlclim..."
+    echo "copying to server..."
     $HOME/NINO/copyfiles.sh erai_${var}_extended.nc erai_${var}_daily_extended.nc &
-    rsync -avt erai_${var}_extended.nc erai_${var}_daily_extended.nc oldenbor@climexp.climexp-knmi.surf-hosted.nl:climexp_data/ERA-interim/ &
 done
 

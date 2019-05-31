@@ -66,7 +66,7 @@ EOF
     do
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'` 
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'`
             echo dat2nc $file s "$station" $ncfile
             dat2nc $file i "$station" $ncfile
         fi
@@ -76,7 +76,7 @@ EOF
     do
         ncfile=${file%.dat}.nc
         if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'` 
+            station=`head -n 20 $file | fgrep 'station_name :: ' | sed -e 's/.*:: //'`
             echo dat2nc $file s "$station" $ncfile
             dat2nc $file i "$station" $ncfile
         fi
@@ -119,11 +119,8 @@ EOF
     average_ensemble rr_%%%.nc num > rr_num.dat
     average_ensemble rrr_%%%.nc num > rrr_num.dat
     $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
-    rsync -avt list_rr.txt rr???.?? rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
     $HOME/NINO/copyfiles.sh list_sd.txt sd???.??
-    rsync -avt list_sd.txt sd???.?? oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
-    rsync -avt rr_???.nc bhlclim:climexp/KNMIData/
-    rsync -avt rr_???.nc oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
-    
+    $HOME/NINO/copyfiles.sh rr_???.nc
+
     ./make_p13.sh
 fi

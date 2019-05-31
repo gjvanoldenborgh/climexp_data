@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 base=http://nomad3.ncep.noaa.gov/pub/reanalysis-2/month/flx/
 wget='wget -q --user=anonymous --password="oldenborgh@knmi.nl"'
@@ -75,11 +75,11 @@ echo $date
 for var in t2m prcp dswrfsfc dlwrfsfc
 do
   case $var in
-  t2m) 
+  t2m)
     gribvar=TMP2m
     oper="-273.15"
     lvar="2m temperature [C]";;
-  prcp) 
+  prcp)
     gribvar=PRATEsfc
     oper=""
     lvar="surface precipitation [kg/m2/s]";;

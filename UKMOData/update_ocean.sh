@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -x
 # download the EN4 objective ocean analysis
 
@@ -63,7 +63,7 @@ fi
 infile=salt_${version}_ObjectiveAnalysis.nc
 outfile=salt_${version}_ObjectiveAnalysis_5m.nc
 if [ ! -s $outfile -o $outfile -ot $infile ]; then
-	cdo sellevel,5.02159 $infile $outfile 
+	cdo sellevel,5.02159 $infile $outfile
 	$HOME/NINO/copyfiles.sh $outfile
 fi
 

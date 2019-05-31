@@ -43,13 +43,13 @@ do
             version=${version%.$type.$ext}
             export version
             case $type in
-                qca) 
+                qca)
                     case $element in
                         tavg) export version_mean_adj=$version;;
                         tmin) export version_min_adj=$version;;
                         tmax) export version_max_adj=$version;;
                     esac;;
-                qcu) 
+                qcu)
                     case $element in
                         tavg) export version_mean_all=$version;;
                         tmin) export version_min_all=$version;;
@@ -67,12 +67,12 @@ date=`date`
 export date
 ./fillout_gettemp.sh
 
-if [ $HOST = bvlclim.knmi.nl ]; then
-    rsync -r -e ssh -avt ghcnm bhlclim:climexp/NCDCData/
+if [ $HOST = pc160050.knmi.nl ]; then
+    rsync -r -e ssh -avt ghcnm climexp.knmi.nl:climexp/NCDCData/
     scp gettemp gettempall \
         getmin getminall \
         getmax getmaxall \
-        bhlclim:climexp/NCDCData/
+        climexp.knmi.nl:climexp/NCDCData/
 fi
 
 date > downloaded_$yr$mo

@@ -50,7 +50,7 @@ while [ -s t2m$yr$mm.nc ]; do
 done
 set -x
 cdo -r -f nc4 -z zip copy $mofiles erai_evappot.nc
-rsync erai_evappot.nc bhlclim:climexp/ERA-interim/
+$HOME/NINO/copyfiles.sh erai_evappot.nc
 cdo -r -f nc4 -z zip copy $files erai_evappot_daily.nc
-rsync erai_evappot_daily.nc bhlclim:climexp/ERA-interim/
+$HOME/NINO/copyfiles.sh erai_evappot_daily.nc
 set +x

@@ -34,6 +34,5 @@ done
 ncatted -a units,sfcWind,a,c,"m/s" era5_sfcWind_daily.nc
 ncatted -a units,sfcWindmax,a,c,"m/s" era5_sfcWindmax_daily.nc
 if [ -n "$filelist" ]; then
-    rsync -v $filelist bhlclim:climexp/ERA5/
-    rsync -v $filelist climexp.climexp-knmi.surf-hosted.nl:climexp/ERA5/
+    $HOME/NINO/copyfiles.sh $filelist bhlclim:climexp/ERA5/
 fi

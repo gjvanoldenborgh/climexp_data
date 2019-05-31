@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # get sea ice indices from NSIDC and convert to my data type
 
 base=ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/

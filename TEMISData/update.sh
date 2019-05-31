@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # uit de mail van Marc Allaart
 #
 base="http://www.temis.nl/protocols/o3field/data"

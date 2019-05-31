@@ -123,11 +123,11 @@ for file in prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_dail
                 $file
     . $HOME/climexp/add_climexp_url_field.cgi
 done
-rsync prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_daily_n1.nc bhlclim:climexp/NCEPData/
+$HOME/NINO/copyfiles.sh prcp_${region}_daily.nc nprcp_${region}_daily.nc prcp_${region}_daily_n1.nc
 if [ $region = CONUS ]; then
     averagefieldspace prcp_CONUS_daily.nc 2 2 prcp_CONUS_daily_05.nc
     file=prcp_CONUS_daily_05.nc
     . $HOME/climexp/add_climexp_url_field.cgi
-    rsync prcp_CONUS_daily_05.nc bhlclim:climexp/NCEPData/
+    $HOME/NINO/copyfiles.sh prcp_CONUS_daily_05.nc
 fi
 done # region

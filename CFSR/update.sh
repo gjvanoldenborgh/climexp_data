@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 yrnow=`date +%Y`
 yrend=2010
@@ -71,7 +71,7 @@ do
         fi
         ncfile=cfsr_$var$lev.nc
         [ -f $ncfile ] && mv $ncfile $ncfile.old
-        
+
         yr=1979
         mo=1
         while [ $yr -le $yrend ]
@@ -81,7 +81,7 @@ do
             else
                 mm=$mo
             fi
-            
+
             file=$type.gdas.$yr$mm.grb2
             if [ -f $file ]; then
                 echo "wgrib2 -fix_ncep -inv /tmp/inv.txt $file -match "$pat1" -match "$lev$pat2" -append -netcdf $ncfile"

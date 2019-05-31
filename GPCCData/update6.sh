@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ 0 = 1 ]; then
 # download GPCC v6
 base=ftp://ftp.dwd.de/pub/data/gpcc/full_data/

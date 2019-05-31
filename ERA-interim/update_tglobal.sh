@@ -1,5 +1,5 @@
-#!/bin/sh
-for var in t2m sst t2msst 
+#!/bin/bash
+for var in t2m sst t2msst
 do
 	if [ $var = t2msst ]; then
 		if [ \( ! -s erai_t2msst.nc \) -o erai_t2msst.nc -ot erai_t2m.nc ]; then

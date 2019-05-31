@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export PATH=$HOME/climexp/bin:/usr/local/free/bin:$PATH
 cdo="cdo -r -f nc4 -z zip"
 mkdir -p CMORPH

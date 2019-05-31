@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yr=1960
 mo=0
 day0=`date +%d`

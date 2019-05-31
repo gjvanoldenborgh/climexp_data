@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 for var in t2m sst t2msst
 do
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yrnow=`date +%Y`
 yr=1979
 list=""

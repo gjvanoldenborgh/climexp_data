@@ -23,7 +23,7 @@ mmnow=`date +%m`
 ddnow=`date +%d`
 pfile=$0
 stillok=true
-while [ -s $pfile ]; do   
+while [ -s $pfile ]; do
     ((dy++))
     case $mo in
         1|3|5|7|8|10|12) dpm=31;;
@@ -117,4 +117,5 @@ file=imerg_daily.nc
 cdo -r -f nc4 -z zip copy $files $file
 ncatted -a institution,global,c,c,"NASA, converted to CF conventions and merged at KNMI" $file
 . $HOME/climexp/add_climexp_url_field.cgi
-rsync -avt imerg_daily*.nc bhlclim:climexp/GPMData/
+
+$HOME/NINO/copyfiles.sh imerg_daily*.nc

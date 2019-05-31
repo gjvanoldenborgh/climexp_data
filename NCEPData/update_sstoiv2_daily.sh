@@ -59,7 +59,7 @@ do
     . $HOME/climexp/add_climexp_url_field.cgi
     cdo -r -f nc4 -z zip copy sst.day.${type}.*.05.nc oisst_v2_${type}_daily.nc
     file=oisst_v2_${type}_daily.nc
-    . $HOME/climexp/add_climexp_url_field.cgi    
+    . $HOME/climexp/add_climexp_url_field.cgi
 done
 
 for index in 12 3 34 4;do
@@ -75,5 +75,5 @@ EOF
         fgrep -v '#' $file >> nino${index}_daily.dat
     done
 done
-rsync -avt oisst_v2_????_monthly.nc oisst_v2_????_daily.nc nino*_daily.dat bhlclim:climexp/NCEPData/
+$HOME/NINO/copyfiles.sh oisst_v2_????_monthly.nc oisst_v2_????_daily.nc nino*_daily.dat
 date > downloaded_$yr$mo

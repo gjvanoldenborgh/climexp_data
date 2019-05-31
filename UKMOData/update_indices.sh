@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 force=false
 [ "$1" = force ] && force=true
 #

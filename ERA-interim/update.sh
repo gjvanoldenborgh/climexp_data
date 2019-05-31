@@ -17,10 +17,7 @@ if [ 1 = 1 ]; then
 ./make_wspd.sh
 ./update_tglobal.sh
 ./update_twetbulb.sh
-# probably runs on zuidzee
-###$HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
-rsync -avt erai_*.nc erai_*.dat bhlclim:climexp/ERA-interim/
-rsync -avt erai_*.nc erai_*.dat oldenbor@climexp-test.knmi.nl:climexp/ERA-interim/
+$HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
 
 fi
 
@@ -38,11 +35,8 @@ do
         *) echo "$0: unknown var $var"; exit -1;;
     esac
     echo "Computing $var"
-    ###rsync erai_${basevar}_daily.nc zuidzee:NINO/ERA-interim/
     daily2longerfield erai_${basevar}_daily.nc 1 $oper minfac 75 erai_$var.nc
-    rsync -at erai_$var.nc bhlclim:climexp/ERA-interim/
-    rsync -at erai_$var.nc erai_*.dat oldenbor@climexp-test.knmi.nl:climexp/ERA-interim/
-    ###$HOME/NINO/copyfiles.sh erai_$var.nc
+    $HOME/NINO/copyfiles.sh erai_$var.nc
 done
 
 date > downloaded_$yr$mo

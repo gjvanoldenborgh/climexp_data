@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 method=old
 if [ $method  = 'old' ]; then
     # from the source code of http://projects.knmi.nl/klimatologie/uurgegevens/selectie.cgi
@@ -22,7 +22,7 @@ if [ $method  = 'old' ]; then
     fi
 elif [ $method = mew ]; then
     (cd ../KNMIUurData/update.sh; ./update.sh)
-    for file in ../KNMIUurData/td???_hr.dat ../KNMIUurData/rh???_hr.dat 
+    for file in ../KNMIUurData/td???_hr.dat ../KNMIUurData/rh???_hr.dat
     do
         newfile=`basename $file .dat | sed -e 's/rh/rx'`
         daily2longer $file 366 max > $newfile
@@ -45,7 +45,7 @@ do
         station=${station%.dat}
         dat2nc $file p $station $ncfile
     fi
-    
+
     if [ $i -lt 10 ]; then
         ii=0$i
     else
@@ -66,5 +66,4 @@ do
 done
 average_ensemble rx_%%.nc num > rx_num.dat
 $HOME/NINO/copyfiles.sh list_rx.txt list_t[dp].txt rx[^_]??.dat t[dp][^_]??.dat rx[^_]??.gz t[dp][^_]??.gz rx_num.dat
-rsync -e ssh -avt rx_??.nc td_??.nc tp_??.nc oldenbor@bhlclim:climexp/KNMIData/
-rsync -e ssh -avt list_rx.txt list_td.txt list_tp.txt rx???.nc td???.nc tp???.nc oldenbor@climexp-test.knmi.nl:climexp/KNMIData/
+$HOME/NINO/copyfiles.sh rx_??.nc td_??.nc tp_??.nc

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 yrnow=`date +"%Y"`
 yrthen=$(($yrnow - 1))
 wget -N ftp://ftp.cpc.ncep.noaa.gov/wd52dg/snow/wkly_89x89/wk\*

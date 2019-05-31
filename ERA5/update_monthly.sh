@@ -1,7 +1,7 @@
 #!/bin/bash
 # this assumes Philippe downloads the updates.
 yrnow=`date +%Y -d "2 months ago"`
-[ "$1" = force  ] && force=true 
+[ "$1" = force  ] && force=true
 cdo="cdo -r -f nc4 -z zip"
 sourcedir=/net/pc170547/nobackup_2/users/sager/ERA5
 vars=`ls $sourcedir/2010/mon/ | sed -e 's/era5_//' -e 's/_.*$//'`
@@ -40,12 +40,11 @@ for var in tmin tmax; do
         if [ ! -s $outfile -o $infile -nt $outfile -o -n "$force" ]; then
             $cdo monmean $infile $outfile
             filelist="$filelist $outfile"
-        fi    
+        fi
     fi
 done
 if [ -n "$filelist" ]; then
-    rsync -v $filelist bhlclim:climexp/ERA5/
-    rsync -v $filelist v:climexp/ERA5/
+    $HOME/NINO/copyfiles.sh $filelist
 fi
 
 # global means
@@ -54,6 +53,5 @@ for  var in t2m
 do
     file=era5_$var.nc
     get_index $file 0 360 -90 90 standardunits > era5_${var}_gl.dat
-    rsync -v $file bhlclim:climexp/ERA5/
-    rsync -v $file oldenbor@climexp-test.knmi.nl:climexp/ERA5/
+    $HOME/NINO/copyfiles.sh $file
 done

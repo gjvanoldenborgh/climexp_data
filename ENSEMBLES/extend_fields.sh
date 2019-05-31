@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 export PATH=/usr/local/free/bin:$HOME/climexp/bin:$PATH
-if [ `uname` = linux ]; then 
+if [ `uname` = linux ]; then
     ulimit -s unlimited
 fi
 firstfile=`ls -t ??_0.25deg_reg_v*eu.nc | head -1`
@@ -77,6 +77,7 @@ do
         extfile=${var}_${res}deg_reg_${version}e.nc
         echo "$cdo copy $files $extfile"
         $cdo copy $files $extfile
-        rsync -avt $extfile bhlclim:climexp/ENSEMBLES/
+        echo "copy to server"
+        $HOME/NINO/copyfiles.sh $extfile
     done
 done

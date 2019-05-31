@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 base=http://cfs.ncep.noaa.gov/cfs/godas/monthly
 yr=1980
 mo=1

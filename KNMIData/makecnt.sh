@@ -46,4 +46,3 @@ averageseries const temp_De_Bilt_hom.dat temp_Winterswijk_Hupsel_hom.dat \
                     temp_Oudenbosch_Gilze-Rijen_hom.dat temp_Gemert_Volkel_hom.dat > cnt4.dat
 
 $HOME/NINO/copyfiles.sh cnt*.dat temp*.dat list_temp_hom.txt
-rsync -avt cnt*.dat temp*.dat list_temp_hom.txt oldenbor@climexp-test.knmi.nl:climexp/KNMIData/

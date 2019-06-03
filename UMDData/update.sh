@@ -43,6 +43,9 @@ wget -N -q $base/$file
 prelimfiles="$prelimfiles $file"
 cdo -r -f nc4 -z zip copy olr-daily_${version}_????0101_????1231.nc $prelimfiles umd_olr_dy.nc
 file=umd_olr_dy.nc
+ncatted -h -a time_coverage_start,global,d,c,""  \
+    -a time_coverage_end,global,d,c,""  \
+    -a time_coverage_duration,global,d,c,""  $file
 . $HOME/climexp/add_climexp_url_field.cgi
 $HOME/NINO/copyfiles.sh umd_olr_dy.nc
 

@@ -30,6 +30,10 @@ if [ ! -s downloaded_$now$nowm ]; then
             gunzip -c $file > ${file%.gz}
         fi
     done
+    if [ ! -s ../final_grid.txt ]; then
+        echo "$0: error: cannot find ../final_grid.txt"
+        exit -1
+    fi
     for file in ${name}*d[0-9][0-9].nc; do
         if [ ! -s ${file%.nc}_newgrid.nc ]; then
             cdo setgrid,../final_grid.txt ${file%.nc}.nc ${file%.nc}_tmp.nc

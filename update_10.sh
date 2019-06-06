@@ -1,16 +1,6 @@
 #!/bin/bash
 # to be ran on the 10th of each month
 
-if [ $HOST != bvlclim.knmi.nl ]; then
-  echo "Are you sure you want to run this script on $HOST?"
-  read yesno
-  if [ $yesno != yes -a $yesno != y ]; then
-    exit
-  fi
-else
-  scp -q gjvo@shell.xs4all.nl:WWW/ip.txt $HOME/etc/ip2.txt
-fi
-
 echo @@@ GISS
 (cd NASAData; ./update.sh | 2>&1 tee update.log)
 (cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
@@ -25,8 +15,8 @@ echo "@@@ other sea level indices"
 (cd SiegenData; ./update.sh | 2>&1 tee update.log)
 (cd CSIROData; ./update.sh | 2>&1 tee update.log)
 
-###echo @@@ LOD  moved
-###cd IERSData; ./update.sh | 2>&1 tee update.log)
+echo @@@ LOD
+cd IERSData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ sunspots
 (cd SIDCData; ./update.sh | 2>&1 tee update.log)

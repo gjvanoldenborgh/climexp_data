@@ -16,7 +16,7 @@ echo "@@@ other sea level indices"
 (cd CSIROData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ LOD
-cd IERSData; ./update.sh | 2>&1 tee update.log)
+(cd IERSData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ sunspots
 (cd SIDCData; ./update.sh | 2>&1 tee update.log)

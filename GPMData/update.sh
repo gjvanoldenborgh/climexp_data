@@ -73,6 +73,12 @@ while [ -s $pfile ]; do
                 echo "missing date ${yr}${mm}${dd}, setting to undef"
                 cp undef.nc $yr/$nrtfile
             else
+                if [ $yr = 2019 -a $mm = 05 -a $version = 05 ]; then
+                    version=06
+                    nrtbase=http://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGDL.$version
+                    nrtfile=3B-DAY-L.MS.MRG.3IMERG.${yr}${mm}${dd}-S000000-E235959.V${version}.nc4
+                    echo "switched to version $version"
+                fi
                 echo "$wget $nrtbase/$dir/$file"
                 $wget $nrtbase/$dir/$nrtfile -O $yr/$nrtfile
             fi

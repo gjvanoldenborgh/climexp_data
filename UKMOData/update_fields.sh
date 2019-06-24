@@ -33,30 +33,46 @@ if [ -n "$also_download_ensemble" ]; then
 	done
 fi
 
-export version=3.1.1.0
-base=http://www.metoffice.gov.uk/hadobs/hadsst3/data/HadSST.$version/netcdf/
-file=HadSST.${version}.median_netcdf.zip
-$wget --header="accept-encoding: gzip" $base/$file
-unzip -o $file
-file=HadSST.${version}.median.nc
-ncatted -a institution,global,a,c,"Met Office Hadley Centre" \
-    -a url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadsst3/" $file
-. $HOME/climexp/add_climexp_url_field.cgi
-$HOME/NINO/copyfilesall.sh HadSST.${version}.median.nc
+for v in 4; do
+    case $v in
+        3) export version=3.1.1.0
+            base=https://www.metoffice.gov.uk/hadobs/hadsst$v/data/HadSST.$version/netcdf
+            file=HadSST.${version}.median_netcdf.zip;;
+        4) export version=4.0.0.0
+            base=https://www.metoffice.gov.uk/hadobs/hadsst4/data/netcdf
+            file=HadSST.4.0.0.0_median.nc;;
+        *) echo "error: unknown major version $v"; exit -1;;
+    esac
+    $wget --header="accept-encoding: gzip" $base/$file
+    if [ $v = 3 ]; then
+        unzip -o $file
+        file=HadSST.${version}.median.nc
+    fi
+    ncatted -a -h url,global,a,c,"https://www.metoffice.gov.uk/hadobs/hadsst$v/" $file
+    . $HOME/climexp/add_climexp_url_field.cgi
+    if [ $v = 4 ]; then
+        file=HadSST.${version}_total_uncertainty.nc
+        $wget $base/$file
+        . $HOME/climexp/add_climexp_url_field.cgi
+        file=HadSST.${version}_number_of_observations.nc
+        $wget $base/$file
+        . $HOME/climexp/add_climexp_url_field.cgi
+    fi
+    $HOME/NINO/copyfilesall.sh HadSST.${version}*.nc
 
-if [ -n "$also_download_ensemble" ]; then
-	i1=1
-	i2=10
-	while $i1 -lt 100 ]; do
-		$wget --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadcrut4/data/gridded_fields/hadcrut4_${i1}_to_${i2}_netcdf.zip
-		i1=$((i1+10))
-		i2=$((i2+10))
-	done
-fi
+    if [ -n "$also_download_ensemble" ]; then
+        i1=1
+        i2=10
+        while $i1 -lt 100 ]; do
+            $wget --header="accept-encoding: gzip" http://www.metoffice.gov.uk/hadobs/hadcrut4/data/gridded_fields/hadcrut4_${i1}_to_${i2}_netcdf.zip
+            i1=$((i1+10))
+            i2=$((i2+10))
+        done
+    fi
+done
 
 . ./update_hadisst1.sh
 . ./update_ipo.sh
-echo "version=$version"
 . ./update_amo.sh
 . ./update_hadslp2.sh
 

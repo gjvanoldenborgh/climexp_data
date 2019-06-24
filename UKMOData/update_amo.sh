@@ -4,8 +4,9 @@ export LANG=C
 # 1. Definition of van Oldenborgh et al, OS, 2009
 
 [ -z "$version" ] && echo "$0: error: please define version $version" && exit -1
-[ ! -s HadSST.${version}.median.nc ] && echo "$0: error: cannot find HadSST.${version}.median.nc" && exit -1
-get_index HadSST.${version}.median.nc -75 -7 25 60 > hadsst_natl.dat
+ncfile=HadSST.${version}_median.nc
+[ ! -s $ncfile ] && echo "$0: error: cannot find $ncfile" && exit -1
+get_index $ncfile -75 -7 25 60 > hadsst_natl.dat
 correlate hadsst_natl.dat file hadcrut4_ns_avg.dat mon 1:12 plot aap.txt
 a=`awk '{print -$10}' aap.txt | tr '\n' ':'`
 echo "$a"
@@ -33,8 +34,8 @@ $HOME/NINO/copyfiles.sh amo_hadsst.dat
 
 # 2. Defnbition of Trenberth & Shea 2006
 
-get_index HadSST.${version}.median.nc -80 0 0 60 > hadsst_0-60N_0-80W.dat
-get_index HadSST.${version}.median.nc 0 360 -60 60 > hadsst_60S-60N.dat
+get_index $ncfile -80 0 0 60 > hadsst_0-60N_0-80W.dat
+get_index $ncfile 0 360 -60 60 > hadsst_60S-60N.dat
 cat > amo_hadsst_ts.dat <<EOF
 # AMO index SST EQ-60N, 0-80W minus SST 60S-60N
 # as in <a href="http://onlinelibrary.wiley.com/doi/10.1029/2006GL026894/full">Trenberth and Shea 2006</a>

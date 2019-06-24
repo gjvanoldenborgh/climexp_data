@@ -8,7 +8,7 @@ program hourly2max
     integer,parameter :: maxstations=100
     integer :: ifile,istation,station,datum,olddatum,yr,mo,dy,hr,i,j, &
         iname,stations(maxstations),nstations,years(2,maxstations)
-    integer :: t,td,rh,tds(24),oldtds(24),rhs(24),maxpr,maxtp,maxtd,ii(8)
+    integer :: t,td,rh,tds(24),oldtds(24),rhs(24),maxpr,maxtp,maxtd,ii(8),oldstation
     real :: lon,lat,hgt
     character :: file*255,line*80,ofile*20,name*40
     logical :: lwrite
@@ -16,8 +16,7 @@ program hourly2max
     lwrite = .false. 
     nstations = 0
     do ifile=1,iargc()
-        olddatum = -1
-        oldtds = 9999
+        oldstation = -1
         call get_command_argument(ifile,file)
         open(1,file=trim(file),status='old')
     100 continue
@@ -34,6 +33,11 @@ program hourly2max
         i = index(line,',', .true. )
         if ( line(i+1:) == ' ' ) go to 100
         read(line,*,err=901,end=901) station,datum,hr,t,td,rh
+        if ( station /= oldstation ) then
+            oldstation = station
+            olddatum = -1
+            tds = 9999
+        end if
         if ( rh == -1 ) rh = 0 ! round down 0<rh<0.05
         yr = datum/10000
         do istation = 1,nstations
@@ -50,7 +54,7 @@ program hourly2max
             open(10+3*istation,file=trim(ofile))
             write(10+3*istation,'(a,i3)') '# daily max of hourly '// &
                 'precipitation at station ',station
-            write(10+3*istation,'(a)') '# pr [mm/hr] max hourly '// &
+            write(10+3*istation,'(a)') '# maxpr [mm/hr] max hourly '// &
                 'precipitation'
             write(ofile,'(a,i3.3,a)') 'tp',station,'.dat'
             open(11+3*istation,file=trim(ofile))
@@ -95,16 +99,13 @@ program hourly2max
                     end if
                 end do
                 if ( maxpr >= 0 .and. maxpr < 9999 ) then
-                    write(10+3*istation,'(i8,f7.1)') &
-                    olddatum,maxpr/10.
+                    write(10+3*istation,'(i8,f7.1)') olddatum,maxpr/10.
                 end if
                 if ( maxtp >= 0 .and. maxtp < 9999 ) then
-                    write(11+3*istation,'(i8,f7.1)') &
-                    olddatum,maxtp/10.
+                    write(11+3*istation,'(i8,f7.1)') olddatum,maxtp/10.
                 end if
                 if ( maxtd >= 0 .and. maxtd < 9999 ) then
-                    write(12+3*istation,'(i8,f7.1)') &
-                    olddatum,maxtd/10.
+                    write(12+3*istation,'(i8,f7.1)') olddatum,maxtd/10.
                 end if
             end if
             olddatum = datum

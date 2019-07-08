@@ -5,8 +5,8 @@ echo @@@ GISS
 (cd NASAData; ./update.sh | 2>&1 tee update.log)
 (cd NASAData; ./update_fields.sh | 2>&1 tee update_fields.log)
 
-echo "@@@ University of Colorado (sealevel)"
-(cd CUData; ./update_indices.sh | 2>&1 tee update.log)
+###echo "@@@ University of Colorado (sealevel)"
+###(cd CUData; ./update_indices.sh | 2>&1 tee update.log)
 
 echo "@@@ AVISO"
 (cd AVISOData; ./update_indices.sh | 2>&1 tee update.log)

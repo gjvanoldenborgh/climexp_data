@@ -23,7 +23,7 @@ program gdcndata
         dummy2*1,tminflags(31)*1,tmaxflags(31)*1
     character :: country(0:999)*50,cc(0:999)*2,elements(9)*4,element*4 &
         ,units(9)*10,uppercountry*50,longname(9)*60
-    character :: string*200,line*500,sname*25,history*1000
+    character :: string*200,line*500,sname*25,history*1000,scripturl*2000
     character :: dir*256,command*1024
     logical :: lwrite
     integer,external :: getcode
@@ -396,6 +396,10 @@ program gdcndata
             call tolower(element)
             print '(4a)','# climexp_url :: https://climexp.knmi.nl/gdcn',element,'.cgi?WMO=',stations(jj)
             write(dir(ldir+1:),'(3a,i10.10,a)') '/ghcnd/',stations(jj),'.dly.gz'
+            call getenv('SCRIPTURL',scripturl)
+            if ( scripturl /= ' ' ) then
+                print '(2a)','# scripturl01 :: ',trim(scripturl)
+            end if
             ldir = len_trim(dir)
             open(2,file=trim(dir),status='old',err=940)
             close(2)

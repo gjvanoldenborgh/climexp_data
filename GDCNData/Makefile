@@ -9,13 +9,16 @@ FFLAGS = -O -m64
 
 FC=gfortran
 
-LIBS=$(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
+LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
+        $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
+
+SYSLIBS = -L/sw/lib -lnetcdff -lnetcdf -L/usr/local/lib -lfgsl -lgsl -lfgsl -lgsl
 
 addyears:	addyears.o
 		$(FC) $(FFLAGS) -o $@ addyears.o $(LIBS)
 
 gdcndata:	gdcndata.o gdcnsupport.o
-		$(FC) $(FFLAGS) $(LDFLAGS) -o $@ gdcndata.o gdcnsupport.o $(LIBS)
+		$(FC) $(FFLAGS) $(LDFLAGS) -o $@ gdcndata.o gdcnsupport.o $(LIBS) $(SYSLIBS)
 
 ghcnd_data:	ghcnd_data.o gdcnsupport.o
 		$(FC) $(FFLAGS) $(LDFLAGS) -o $@ $@.o gdcnsupport.o

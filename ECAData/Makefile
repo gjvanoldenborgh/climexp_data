@@ -10,7 +10,10 @@ FC=gfortran
 ###FFLAGS = -O -Wl,-Bstatic
 FFLAGS = -O -m64
 
-LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a
+LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
+        $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
+
+SYSLIBS = -L/sw/lib -lnetcdff -lnetcdf -L/usr/local/lib -lfgsl -lgsl -lfgsl -lgsl
 
 all:		serieslist.dat ecadata
 
@@ -18,7 +21,7 @@ serieslist.dat: stamap/serieslist.dat.gz
 		gunzip -c stamap/serieslist.dat.gz > serieslist.dat
 
 ecadata:	ecadata.o support.o $(LIBS)
-		$(FC) $(FFLAGS) -o $@ $@.o support.o $(LIBS)
+		$(FC) $(FFLAGS) -o $@ $@.o support.o $(LIBS) $(SYSLIBS)
 
 txt2dat:	txt2dat.o $(LIBS)
 		$(FC) $(FFLAGS) -o $@ $@.o $(LIBS)

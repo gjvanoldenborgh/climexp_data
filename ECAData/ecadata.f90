@@ -16,7 +16,7 @@ program eca
     character :: name(nn)*40,country(nn)*2,pmlon*1,pmlat*1,gsn(nn)*3 &
         ,el*3,elem*40,element*2,elin*2,wmo*6,units*10,longname*40,progname*4
     character :: string*200,line*500,sname*25,history*1000
-    character :: dir*256,format*20
+    character :: dir*256,format*20,scripturl*2000
     integer :: iargc,rindex
 ! 01- 05 STAID  : Location identifier (see file location.txt for more info.)
 ! 07- 12 SOUID  : Source identifier
@@ -322,6 +322,10 @@ program eca
             print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
             print '(a,f8.1,a)','# elevation :: ',elev(jj),' m'
             print format,'# climexp_url :: https://climexp.knmi.nl/eca'//progname//'.cgi?WMO=',iecd(jj)
+            call getenv('SCRIPTURL',scripturl)
+            if ( scripturl /= ' ' ) then
+                print '(2a)','# scripturl01 :: ',trim(scripturl)
+            end if
             
             if ( blend ) then
                 write(dir(ldir+1:),'(2a,i6.6,a)') '/data/b',element, &

@@ -15,7 +15,7 @@ program getsealev
         ,rlatmin,rlatmax
     character :: name(nn)*40,country(0:9999)*60,countryheader*60,ns,ew
     character :: string*80,sname*30
-    character :: dir*256,line*132
+    character :: dir*256,line*132,scripturl*2000
     logical :: lwrite
 
     lwrite = .false. 
@@ -197,6 +197,10 @@ program getsealev
             print '(a)','# source :: https://www.psmsl.org/data/obtaining/complete.php'
             print '(a,f7.2,a)','# latitude :: ',rlat(jj),' degrees_north'
             print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
+            call getenv('SCRIPTURL',scripturl)
+            if ( scripturl /= ' ' ) then
+                print '(2a)','# scripturl01 :: ',trim(scripturl)
+            end if
             call getdata('slv',2,ii(jj),1,nmin)
         endif
     700 continue

@@ -20,7 +20,7 @@ program gettemp
     character :: stloc(nn)*2,airstn(nn)*1
     character(48) :: country(0:999)
     character :: string*80,sname*30,type*7,file*1023,wmostring*12
-    character :: dir*256
+    character :: dir*256,scripturl*2000
     logical :: lmin,enough,okstation,lwrite
     integer :: iargc
 

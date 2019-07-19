@@ -1,6 +1,5 @@
 #!/bin/bash
 # OLR
-
 yrnow=`date -d "a month ago" +%Y`
 base=https://www.ncei.noaa.gov/data/outgoing-longwave-radiation-daily/access/
 version=v01r02
@@ -65,13 +64,9 @@ if [ ! -s olr-monthly_${version}-1_197901_$yr$mo.nc ]; then
     $HOME/NINO/copyfiles.sh umd_olr_mo.nc
 fi
 
-
-
-
-
-exit
-
 # NDVI
+echo "UMD NDVI is no longer updated"
+exit
 
 d1=0
 d2=11
@@ -104,3 +99,4 @@ while [ $yr -lt 2007 ]; do
 done
 cdo copy gimms_ndvi_????[ab]_lo.nc gimms_ndvi_15dy.nc
 daily2longerfield gimms_ndvi_15dy.nc 12 mean gimms_ndvi_mo.nc
+$HOME/NINO/copyfiles.sh gimms_ndvi_mo.nc

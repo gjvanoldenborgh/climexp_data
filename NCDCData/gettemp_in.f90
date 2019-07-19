@@ -431,6 +431,10 @@ program gettemp
                 prog = 'ge'//type ! stupid convention a long, long, time ago
             end if
             print '(4a)','# climexp_url :: https://climexp.knmi.nl/',trim(prog),'.cgi?WMO=',trim(wmostring)
+            call getenv('SCRIPTURL',scripturl)
+            if ( scripturl /= ' ' ) then
+                print '(2a)','# scripturl01 :: ',trim(scripturl)
+            end if
         end if
         call getdata3(type,2,100000*ic(jj)+iwmo(jj),imod(jj) &
             ,nflag,nyr,nrec,nstat,yr1,yr2,version)

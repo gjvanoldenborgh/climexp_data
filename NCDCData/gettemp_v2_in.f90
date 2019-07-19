@@ -438,6 +438,10 @@ program gettemp
             print '(a,f7.2,a)','# longitude :: ',rlon(jj),' degrees_east'
             print '(a,i8,a)','# elevation :: ',ielevs(jj),' m'
             print '(4a)','# climexp_url :: https://climexp.knmi.nl/get',trim(type),'.cgi?WMO=',trim(wmostring)
+            call getenv('SCRIPTURL',scripturl)
+            if ( scripturl /= ' ' ) then
+                print '(2a)','# scripturl01 :: ',trim(scripturl)
+            end if
         end if
         call getdata(type,2,100000*ic(jj)+iwmo(jj),imod(jj),nflag,nyr,nrec,nstat,yr1,yr2)
     700 continue

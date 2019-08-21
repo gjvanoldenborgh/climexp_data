@@ -19,8 +19,6 @@ for var in $vars; do
             onefile=`echo $sourcedir/$yr/mon/era5_${var}_*`
             if [ -s "$onefile" ]; then
                 sourcefiles="$sourcefiles $onefile"
-            else
-                sourcefiles=""
             fi
         done
         lastfile=`ls -t $sourcefiles | head -n 1`

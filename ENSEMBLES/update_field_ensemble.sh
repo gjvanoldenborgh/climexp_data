@@ -89,7 +89,7 @@ do
         ncatted -h -a institution,global,a,c,"KNMI" -a contact,global,a,c,"eca@knmi.nl" \
                 -a title,global,c,c,"E-OBS analyses $version" \
                 -a source_url,global,a,c,"http://surfobs.climate.copernicus.eu//dataaccess/access_eobs.php" \
-                -a References,global,a,m,"Haylock, M.R., N. Hofstra, A.M.G. Klein Tank, E.J. Klok, P.D. Jones, M. New. 2008: A European daily high-resolution gridded dataset of surface temperature and precipitation. J. Geophys. Res (Atmospheres), 113, D20119, doi:10.1029/2008JD10201" \
+                -a References,global,a,c,"Haylock, M.R., N. Hofstra, A.M.G. Klein Tank, E.J. Klok, P.D. Jones, M. New. 2008: A European daily high-resolution gridded dataset of surface temperature and precipitation. J. Geophys. Res (Atmospheres), 113, D20119, doi:10.1029/2008JD10201" \
                 $file
         . $HOME/climexp/add_climexp_url_field.cgi
         $HOME/NINO/copyfiles.sh $outfile

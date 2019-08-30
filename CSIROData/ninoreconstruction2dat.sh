@@ -14,6 +14,7 @@ for type in NCT NWP; do
 # institution :: CSIRO
 # contact :: Mandy.Freund@csiro.au
 # references :: Freund, M. B., Henley, B. J., Karoly, D. J., McGregor, H. V., Abram, N. J. and Dommenget, D. (2019) Higher frequency of Central Pacific El Niño events in recent decades relative to past centuries, Nature Geoscience, doi:10.1038/s41561-019-0353-3
+# source_url :: https://www.ncdc.noaa.gov/paleo/study/26270
 EOF
     ./ninoreconstruction2dat $infile $col >> $outfile   
 done

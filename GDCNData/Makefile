@@ -12,7 +12,7 @@ FC=gfortran
 LIBS = $(HOME)/climexp_numerical/$(PVM_ARCH)/climexp.a \
         $(HOME)/climexp_numerical/$(PVM_ARCH)/wrappers.a
 
-SYSLIBS = -L/sw/lib -lnetcdff -lnetcdf -L/usr/local/lib -lfgsl -lgsl -lfgsl -lgsl
+SYSLIBS = -L/sw/lib -lnetcdff -lnetcdf -L/usr/local/lib -L$(HOME)/lib -lfgsl -lgsl -lfgsl -lgsl
 
 addyears:	addyears.o
 		$(FC) $(FFLAGS) -o $@ addyears.o $(LIBS)

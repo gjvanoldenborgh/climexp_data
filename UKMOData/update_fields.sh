@@ -33,14 +33,14 @@ if [ -n "$also_download_ensemble" ]; then
 	done
 fi
 
-for v in 4; do
+for v in 3 4; do
     case $v in
         3) export version=3.1.1.0
             base=https://www.metoffice.gov.uk/hadobs/hadsst$v/data/HadSST.$version/netcdf
             file=HadSST.${version}.median_netcdf.zip;;
         4) export version=4.0.0.0
             base=https://www.metoffice.gov.uk/hadobs/hadsst4/data/netcdf
-            file=HadSST.4.0.0.0_median.nc;;
+            file=HadSST.${version}_median.nc;;
         *) echo "error: unknown major version $v"; exit -1;;
     esac
     $wget --header="accept-encoding: gzip" $base/$file

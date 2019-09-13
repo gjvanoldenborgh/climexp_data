@@ -14,10 +14,10 @@ if [ $file -nt piomas_dy.dat ]; then
 fi
 $HOME/NINO/copyfilesall.sh piomas_??.dat
 
-cp PDO.latest PDO.latest.old
-wget -N http://research.jisao.washington.edu/pdo/PDO.latest
-diff PDO.latest PDO.latest.old
-if [ $? != 0 ]; then
+cp PDO.latest.txt PDO.latest.old
+wget -N http://research.jisao.washington.edu/pdo/PDO.latest.txt
+diff PDO.latest.txt PDO.latest.old
+if [ $? != 0 -o "$1" = force ]; then
     # metadata structured from the file dd 4-feb-2018
     cat > pdo.dat <<EOF
 # PDO [1] Pacific Decadal Oscillation index
@@ -32,7 +32,7 @@ if [ $? != 0 ]; then
 # data_source :: UKMO Historical SST data set for 1900-81, Reynold's Optimally Interpolated SST (V1) for January 1982-Dec 2001, OI SST Version 2 (V2) beginning January 2002
 # history :: retrieved at `date`
 EOF
-    egrep '^[12]' PDO.latest | tr -d '*' | sed -e 's/-9999/-999.9/' >> pdo.dat
+    egrep '^[12]' PDO.latest.txt | tr -d '*' | sed -e 's/-9999/-999.9/' -e 's/0.18   0.09$/0.18   0.09 -999.9 -999.9 -999.9/' >> pdo.dat
     $HOME/NINO/copyfilesall.sh pdo.dat
 fi
 

@@ -1,5 +1,33 @@
-#!/bin/sh
+#!/bin/bash
 ###set -x
+
+cp PDO.latest PDO.latest.old
+wget --no-check-certificate -N https://oceanview.pfeg.noaa.gov/erddap/tabledap/cciea_OC_PDO.htmlTable
+egrep 'td class=|00Z' cciea_OC_PDO.htmlTable | sed -e 's/T00:00:00Z//' -e 's/<.*>//' |\
+(while read line; do 
+    if [ ${line: -3:3} = "-01" ] ; then 
+        echo -n $line " "
+    else echo $line
+fi
+done) > PDO.latest
+diff PDO.latest PDO.latest.old
+if [ $? != 0 -o "$1" = force ]; then
+    # metadata structured from the file dd 4-feb-2018
+    cat > pdo.dat <<EOF
+# PDO [1] Pacific Decadal Oscillation index
+# from <a href="https://oceanview.pfeg.noaa.gov/erddap/tabledap/cciea_OC_PDO.htmlTable">SWFSC</a>
+# institution :: Southwest Fisheries Science Center
+# author :: Nate Mantua
+# contact :: nate.mantua@noaa.gov
+# source :: https://oceanview.pfeg.noaa.gov/erddap/tabledap/cciea_OC_PDO.htmlTable
+# reference :: Zhang, Y., J.M. Wallace, D.S. Battisti, 1997: ENSO-like interdecadal variability: 1900-93. J. Climate, 10, 1004-1020. 
+# reference :: Mantua, N.J. and S.R. Hare, Y. Zhang, J.M. Wallace, and R.C. Francis, 1997: A Pacific interdecadal climate oscillation with impacts on salmon production. BAMS, 78, 1069-1079.
+# data_source :: UKMO Historical SST data set for 1900-81, Reynold's Optimally Interpolated SST (V1) for January 1982-Dec 2001, OI SST Version 2 (V2) beginning January 2002
+# history :: retrieved at `date`
+EOF
+    cat PDO.latest >> pdo.dat
+    $HOME/NINO/copyfilesall.sh pdo.dat
+fi
 
 yrnow=`date +%Y`
 ###echo "Please download the file PIOMAS.vol.daily.1979.*.dat by hand from http://psc.apl.washington.edu/wordpress/research/projects/arctic-sea-ice-volume-anomaly/data/"
@@ -13,28 +41,6 @@ if [ $file -nt piomas_dy.dat ]; then
 	daily2longer piomas_dy.dat 12 mean > piomas_mo.dat
 fi
 $HOME/NINO/copyfilesall.sh piomas_??.dat
-
-cp PDO.latest.txt PDO.latest.old
-wget -N http://research.jisao.washington.edu/pdo/PDO.latest.txt
-diff PDO.latest.txt PDO.latest.old
-if [ $? != 0 -o "$1" = force ]; then
-    # metadata structured from the file dd 4-feb-2018
-    cat > pdo.dat <<EOF
-# PDO [1] Pacific Decadal Oscillation index
-# from <a href="http://research.jisao.washington.edu/pdo/">JISAO</a>
-# insitution :: University of Washington, JISAO
-# author :: Nate Mantua
-# contact :: nate.mantua@noaa.gov
-# link :: http://research.jisao.washington.edu/pdo/
-# source :: http://research.jisao.washington.edu/pdo/PDO.latest
-# reference :: Zhang, Y., J.M. Wallace, D.S. Battisti, 1997: ENSO-like interdecadal variability: 1900-93. J. Climate, 10, 1004-1020. 
-# reference :: Mantua, N.J. and S.R. Hare, Y. Zhang, J.M. Wallace, and R.C. Francis, 1997: A Pacific interdecadal climate oscillation with impacts on salmon production. BAMS, 78, 1069-1079.
-# data_source :: UKMO Historical SST data set for 1900-81, Reynold's Optimally Interpolated SST (V1) for January 1982-Dec 2001, OI SST Version 2 (V2) beginning January 2002
-# history :: retrieved at `date`
-EOF
-    egrep '^[12]' PDO.latest.txt | tr -d '*' | sed -e 's/-9999/-999.9/' -e 's/0.18   0.09$/0.18   0.09 -999.9 -999.9 -999.9/' >> pdo.dat
-    $HOME/NINO/copyfilesall.sh pdo.dat
-fi
 
 FORM_field=hadsst3
 . $HOME/climexp/queryfield.cgi

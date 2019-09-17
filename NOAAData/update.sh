@@ -1,4 +1,19 @@
 #!/bin/bash
+cp meiv2.data meiv2.data.old
+url=https://www.esrl.noaa.gov/psd/enso/mei/data/meiv2.data
+wget --no-check-certificate -N $url
+cat > meiv2.dat <<EOF
+# MEI [1] Multivariate ENSO Index v2
+# shifted by 0.5 month, i.e., the Jan value represents the Dec/Jan MEI index.
+# from <a href="https://www.esrl.noaa.gov/psd/enso/mei/">ESRL</a>
+# insitution :: NOAA/ESRL
+# link :: https://www.esrl.noaa.gov/psd/enso/mei/
+# source :: $url
+# history :: retrieved from NOAA/ESRL on `date`
+EOF
+tail -n +2 meiv2.data | egrep '^[12][0-9]' | sed -e 's/-999.00/ -999.9/g' >> meiv2.dat
+$HOME/NINO/copyfiles.sh meiv2.dat
+
 if [ -n "$MEI_UPDATED_AGAIN" ]; then
 cp table.html table.html.old
 url=https://www.esrl.noaa.gov/psd/enso/mei/table.html

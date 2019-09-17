@@ -9,7 +9,7 @@ egrep 'td class=|00Z' cciea_OC_PDO.htmlTable | sed -e 's/T00:00:00Z//' -e 's/<.*
         echo -n $line " "
     else echo $line
 fi
-done) > PDO.latest
+done) | sed -e 's/\([^ ]\)-/\1/g' > PDO.latest
 diff PDO.latest PDO.latest.old
 if [ $? != 0 -o "$1" = force ]; then
     # metadata structured from the file dd 4-feb-2018

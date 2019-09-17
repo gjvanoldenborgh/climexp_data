@@ -1,4 +1,5 @@
 #!/bin/bash
+export LANG=C
 infile="$1"
 vars="CO2_ERF Other_Well_mixed_GHG_ERF Tropospheric_O3_ERF Stratospheric_O3_ERF RFari total_aerosol_ERF \
 land_use_change_ERF stratospheric_water_vapour_ERF black_carbon_snow_ERF Contrails_ERF Solar_ERF \
@@ -43,6 +44,8 @@ EOF
     if [ $var = Solar_ERF ]; then
         echo "# references :: Lean, J., Rottman, G., Harder, J., & Kopp, G. (2005). SORCE contributions to new understanding of global change and solar variability. Solar Physics, 230( 1‐2), 27– 53. https://doi.org/10.1007/s11207‐005‐1527‐2" >> $outfile
     fi
+    echo "# climexp_url :: https://climexp.knmi.nl/getindices.cgi?LeedsData/$var" >> $outfile
+    echo "# history :: converted from $infile on `date`" >> $outfile
     ((col++))
     egrep '^[12]' "$infile" | egrep -v '^20..,|http|onward' | cut -d ';' -f 1,$col | tr ',;' '. ' >> $outfile
     egrep '^20..,541' "$infile" | sed -e 's/,541096//' | cut -d ';' -f 1,$col | tr ',;' '. ' >> $outfile

@@ -2,12 +2,11 @@
 yr=1979
 version="6.0"
 myversion="60"
-base=http://www.atmos.uah.edu/public/msu/v6.0/tlt/
+base=https://www.atmos.uah.edu/public/msu/v6.0/tlt/
 yrnow=`date -d "last month" +"%Y"`
-while [ $yr -le $yrnow ]
-do
+while [ $yr -le $yrnow ]; do
   file=tltmonamg.${yr}_$version
-  wget -q -N $base$file
+  wget --no-check-certificate -N $base$file
   size=`wc -c $file | awk '{print $1}'`
   if [ -n "$size" -a ${size:-0} -lt 500 ]
   then

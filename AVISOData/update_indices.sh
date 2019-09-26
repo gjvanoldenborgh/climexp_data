@@ -11,5 +11,5 @@ cat > ssh_aviso.dat <<EOF
 # history :: retrieved `date`
 EOF
 ./tenday2month $file >> ssh_aviso.dat
-daily2longer ssh_aviso.dat 1 mean ssh_aviso.dat > ssh_aviso_annual.dat
+daily2longer ssh_aviso.dat 1 mean > ssh_aviso_annual.dat
 $HOME/NINO/copyfilesall.sh  ssh_aviso.dat

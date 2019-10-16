@@ -10,8 +10,8 @@ fi
 getit="wget --no-check-certificate -N -q "
 
 oceanbase=https://data.giss.nasa.gov/pub/gistemp
-base=https://data.giss.nasa.gov/pub/gistemp/GHCNv3
-for file in SBBX.ERSSTv5 SBBX1880.Ts.GHCN.CL.PA.1200 SBBX1880.Ts.GHCN.CL.PA.250 # SBBX.Tsurf1200 SBBX.ERSSTv5 # SBBX.SSTHadR2
+base=https://data.giss.nasa.gov/pub/gistemp
+for file in SBBX.ERSSTv5 SBBX1880.Ts.GHCNv4.1200 SBBX1880.Ts.GHCNv4.250
 do
   cp $file $file.old
   if [ $file = SBBX.ERSSTv5 ]; then
@@ -34,10 +34,11 @@ done
 
 for decor in 1200 250
 do
-	if [ "$force" = true -o \( ! -s giss_temp_land_$decor.nc \) -o giss_temp_land_$decor.nc -ot SBBX1880.Ts.GHCN.CL.PA.$decor ]
+    file=SBBX1880.Ts.GHCNv4.$decor
+	if [ "$force" = true -o \( ! -s giss_temp_land_$decor.nc \) -o giss_temp_land_$decor.nc -ot $file ]
 	then
 		rm TS_DATA
-		ln -s SBBX1880.Ts.GHCN.CL.PA.$decor TS_DATA
+		ln -s $file TS_DATA
 		rm SST_DATA
 		ln -s SBBX.ERSSTv5 SST_DATA
 		yr=`date -d "last month" "+%Y"`

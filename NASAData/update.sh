@@ -6,7 +6,7 @@ getit="wget --no-check-certificate -N -q "
 # GISTEMP
 
 make txt2dat
-base=https://data.giss.nasa.gov/gistemp/tabledata_v3/
+base=https://data.giss.nasa.gov/gistemp/tabledata_v4/
 for type in Ts Ts+dSST
 do
 	for region in GLB NH SH 

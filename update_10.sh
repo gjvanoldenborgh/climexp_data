@@ -21,8 +21,8 @@ echo @@@ LOD
 echo @@@ sunspots
 (cd SIDCData; ./update.sh | 2>&1 tee update.log)
 
-echo @@@ solar radio flux
-(cd SRMPData; ./update.sh | 2>&1 tee update.log)
+###echo @@@ solar radio flux
+###(cd SRMPData; ./update.sh | 2>&1 tee update.log) # does not work 6-oct-2019
 
 echo @@@ Mauna Loa
 (cd CDIACData; ./update.sh | 2>&1 tee update.log)
@@ -137,10 +137,10 @@ echo @@@ NCEP/NCAR daily
 
 if [ $HOST = pc160050.knmi.nl ]; then
     echo @@@ ERA-interim
-    (cd ERA-interim; ./update_indices.sh | 2>&1 tee update_indices.log)
     (cd ERA-interim; ./update.sh | 2>&1 tee update.log)
 
     echo @@@ ERA5
+    (cd ERA5; ./update_indices.sh | 2>&1 tee update_indices.log)
     (cd ERA5; ./update_monthly.sh | 2>&1 tee update_monthly.log)
     (cd ERA5; ./update_daily.sh | 2>&1 tee update_daily.log)
 fi

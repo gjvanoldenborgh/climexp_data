@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 wget -q -N ftp://ftp.geolab.nrcan.gc.ca/data/solar_flux/monthly_averages/solflux_monthly_average.txt
 cat  > solarradioflux.dat <<EOF
 # Observed solar radio flux at 10.7cm from <a href="http://www.spaceweather.ca/sx-eng.php">Space Weather Canada</a>

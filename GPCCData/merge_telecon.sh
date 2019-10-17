@@ -8,7 +8,11 @@ fi
 dir=$HOME/climexp
 case $dataset in
     gpcc) file=$dir/GPCCData/gpcc_10_combined.nc;description="GPCC station-based land precipitation";;
-    cruts) file=$dir/CRUData/cru_ts4.01.1901.2016.pre.dat_1.nc;description="CRU TS station-based land precipitation";;
+    cruts) export DIR=$HOME/climexp # make sure we always get the latest version
+        export FORM_field=cru4_pre_10
+        . $DIR/queryfield.cgi
+        file=$DIR/$file
+        description="$kindname station-based land precipitation";;
     cmorph) file=$dir/NCEPData/cmorph_monthly.nc;description="CMORPH satellite-based precipitation";;
     erai) file=$dir/ERA-interim/erai_tp_daily_extended_mo.nc;;
     *) echo "$0: unknown dataset $dataset"; exit -1;;

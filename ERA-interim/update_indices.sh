@@ -1,4 +1,7 @@
 #!/bin/sh
+echo "These indices are no longer updated by Copernicus"
+exit -1
+
 yr=`date +%Y -d now`
 mo=`date +%m -d now`
 yr1=`date +%Y -d '1 month ago'`

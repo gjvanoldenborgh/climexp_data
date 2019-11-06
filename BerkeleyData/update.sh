@@ -6,8 +6,14 @@ if [ -f downloaded_$yr$mo -a "$force" != true ]; then
   exit
 fi
 
-wget -N http://berkeleyearth.lbl.gov/auto/Global/Complete_TAVG_complete.txt
-fgrep "Berkeley Dataset" Complete_TAVG_complete.txt | tr '%' "#" | \
+file=Complete_TAVG_complete.txt
+wget -N http://berkeleyearth.lbl.gov/auto/Global/$file
+c=`file $file | fgrep -c gzip`
+if [ $c == 1 ]; then
+    mv $file $file.gz
+    gunzip $file.gz
+fi
+fgrep "Berkeley Dataset" $file | tr '%' "#" | \
 	sed -e 's@Berkeley Dataset@<a href="http://www.berkeleyearth.org">Berkeley Dataset</a>@' > t2m_land_best.dat
 echo 
 cat >> t2m_land_best.dat <<EOF
@@ -16,12 +22,18 @@ cat >> t2m_land_best.dat <<EOF
 # history :: retrieved `date`
 # T2m_land_anom [K] land-surface average temperature anomalies relative to 1951-1980"
 EOF
-fgrep -v '%' Complete_TAVG_complete.txt | fgrep -v ' 2010 ' \
+fgrep -v '%' $file | fgrep -v ' 2010 ' \
     | cut -b 1-22 \
     | fgrep -v NaN >> t2m_land_best.dat
 $HOME/NINO/copyfilesall.sh t2m_land_best.dat
 
-wget -N http://berkeleyearth.lbl.gov/auto/Global/Land_and_Ocean_complete.txt
+file=Land_and_Ocean_complete.txt
+wget -N http://berkeleyearth.lbl.gov/auto/Global/$file
+c=`file $file | fgrep -c gzip`
+if [ $c == 1 ]; then
+    mv $file $file.gz
+    gunzip $file.gz
+fi
 cat << EOF > t2m_land_ocean_best.dat
 # Land temperature from <a href="http://www.berkeleyearth.org">Berkeley Dataset</a>, 
 # ocean temperature reinterpolated from HadSST, temperature over sea ice extrapolated from land.
@@ -30,9 +42,9 @@ cat << EOF > t2m_land_ocean_best.dat
 # history :: retrieved `date`
 # T2m_anom [K] global mean temperature anomalies relative to 1951-1980
 EOF
-echo "# comment :: "`sed -e '/The reported data is broken into two sections/,$d' Land_and_Ocean_complete.txt \
+echo "# comment :: "`sed -e '/The reported data is broken into two sections/,$d' $file \
     | fgrep '%' | sed -e 's/^% //' | tr -d '\n'`  >> t2m_land_ocean_best.dat
-sed -e '/Sea Ice Temperature Inferred from Water Temperatures/,$d' Land_and_Ocean_complete.txt \
+sed -e '/Sea Ice Temperature Inferred from Water Temperatures/,$d' $file \
     | fgrep -v '%' \
     | cut -b 1-22 >> t2m_land_ocean_best.dat
 $HOME/NINO/copyfilesall.sh t2m_land_ocean_best.dat
@@ -92,10 +104,12 @@ do
 	wget -N $base/$file
 	ncfile=${var}_LatLong1.nc
 	if [ ! -s $ncfile -o $ncfile -ot $file ]; then
-	    ncatted -a units,time,m,c,"years since 0000-01-01 00:00" $file aap.nc
-	    cdo -r -f nc4 -z zip selvar,temperature aap.nc $ncfile
-	    rm aap.nc
-	    file=${var}_LatLong1.nc
+	    ncatted -a units,time,m,c,"years since 0000-01-01 00:00" $file tmp$ncfile
+	    cdo -r -f nc4 -z zip selvar,temperature tmp$ncfile tmp2$ncfile
+	    # grads does not accept this, use dummy climexp routine to convert to "months since"
+	    catnc tmp2$ncfile $ncfile 
+	    rm tmp$ncfile tmp2$ncfile
+	    file=$ncfile
     	ncatted -h -a source_url,global,a,c,"http://berkeleyearth.org/data/" $file
     	. $HOME/climexp/add_climexp_url_field.cgi
     	$HOME/NINO/copyfiles.sh $file

@@ -11,9 +11,9 @@ if [ "$1" = noupdate ]; then
 fi
 
 # adjust with each version
-version=v19.0e
+version=v20.0e
 # end date of official file if in the same year as the year of last month
-enddate="" # "2017-08-31" # keep empty when shortening is not needed "2013-12-31"
+enddate="2019-07-31" # "2017-08-31" # keep empty when shortening is not needed "2013-12-31"
 # begin date of annual additions when in the previous year
 nextdate="" # "2017-09-01" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
 

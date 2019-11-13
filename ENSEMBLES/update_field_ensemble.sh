@@ -21,7 +21,7 @@ cdoflags="-r -f nc4 -z zip"
 wgetflags="-N --no-check-certificate"
 
 yr=`date -d "last month" "+%Y"`
-for var in rr tg tn tx pp
+for var in rr tg tn tx pp qq
 do
   for res in 0.25 # 0.1 too big for my computers
   do

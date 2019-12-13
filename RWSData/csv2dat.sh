@@ -9,7 +9,7 @@
 outfile=debiet_lobith.dat
 cat > $outfile <<EOF
 # Historical daily discharge data from Deltares
-# history: :: 06-dec-2018 received from Ruurd.Noordhuis@deltares.nl
+# history :: 06-dec-2018 received from Ruurd.Noordhuis@deltares.nl
 # discharge [m^3/s] discharge of the Rhine at Lobith
 EOF
 
@@ -30,10 +30,29 @@ gfortran -fbounds-check -o table1950 table1950.f90
 outfile=debiet_eijsden.dat
 cat > $outfile <<EOF
 # Historical daily discharge data from Deltares
-# history: :: 06-dec-2018 received from Ruurd.Noordhuis@deltares.nl
+# history :: 06-dec-2018 received from Ruurd.Noordhuis@deltares.nl
 # discharge [m^3/s] discharge of the Meuse at Eijsden
 EOF
 
 # note that I added two time -999.9 at the end of the last two lines in th ecsv file by hand.
 file2="debiet Eijsden 1950-2016 tabel.csv"
 ./table1950 "$file2" >> $outfile
+
+# better series from Jules
+
+# metadata. Hmm, not much
+outfile=debiet_lobith_1.dat
+cat > $outfile <<EOF
+# Historical daily discharge data from Deltares
+# history :: 19-dsep-2018 received from jules.beersma@knmi.nl
+# discharge [m^3/s] discharge of the Rhine at Lobith from DONAR
+# until 1-1-1989 8:00h MET, after this daily means of hourly observations.
+EOF
+
+file3="Q_lobith_dagelijks.csv"
+gfortran -fbounds-check -o table1901 table1901.f90
+./table1901 "$file3" >> $outfile
+
+# make this the default, they seem to agree within 1 m3/s
+mv debiet_lobith_1.dat debiet_lobith.dat 
+ 

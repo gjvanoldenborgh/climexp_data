@@ -5,28 +5,22 @@ fi
 
 # new merged dataset
 echo "NCDC merged dataset"
-base=ftp://ftp.ncdc.noaa.gov/pub/data/noaaglobaltemp/operational/gridded/
+base=https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/gridded/
 ###file=`curl $base | fgrep asc.gz | sed -e 's/.*href="//' -e 's/asc.gz".*$//'`
 curl $base > index.html
-file=`cat index.html | fgrep asc | sed -e 's/^.* NOAA/NOAA/' -e 's/\.asc.gz//'`
-[ -f $file.asc ] && cp $file.asc $file.asc.old
-echo "wget -q -N --no-check-certificate $base/$file.asc.gz"
-wget -q -N --no-check-certificate $base/$file.asc.gz
-gunzip -c $file.asc.gz > $file.asc
-cmp $file.asc $file.asc.old
-if [ $? != 0 -o "$force" = true ]; then
-    make ncdc2grads4
-    ./ncdc2grads4 $file.asc
-    newfile=`echo $file | sed -e 's/\.v.*$//'`
-    version=`echo $file | sed -e 's/^.*\.v//' -e 's/\.20.*$//'`
-    grads2nc t_anom.ctl $newfile.nc
-    ncatted -h -a title,global,m,c,"NOAA/NCEI Land and Ocean Temperature Anomalies v$version" \
-            -a institution,global,m,c,"NOAA/NCEI" \
-            -a source_url,global,a,c,"https://www.ncdc.noaa.gov/data-access/marineocean-data/noaa-global-surface-temperature-noaaglobaltemp" \
-            $newfile.nc
-    file=$newfile.nc
-	. $HOME/climexp/add_climexp_url_field.cgi
-	$HOME/NINO/copyfiles.sh $file
+file=`cat index.html | fgrep .nc | tail -n 1 | sed -e 's/^.*NOAA/NOAA/' -e 's/\.nc.*$/.nc/'`
+if [ -z "$file" -o "$file" = ".nc" ]; then
+    echo "$0: error: file=$file"
+else
+    echo "wget -N --no-check-certificate $base/$file"
+    wget -N --no-check-certificate $base/$file
+    newfile=`echo $file | sed -e 's/gridded.*$/gridded.nc/'`
+    echo "mv $file $newfile"
+    mv $file $newfile
+    export file=$newfile
+    ncatted -h -a source_url,global,a,c,"$base" $file
+    . $HOME/climexp/add_climexp_url_field.cgi
+    $HOME/NINO/copyfiles.sh $file
 fi
 
 # GHCN-M v3 temperature

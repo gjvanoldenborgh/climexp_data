@@ -3,12 +3,17 @@
 # and https://www.ncdc.noaa.gov/cdr/terrestrial/normalized-difference-vegetation-index
 ###set -x
 
+if [ "$HOST" = pc160050.knmi.nl ]; then
+    # new cdo...
+    PATH=/usr/local/free/installed/cdo-1.9.5/bin:$PATH
+fi
+
 version=v005
 yr=1981
 yrnow=`date +%Y`
 base=https://www.ncei.noaa.gov/data/avhrr-land-normalized-difference-vegetation-index/access
 while [ $yr -lt $yrnow ]; do
-    yrfile=ndvi_${version}_$yr.nc
+    yrfile=ndvi_${version}_${yr}_01.nc
     if [ ! -s $yrfile ]; then
         mkdir -p ndvi_$yr
         cd ndvi_$yr
@@ -38,16 +43,17 @@ EOF
                 cdo selname,l2 qa_layers.nc clouds.nc
                 cdo selname,l3 qa_layers.nc cloudshadows.nc
                 cdo ifnotthen clouds.nc ndviraw$file ndvi$file
-                rm ndviraw$file qa$file
+                rm ndviraw$file qa$file $file
             fi
         done
         cdo copy ndvi*.nc ndvi_${yr}_dy.nc
         # because of the cloud masking a few glimpses should be enough to get valid data
-        daily2longerfield ndvi_${yr}_dy.nc 12 mean minfac 30 ndvi_${yr}_mo.nc
+        ###daily2longerfield ndvi_${yr}_dy.nc 12 mean minfac 15 ndvi_${yr}_mo.nc
+        # cdo only demands one valid point and does not attempt to read the 100GB in memory
+        cdo -f nc4 -z zip monmean ndvi_${yr}_dy.nc ndvi_${yr}_mo.nc
         # my routine only demand 30% valid data, i.e., in this case 2 out of 4 pixels.
         averagefieldspace ndvi_${yr}_mo.nc 2 2 ../$yrfile
         ###cdo remapcon,r3600x1800 ndvi$file ${file}_01.nc
-exit
         rm *.nc
         cd ..
     fi

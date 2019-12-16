@@ -15,7 +15,7 @@ do
 
         if [ ! -s v2p0chirps_${yr}_${res}.nc -o $yr -ge $((yrnow-1)) ]; then
             echo "downloading $yr"
-            wget -q -N -r -nH --cut-dirs=4 ftp://chg-ftpout.geog.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/bils/p${res}/${yr}
+            wget -q -N -r -nH --cut-dirs=4 ftp://ftp.chg.ucsb.edu/pub/org/chg/products/CHIRPS-2.0/africa_daily/bils/p${res}/${yr}
             echo "converting $yr"
             date > gdal.log
             echo $yr >> gdal.log

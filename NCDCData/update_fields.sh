@@ -91,7 +91,7 @@ do
             . ./makenino.sh
             $HOME/NINO/copyfilesall.sh ersst_nino*.dat
             . ./makeiozm.sh
-            $HOME/NINO/copyfilesall.sh dmi_ersst.dat seio_ersst.dat wio_ersst.dat
+            $HOME/NINO/copyfilesall.sh dmi_ersst.dat seio_ersst.dat wtio_ersst.dat
             . ./makesiod.sh
             $HOME/NINO/copyfilesall.sh siod_ersst.dat esiod_ersst.dat wsiod_ersst.dat
             . ./update_amo.sh

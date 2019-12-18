@@ -163,4 +163,7 @@ echo @@@ Copernicus
 ###echo @@@ Berkeley
 ###(cd BerkeleyData; ./update.sh | 2>&1 tee update.log)
 
+echo @@@ NOAA NDVI
+(cd NOAAData; ./update_ndvi.sh | 2>&1 tee update.log)
+
 echo @@@ finished @@@

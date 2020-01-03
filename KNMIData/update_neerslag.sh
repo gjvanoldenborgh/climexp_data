@@ -118,7 +118,7 @@ EOF
     average_ensemble rrr_%%%.nc max > rrr_max.dat
     average_ensemble rr_%%%.nc num > rr_num.dat
     average_ensemble rrr_%%%.nc num > rrr_num.dat
-    $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rr???.DAT rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
+    $HOME/NINO/copyfiles.sh list_rr.txt rr???.?? rr???.dat rh???.nc rrr_max.dat rrr_num.dat rr_max.dat rr_num.dat
     $HOME/NINO/copyfiles.sh list_sd.txt sd???.dat sd???.??
     $HOME/NINO/copyfiles.sh list_sdhom.txt sdhom???.dat sdhom???.??
 

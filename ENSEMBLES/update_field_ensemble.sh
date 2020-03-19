@@ -15,7 +15,7 @@ version=v20.0e
 # end date of official file if in the same year as the year of last month
 enddate="2019-07-31" # "2017-08-31" # keep empty when shortening is not needed "2013-12-31"
 # begin date of annual additions when in the previous year
-nextdate="" # "2017-09-01" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
+nextdate="2019-08-01" # "2017-09-01" # "2016-09-01" # "2015-07-01" # keep empty when previous year is not needed
 
 cdoflags="-r -f nc4 -z zip"
 wgetflags="-N --no-check-certificate"

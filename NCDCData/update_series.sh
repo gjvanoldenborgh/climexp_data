@@ -69,10 +69,16 @@ export date
 
 if [ $HOST = pc160050.knmi.nl ]; then
     rsync -r -e ssh -avt ghcnm climexp.knmi.nl:climexp/NCDCData/
+    equalversions=false
+    if [ $equalversions = true ]; then
     scp gettemp gettempall \
         getmin getminall \
         getmax getmaxall \
         climexp.knmi.nl:climexp/NCDCData/
+    else
+        scp gettemp.f90 climexp.knmi.nl:climexp/NCDCData/
+        ssh climexp.knmi.nl "cd climexp/NCDCData/; make gettemp"
+    fi
 fi
 
 date > downloaded_$yr$mo

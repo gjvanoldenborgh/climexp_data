@@ -3,7 +3,7 @@ program makesoi
 !   make a standard .dat file out of the two NCEP SOI file soi and soi.his
 
     implicit none
-    integer,parameter :: yrbeg=1882,yrend=2021
+    integer,parameter :: yrbeg=1882,yrend=2031
     integer :: i,ii,j,idatum(8)
     real :: data(12,yrbeg:yrend)
     character(128) :: line

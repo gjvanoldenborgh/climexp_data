@@ -3,10 +3,8 @@ program tele2dat
 !   convert the CPC teleconnection index table to a couple of dat files
 
     implicit none
-    integer :: npat
-    parameter(npat=12)
-    integer :: year,month,i,j,k,yrbeg,yrend,state,status
-    parameter (yrbeg=1950,yrend=2020)
+    integer,parameter :: npat=12,yrbeg=1950,yrend=2030
+    integer :: year,month,i,j,k,state,status
     real :: data(12,yrbeg:yrend,npat)
     character(130) :: string
     character(43) :: names(3:npat),snames(3:npat)

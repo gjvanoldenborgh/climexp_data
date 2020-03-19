@@ -80,10 +80,10 @@ done
 export file=ndvi_${oldversion}_01.nc
 echo "Concatenating years..."
 cdo -f nc4 -z zip copy ndvi_${oldversion}_????_01.nc  $file
-ncatted -h -a description,global,a,c,"KNMI processing: mask out all coud pixels, take monthly mean demanding at least one valid pixel, average spatially." $file
+ncatted -h -a description,global,a,c,"KNMI processing: mask out all cloud pixels, take monthly mean demanding at least one valid pixel, average spatially." $file
 . $HOME/climexp/add_climexp_url_field.cgi
 averagefieldspace $file 5 5 ndvi_${oldversion}_05.nc
 export file=ndvi_${oldversion}_05.nc
 . $HOME/climexp/add_climexp_url_field.cgi
-$HOME/copyfiles.sh ndvi_${oldversion}_01.nc ndvi_${oldversion}_05.nc
+$HOME/NINO/copyfiles.sh ndvi_${oldversion}_01.nc ndvi_${oldversion}_05.nc
 

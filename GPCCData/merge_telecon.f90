@@ -3,7 +3,7 @@ program merge_telecon
 !   for some reason patternfield does not accept multiple months, so merge all
 !
     implicit none
-    integer,parameter :: yrbeg=1880,yrend=2020
+    integer,parameter :: yrbeg=1880,yrend=2030
     integer :: mo,yr
     real :: vals(12),data(12,yrbeg:yrend)
     logical :: lvalid(yrbeg:yrend)

@@ -16,6 +16,7 @@ do
   ###fi
 done
 . ./make_snao.sh
+. ./make_nao.sh
 
 export nt=`describefield slp.mon.mean.nc 2>&1 | fgrep months | awk '{print $9}'`
 echo "nt = $nt"

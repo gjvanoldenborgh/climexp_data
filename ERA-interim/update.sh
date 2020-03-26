@@ -17,6 +17,7 @@ if [ 1 = 1 ]; then
 ./make_wspd.sh
 ./update_tglobal.sh
 ./update_twetbulb.sh
+./make_nao.sh
 $HOME/NINO/copyfiles.sh erai_*.nc erai_*.dat
 
 fi

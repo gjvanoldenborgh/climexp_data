@@ -21,11 +21,12 @@ cdoflags="-r -f nc4 -z zip"
 wgetflags="-N --no-check-certificate"
 
 yr=`date -d "last month" "+%Y"`
-for var in rr tg tn tx pp qq
+for var in rr tg tn tx pp # qq
 do
   for res in 0.25 # 0.1 too big for my computers
   do
-    base=http://www.ecad.eu/download/ensembles/data/Grid_${res}deg_reg_ensemble/
+    ###base=http://www.ecad.eu/download/ensembles/data/Grid_${res}deg_reg_ensemble/
+    base=https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_${res}deg_reg_ensemble
     file=${var}_ens_mean_${res}deg_reg_$version.nc
     wget $wgetflags $base/$file
     ubase=http://www.ecad.eu/download/ensembles/data/months/ens

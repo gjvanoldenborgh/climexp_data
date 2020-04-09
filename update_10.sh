@@ -43,9 +43,6 @@ echo @@@ Rutgers
 (cd RutgersData; ./update.sh | 2>&1 tee update.log)
 (cd RutgersData; ./update_fields.sh | 2>&1 tee update.log)
 
-echo @@@ UW
-(cd UWData; ./update.sh | 2>&1 tee update.log)
-
 echo @@@ GRACE
 (cd GRACEData; ./update.sh | 2>&1 tee update.log)
 
@@ -122,6 +119,9 @@ echo @@@ MSU
 
 echo @@@ UMainz
 (cd MainzData; ./update.sh  | 2>&1 tee update.log )
+
+echo @@@ UW
+(cd UWData; ./update.sh | 2>&1 tee update.log)
 
 echo @@@ NCEP/NCAR reanalysis indices
 (cd NCEPNCAR40; ./update_indices.sh | 2>&1 tee update_indices.log)

@@ -1,4 +1,14 @@
-#!/bin/sh
+#!/bin/bash
+
+# SAM
+
+get_index era5_msl.nc 0 360 -40 -40 nearest > slp40.dat
+get_index era5_msl.nc 0 360 -65 -65 nearest > slp65.dat
+normdiff slp40.dat slp65.dat none none > era5_sam.dat
+$HOME/NINO/copyfiles.sh era5_sam.dat
+
+# Copernicus T2m regions
+
 yr=`date +%Y -d now`
 mo=`date +%m -d now`
 yr1=`date +%Y -d '1 month ago'`

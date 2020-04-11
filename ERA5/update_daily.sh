@@ -5,8 +5,18 @@ yrnow=`date +%Y -d "2 months ago"`
 cdo="cdo -r -f nc4 -z zip"
 sourcedir=/net/pc170547/nobackup_2/users/sager/ERA5
 vars=`ls $sourcedir/2010/day/era5_201001* | sed -e "s@$sourcedir/2010/day/era5_201001_@@" -e 's/\..*$//'`
+
+# clean up files the extend rouroutine may have left behind
+echo "cleaning up old files..."
+for prefix in oper forecast; do
+    for file in ??/*/${prefix}*; do
+        [ -f $file ] && rm $file
+    done
+done
+
 filelist=""
 for var in $vars; do
+    echo "getting $var..."
     if [ $var != 3d ]; then
         yr=1978
         sourcefiles=""

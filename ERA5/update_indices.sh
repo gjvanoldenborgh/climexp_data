@@ -2,9 +2,14 @@
 
 # SAM
 
-get_index era5_msl.nc 0 360 -40 -40 nearest > slp40.dat
-get_index era5_msl.nc 0 360 -65 -65 nearest > slp65.dat
-normdiff slp40.dat slp65.dat none none > era5_sam.dat
+if [ era5_msl_extended.nc -nt era5_msl.nc ]; then
+    suffix="_extended"
+else
+    suffix=""
+fi
+get_index era5_msl$suffix.nc 0 360 -40 -40 nearest > slp40.dat
+get_index era5_msl$suffix.nc 0 360 -65 -65 nearest > slp65.dat
+normdiff slp40.dat slp65.dat year none | sed -e 's/diff.*$/SAM [1] Southern Annular Mode/' > era5_sam.dat
 $HOME/NINO/copyfiles.sh era5_sam.dat
 
 # Copernicus T2m regions

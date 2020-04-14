@@ -87,7 +87,7 @@ fi
 base=ftp://sidads.colorado.edu/pub/DATASETS
 subdir=nsidc0051_gsfc_nasateam_seaice
 
-for version in final-gsfc preliminary
+for version in final-gsfc # preliminary
 do
   	for region in north south
   	do
@@ -95,11 +95,63 @@ do
   	done
 done
 
-subdir=nsidc0081_nrt_nasateam_seaice
-for region in north south
-do
-  wget -N $base/$subdir/$region/\*.bin
+# get last month with monthly data
+yr=2018
+m=1
+mo=01
+file=`ls -t nt_${yr}${mo}_*_n.bin | head -1`
+while [ -n "$file" -a -s "$file" ]; do
+    ((m++))
+    if [ $m -gt 12 ]; then
+        m=1
+        ((yr++))
+    fi
+    mo=`printf %02i $m`
+    file=`ls -t nt_${yr}${mo}_*_n.bin | head -1`
 done
+echo "starting daily downloads from $yr$mo"
+
+# get daily data
+wget="wget -N -q --no-check-certificate --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies"
+base=https://n5eil01u.ecs.nsidc.org/PM/NSIDC-0081.001
+file=$0 # something that exists
+d=0
+while [ -s $file ]; do
+    ((d++))
+    case $m in
+        1|3|5|7|8|10|12) dpm=31;;
+        4|6|9|11) dpm=30;;
+        2)  if [ $(( 4*(yr/4) )) = $yr ]; then
+                dpm=29
+            else
+                dpm=28
+            fi;;
+        *) echo "$0: error gyuotu73o88"; exit -1;;
+    esac
+    if [ $d -gt $dpm ]; then
+        d=1
+        ((m++))
+    fi
+    if [ $m -gt 12 ]; then
+        m=1
+        ((yr++))
+    fi
+    mo=`printf %02i $m`
+    dy=`printf %02i $d`
+    subdir=${yr}.${mo}.${dy}
+    file=nt_${yr}${mo}${dy}_f18_nrt_n.bin
+    echo "$wget $base/$subdir/$file"
+    $wget $base/$subdir/$file
+    file=nt_${yr}${mo}${dy}_f18_nrt_s.bin
+    echo "$wget $base/$subdir/$file"
+    $wget $base/$subdir/$file
+done
+
+###subdir=nsidc0081_nrt_nasateam_seaice
+###for region in north south
+###do
+###  wget -N $base/$subdir/$region/\*.bin
+###done
 
 make day2mon
 ./day2mon

@@ -6,10 +6,10 @@ if [ "$1" = force ]; then
 fi
 
 vars="tmp tmn tmx dtr pre vap cld"
-version="4.04"
+version="4.05"
 vers=cru_ts$version
-date=2004151855
-last=2019
+date=2103051243
+last=2020
 base=https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_$version/
 ###ftp ftp1.ceda.ac.uk < commands.ftp > ftp.lo1
 
